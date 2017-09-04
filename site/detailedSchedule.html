@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="http://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="detailed-course-schedule">Detailed Course Schedule</h1>
+<h2 id="week-1">Week 1</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>What is Functional Programming (1.2)</li>
+<li>Haskell Language features (1.3)
+<ul>
+<li>Conciseness</li>
+<li>Powerful types</li>
+<li>List comprehensions</li>
+<li>Recursive functions and types</li>
+<li>Higher-order functions</li>
+<li>Pure functions separated from effectful functions</li>
+<li>Lazy evaluation</li>
+</ul></li>
+<li>Examples: <code>sum</code> (two versions), <code>qsort</code> (1.5)</li>
+<li>In-class activity: Write <code>product</code></li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>Introduction to GHC, GHCi (2.1, 2.2)
+<ul>
+<li>Math operations. Compute the 10th power of 2.</li>
+</ul></li>
+<li>Standard Prelude (2.3, 2.4)
+<ul>
+<li>Basic list methods</li>
+<li>Function application needs no parentheses</li>
+</ul></li>
+<li>Loading script files (2.5)
+<ul>
+<li>Write in the custom qsort function
+<ul>
+<li>load it</li>
+<li>ask for its type</li>
+<li>test it with strings and numbers</li>
+</ul></li>
+<li>Comments, layout rule</li>
+</ul></li>
+<li>In-class activities:
+<ul>
+<li>Write function <code>addInterest</code></li>
+<li>Write function <code>weirdOp x y</code> that does “sum minus product”</li>
+<li>Write function <code>haveEnough n lst</code> that checks if list has that many elements</li>
+<li>Write a function <code>last</code> that given a list returns the last element (use other existing functions)</li>
+</ul></li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>Basic types (3.1, 3.2)
+<ul>
+<li>Bool</li>
+<li>String vs Char</li>
+<li>Int vs Integer</li>
+</ul></li>
+<li>List types (3.3)
+<ul>
+<li>Strings are really <code>[Char]</code></li>
+<li>List of lists</li>
+</ul></li>
+<li>Tuple types (3.4)
+<ul>
+<li>Difference between tuples and lists?</li>
+<li>Activity: Think of things we might represent with tuples.</li>
+</ul></li>
+<li>Function types (3.5)
+<ul>
+<li>Look at types of standard functions</li>
+<li>In-class activity:
+<ul>
+<li>TODO</li>
+</ul></li>
+</ul></li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-2">Week 2</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Curried functions (3.6) and their type</li>
+<li>Polymorphic types (3.7)</li>
+<li>Overloaded types (3.8)</li>
+<li>Type classes (3.9)</li>
+<li>In-class activity:
+<ul>
+<li>Determine type for certain functions, with type classes in mind</li>
+<li>Build up to the Map and Set ADTs</li>
+</ul></li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>Conditionals (4.2)</li>
+<li>Guarded equations (4.3)</li>
+<li>In-class activity:
+<ul>
+<li>Define Collatz function, explore its behavior</li>
+<li>Define function that given pair (string1, string2) returns whichever string is longer</li>
+<li>Do the same problem by first writing a function “min” (return to this later as a higher-order-function — argmax)</li>
+</ul></li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>Pattern matching (4.4)
+<ul>
+<li>Booleans</li>
+<li>Tuples</li>
+<li>Lists</li>
+</ul></li>
+<li>In-class activity:
+<ul>
+<li>Define function that does ||</li>
+<li>Define function that finds the maximum element on a list by dropping the smallest of the top two elements.</li>
+<li>Write a function that tests if a list of numbers is ordered in increasing order.</li>
+</ul></li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-3">Week 3</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Anonymous functions (4.5)</li>
+<li>In-class activity: Write anonymous functions that:
+<ul>
+<li>given two lists return the longest of the two</li>
+<li>given a list take out the first 3 elements</li>
+<li>given a pair of numbers (x, y) return the y</li>
+<li>given a number and a list, return the list if the number is even, and the reverse list if the number is odd</li>
+</ul></li>
+<li>Sections (4.6)</li>
+<li>In-class activity: Write sections that:
+<ul>
+<li>cut a number in half.</li>
+<li>turn a number into its negative.</li>
+<li>turn a number into a list with one element.</li>
+<li>append to any list the number 1.</li>
+<li>compute the division-by-2 remainder of a number.</li>
+<li>take out the first 3 elements from a list.</li>
+</ul></li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>Basics of list comprehensions (5.1-5.3)</li>
+<li>In-class activity: Write list comprehensions that:
+<ul>
+<li>given a list of pairs return a list of the first entries in those pairs</li>
+<li>given a list of pairs of numbers return a list of the largest number on each pair</li>
+<li>given a list of numbers return the squares, but only for the numbers that are odd</li>
+<li>given a list of elements, return a list of pairs where the first coordinate is the same element from the original list, and the second coordinate is the number 1</li>
+<li>given two lists of numbers produce pairs of the sum and product for each combination, but only for the combinations where the number from the first list is bigger than the number from the second list</li>
+<li>given a list of lists of numbers, flatten out into one list, but ignoring any lists that have less than 3 elements</li>
+<li>given a list of numbers, return the 1st, 3rd, 5th etc (use zip with [1…])</li>
+</ul></li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>String comprehensions (5.4)</li>
+<li>Long example: Caesar cipher (5.5)</li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-4">Week 4</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Numerical recursion (6.1)</li>
+<li>In-class activity:
+<ul>
+<li>Implement fast exponentiation</li>
+<li>TODO</li>
+</ul></li>
+<li>Recursion on lists (6.2)</li>
+<li>In-class activity:
+<ul>
+<li>TODO</li>
+</ul></li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>Recursion with multiple arguments (6.3)</li>
+<li>Multiple/Mutual recursion (6.4, 6.5)</li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>Recursion practice (6.6)
+<ul>
+<li>Insert on a sorted list</li>
+<li>Search on a sorted list (boolean result)</li>
+<li>Check if list sorted</li>
+<li>Group up consecutive same elements in list</li>
+</ul></li>
+<li>Lab: Implementation of map via sorted lists of pairs</li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-5">Week 5</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Higher-order functions (7.1)</li>
+<li>Processing lists (7.2)</li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>foldr (7.3), foldl (7.4)</li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>composition, point-free style (7.5)</li>
+<li>Example: voting algorithms (7.7)</li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-6">Week 6</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>More practice with higher-order functions?</li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>type declarations, type aliases (8.1)</li>
+<li>data declarations (8.2)</li>
+<li>the Maybe type</li>
+<li>newtype declarations (8.3)</li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>Recursive types (8.4)</li>
+<li>Tree structures</li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-7">Week 7</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Example use of types (Heaps?)</li>
+<li>Type-directed programming</li>
+<li>Creating a custom module (Heaps?)</li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>Information hiding and abstraction with modules (TODO)</li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>Class and instance declarations (8.5)</li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-8">Week 8</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Example: Tautology checker (8.6)</li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>Example: TODO (abstract machine? 8.7 or something “better”)</li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>More on modules and classes</li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-9">Week 9</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Countdown problem setup (9.1, 9.2, 9.3, 9.9)</li>
+<li>Plan the solution</li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>Countdown problem solution (9.4, 9.5, 9.6)</li>
+<li>Combining generation and evaluation (9.7, 9.8)</li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>Interactive programming intro (10.1, 10.2, 10.3)</li>
+<li>Interactive programming sequencing, derived (10.4, 10.5)</li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-10">Week 10</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Interactive programming example: Nym (10.7)</li>
+<li>Idea of a main loop?</li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>Graphics? (or tic-tac-toe?)</li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>Functors (12.1)</li>
+<li>Applicatives (12.2)</li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-11">Week 11</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Monads (12.3)</li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>State in a pure world: The state monad (12.4)</li>
+</ul>
+</dd>
+<dt>Friday</dt>
+<dd><ul>
+<li>Lazy Evaluation intro (15.1, 15.2)</li>
+<li>Call-by-name may terminate (15.3)</li>
+</ul>
+</dd>
+</dl>
+<h2 id="week-12">Week 12</h2>
+<dl>
+<dt>Monday</dt>
+<dd><ul>
+<li>Number of reductions and lazy evaluation (15.4)</li>
+<li>Infinite structures (15.5)</li>
+</ul>
+</dd>
+<dt>Wednesday</dt>
+<dd><ul>
+<li>Separation of control and data generation (15.6)</li>
+</ul>
+</dd>
+</dl>
+<p>Friday</p>
+<p>:</p>
+<h2 id="week-13">Week 13</h2>
+<p>Monday</p>
+<p>:</p>
+<p>Wednesday</p>
+<p>:</p>
+<p>Friday</p>
+<p>:</p>
+<h2 id="week-14">Week 14</h2>
+<p>Monday</p>
+<p>:</p>
+<p>Wednesday</p>
+<p>:</p>
+<p>Friday</p>
+<p>:</p>
+</body>
+</html>

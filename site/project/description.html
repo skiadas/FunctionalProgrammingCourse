@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="http://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="project-description">Project Description</h1>
+<ul>
+<li></li>
+</ul>
+<h2 id="overall-description">Overall description</h2>
+<p>We will build a text-based role-playing game (RPG). The player will be able to create characters of various classes and races, and engage in combat with AI-generated opponents.</p>
+<p>We have top-level modules that then contain smaller submodules.</p>
+<ul>
+<li><a href="#unit">Unit</a> manages all information related to playable as well as AI-generated units.</li>
+<li><a href="#equipment">Equipment</a> manages information related to equipment, weaponry and armor that one may carry.</li>
+<li><a href="#combat">Combat</a> manages the mechanics involved with hostile encounters, such as forming parties, managing actions and their order, managing in-combat unit health and buffs.</li>
+<li><a href="#ai">AI</a> is responsible for the management of enemy behavior.</li>
+<li><a href="#ui">UI</a> is responsible for user interaction, showing progress to the user and receiving input.</li>
+</ul>
+<h3 id="unit-module">Unit Module</h3>
+<p>The Unit module manages the different characteristics of the various units. A unit</p>
+<pre><code>Unit
+Unit.Class
+Unit.Race
+Unit.Stats
+Unit.Ability
+Unit.Gear
+Unit.Backpack
+Equipment
+Combat
+Combat.State
+Combat.Unit
+Combat.Party
+Combat.Effect   (Buff/Debuff)
+Combat.Turn?
+Combat.Action
+AI
+AI.Random
+AI.Unit
+AI.Strategy
+UI
+UI.Loop
+UI.Menu
+UI.Combat.Unit
+UI.Combat.Action</code></pre>
+</body>
+</html>
