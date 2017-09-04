@@ -140,7 +140,7 @@ void quickSort(int arr[], int low, int high) {
 }
 ```
 
-The Haskell approach is in essence the same, except it focuses on a more high-level description of the process: *The result of performing quicksort on a list is the result of taking all elements less than its first element, followed by that first element, followed by all elements greater than the first element.
+The Haskell approach is in essence the same, except it focuses on a more high-level description of the process: *The result of performing quicksort on a list is the result of taking all elements less than its first element, followed by that first element, followed by all elements greater than the first element*.
 
 This is not the most efficient implementation of this algorithm in Haskell, but it is illustrative of the language's expressiveness.
 ```haskell
