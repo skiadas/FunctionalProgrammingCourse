@@ -8,7 +8,7 @@ Mon
   ~ [Introduction to Haskell and Fuctional Programming](notes/intro.md) (1.1-1.5)
 
 Wed
-  ~ Working with the GHC compiler and interpreter. Lists. (2.1-2.5)
+  ~ [Working with the GHC compiler and interpreter. Lists.](notes/lists.md) (2.1-2.5)
 
 Fri
   ~ Standard Haskell values and types. (3.1-3.5)

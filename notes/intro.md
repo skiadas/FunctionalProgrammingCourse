@@ -3,7 +3,7 @@
 ## Reading
 
 - Sections 1.1-1.5
-- Practice exercises (1.7): 1, 2, 3, 4,5
+- Practice exercises (1.7): 1, 2, 3, 4, 5
 
 ## Functional Programming and Haskell
 
