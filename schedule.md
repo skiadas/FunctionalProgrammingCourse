@@ -11,12 +11,12 @@ Wed
   ~ [Working with the GHC compiler and interpreter. Lists.](notes/lists.md) (2.1-2.5)
 
 Fri
-  ~ Standard Haskell values and types. (3.1-3.5)
+  ~ [Standard Haskell values and types. Curried Functions.](notes/standard.md) (3.1-3.6)
 
 ## Week  2 (01/18-01/22)
 
 Mon
-  ~ Curried Functions, Polymorphic Types, Type classes. (3.6-3.9)
+  ~ Polymorphic Types, Type classes. (3.7-3.9)
 
 Wed
   ~ Conditionals. Guarded Expressions. (4.1-4.3)

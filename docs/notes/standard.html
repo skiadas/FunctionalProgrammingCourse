@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="standard-haskell-types">Standard Haskell Types</h1>
+<p>In this section we learn about the standard values and types that Haskell offers. These form the bread and butter of working with Haskell</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Sections 3.1-3.6</li>
+<li>Practice exercises (3.11): 1, 2, 3 (might not be able to do some parts until next class)</li>
+</ul>
+<h2 id="haskell-types">Haskell Types</h2>
+<p>Haskell is what is known as a <em>statically typed</em> language: Every value and expression in the language has a <em>type</em>. A <strong>type</strong> is in effect <em>a collection of related values</em>. A key premise is that whenever an operation can be performed for a value of a certain type, it can also be performed for all values of that same type.</p>
+<p>Types effectively allow us to organize our program. Knowing that a function returns a value of a certain type allows us to safely feed that value as input into another function that accepts that type of value.</p>
+<p>Types in Haskell always start with a capital letter.</p>
+<h3 id="type-ascription">Type ascription</h3>
+<p>We can specify the type of an expression by appending a double colon <code>::</code> followed by the type. For example we can write:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">True</span><span class="ot"> ::</span> <span class="dt">Bool</span>        <span class="co">-- The value &quot;True&quot; is of type Bool</span>
+not<span class="ot"> ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="co">-- The value &quot;not&quot; has the function type Bool-&gt;Bool</span>
+not <span class="dt">True</span><span class="ot"> ::</span> <span class="dt">Bool</span>    <span class="co">-- The expression &quot;not True&quot; is of type Bool</span></code></pre></div>
+<p>You can ask the Haskell interpreter for the type of an expression by prepending it with <code>:type</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">:</span><span class="kw">type</span> not <span class="dt">True</span>   <span class="co">-- will print &quot;not True :: Bool&quot;</span></code></pre></div>
+<p>An important point to make is that the above does not actually attempt to evaluate the expression <code>not True</code>, it just determines its type.</p>
+<h3 id="type-inference">Type inference</h3>
+<p>Haskell has a very powerful <em>type inference</em> process. <strong>Type inference</strong> is the process of determining the type of an expression without any required input from the programmer.</p>
+<p>This means that most of the time we do not need to specify the types of expressions, we can let Haskell figure it all out. It is however customary to specify the types of functions in scripts, as we will see later on.</p>
+<p>The type inference model is based on a simple idea:</p>
+<blockquote>
+<p>In the expression <code>f x</code> where <code>f</code> is a function of type <code>A -&gt; B</code>, then <code>x</code> must have type <code>A</code> and the result <code>f x</code> has type <code>B</code>.</p>
+</blockquote>
+<p>This simple principle introduces type constraints, and the Haskell typechecker solves these constraints to determine the type of more complex expressions.</p>
+<h3 id="basic-types">Basic Types</h3>
+<p>Here is a listing of the basic types in Haskell</p>
+<dl>
+<dt><code>Bool</code></dt>
+<dd>for logical values. The only values are <code>True</code> and <code>False</code>.
+</dd>
+<dt><code>Char</code></dt>
+<dd>for single Unicode characters, surrounded in quotes like so: <code>'a'</code>.
+</dd>
+<dt><code>String</code></dt>
+<dd>for strings of characters. Surrounded in double-quotes like so: <code>&quot;hello there!&quot;</code>. Note that technically strings are the same thing as lists of chars. So <code>String</code> is actually a <em>type alias</em> for what we will call <code>[Char]</code> in a bit.
+</dd>
+<dt><code>Int</code></dt>
+<dd>for fixed-precision integers, extending up to <span class="math inline">\(\pm2^{63}\)</span>.
+</dd>
+<dt><code>Integer</code></dt>
+<dd>for arbitrary precision integers. These can be as large as desired, and will cause no overflow errors. But operations on them are a lot slower.
+</dd>
+<dt><code>Float</code></dt>
+<dd>for single-precision floating point numbers. In general these are to be avoided in favor of <code>Double</code>. These typically contain no more than a total of 8 digits.
+</dd>
+<dt><code>Double</code></dt>
+<dd>for double-precision floating point numbers. These typically contain 16 digits.
+</dd>
+</dl>
+<h3 id="compound-types">Compound Types</h3>
+<p>There are a number of ways of producing more complex types out of simpler types. These are some times called <em>compound types</em>.</p>
+<h4 id="list-types">List Types</h4>
+<p>The first example of that is the list type. As elements of the list all must have the same type, we can specify the type of a list with two pieces of information:</p>
+<ul>
+<li>The fact that it is a list. This is denoted by using a single pair of square brackets: <code>[...]</code></li>
+<li>The fact that the entries have a certain type. That type goes between the brackets.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">[<span class="dt">False</span>, <span class="dt">True</span>, <span class="dt">True</span>, <span class="dt">True</span>]<span class="ot"> ::</span> [<span class="dt">Bool</span>]
+[<span class="ch">&#39;a&#39;</span>, <span class="ch">&#39;b&#39;</span>, <span class="ch">&#39;c&#39;</span>]<span class="ot"> ::</span> [<span class="dt">Char</span>]            <span class="co">-- Can also be called String</span>
+<span class="st">&quot;abc&quot;</span><span class="ot"> ::</span> [<span class="dt">Char</span>]                      <span class="co">-- Same as above</span>
+[<span class="st">&quot;abc&quot;</span>, <span class="st">&quot;def&quot;</span>]<span class="ot"> ::</span> [[<span class="dt">Char</span>]]           <span class="co">-- Or also [String]</span></code></pre></div>
+<p><strong>Practice</strong>: Write a value of type <code>[[Int]]</code>.</p>
+<h4 id="tuple-types">Tuple Types</h4>
+<p>A <strong>tuple</strong> is a collection of values separated by commas and surrounded by parentheses. Unlike lists:</p>
+<ul>
+<li>A tuple has a fixed number of elements (fixed <em>arity</em>), either zero or at least two.</li>
+<li>The elements can have different types, from each other.</li>
+<li>The types of each of the elements collectively form the type of the tuple.</li>
+</ul>
+<p>Examples:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="dt">False</span>, <span class="dv">3</span>)<span class="ot"> ::</span> (<span class="dt">Bool</span>, <span class="dt">Int</span>)
+(<span class="dv">3</span>, <span class="dt">False</span>)<span class="ot"> ::</span> (<span class="dt">Int</span>, <span class="dt">Bool</span>)    <span class="co">-- This is different from the one above</span>
+(<span class="dt">True</span>, <span class="dt">True</span>, <span class="st">&quot;dat&quot;</span>)<span class="ot">  ::</span> (<span class="dt">Bool</span>, <span class="dt">Bool</span>, [<span class="dt">Char</span>])
+<span class="ot">() ::</span> ()                     <span class="co">-- The empty tuple, with the empty tuple type</span></code></pre></div>
+<p>We can also mix list types and tuple types. For instance:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">[(<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">3</span>, <span class="dv">4</span>)]<span class="ot"> ::</span> [(<span class="dt">Int</span>, <span class="dt">Int</span>)]       <span class="co">--   A list of pairs of integers</span>
+ <span class="co">-- A list of pairs of strings and booleans</span>
+[(<span class="st">&quot;Peter&quot;</span>, <span class="dt">True</span>), (<span class="st">&quot;Jane&quot;</span>, <span class="dt">False</span>)]<span class="ot"> ::</span> [([<span class="dt">Char</span>], <span class="dt">Bool</span>)]</code></pre></div>
+<p><strong>Activity</strong>: Think of uses for tuple types. What information might we choose to represent with tuples?</p>
+<h4 id="function-types">Function types</h4>
+<p>A function type is written as <code>A -&gt; B</code> where <code>A</code> is the type of the input and <code>B</code> is the type of the output. For example:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">add3 x <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">3</span><span class="ot">           ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+add (x, y) <span class="fu">=</span> x <span class="fu">+</span><span class="ot"> y       ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Int</span>
+oneUpTo n <span class="fu">=</span> [<span class="dv">1</span><span class="fu">..</span>n]<span class="ot">       ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
+range (a, b) <span class="fu">=</span> [a<span class="fu">..</span>b]<span class="ot">    ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</code></pre></div>
+<p>When writing functions, we tend to declare their type right before their definition, like so:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">range<span class="ot"> ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
+range (a, b) <span class="fu">=</span> [a<span class="fu">..</span>b]</code></pre></div>
+<p>You may be tempted to think of this function as a function of two variables. It technically is not, and we will discuss this topic on the next section.</p>
+<h3 id="type-practice">Type Practice</h3>
+<p>Work out the types of the following expressions:</p>
+<ol style="list-style-type: decimal">
+<li><code>(5 &gt; 3, 3 + head [1, 2, 3])</code></li>
+<li><code>[length &quot;abc&quot;]</code></li>
+<li>The function <code>f</code> defined by <code>f lst = length lst + head lst</code></li>
+<li>The function <code>g</code> defined by <code>g lst = if head lst then 5 else 3</code></li>
+</ol>
+<h3 id="curried-functions">Curried functions</h3>
+<p>Looking at the example of the <code>range</code> function above:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">range<span class="ot"> ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
+range (a, b) <span class="fu">=</span> [a<span class="fu">..</span>b]</code></pre></div>
+<p>You may be tempted to think of this function as having as input <em>two parameters</em>, the <code>a</code> and the <code>b</code>. In reality it has only <em>one parameter</em>, namely the <em>tuple</em> <code>(a, b)</code>. This is why the type for the function has one thing on the left side of the arrow, namely the compound type <code>(Int, Int)</code>.</p>
+<p>This is an important step: Compound types allow us the illusion of multiple parameters when in reality there is only one parameter.</p>
+<p>There is however one other way of allowing multiple parameters, which is called <em>currying</em> in honor of Haskell Brooks Curry once again. The main idea is that functions can be specified to take <em>multiple parameters one at a time</em>. An example is in order, using the function <code>take</code> we saw earlier. A typical call to <code>take</code> would look like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">take <span class="dv">3</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</code></pre></div>
+<p>So we are calling <code>take</code>, providing it with two parameters, and get back the result list.</p>
+<p>However, the “curried” nature of the function lies in the fact that we could provide only the first argument, and thus create a new function that simply expects a list as input:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">prefix <span class="fu">=</span> take <span class="dv">3</span>           <span class="co">-- prefix is now a function</span>
+prefix [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]            <span class="co">-- This is the same as `take 3 [1..10]`</span></code></pre></div>
+<p>Providing only partial arguments to a curried function, and thus effectively creating a new function, is an extremely common practice, and the system is built so that this process is very efficient.</p>
+<p>Let us look at another example:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">f x y <span class="fu">=</span> x <span class="fu">+</span> y                <span class="co">-- function of two variables</span>
+add3 <span class="fu">=</span> f <span class="dv">3</span>                   <span class="co">-- new function</span>
+add3 <span class="dv">10</span>                      <span class="co">-- same as f 3 10</span></code></pre></div>
+<h4 id="types-for-carried-functions">Types for carried functions</h4>
+<p>A curried function is basically <em>a function whose return value is again a function</em>. When we write <code>f x y = x + y</code> what Haskell reads is:</p>
+<blockquote>
+<p><code>f</code> is a function of one argument <code>x</code>, whose result is a new function of one argument <code>y</code>, whose result is adding the <code>x</code> to the <code>y</code>.</p>
+</blockquote>
+<p>This helps us understand the type of such a function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">f ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>)</code></pre></div>
+<p>Since these functions are so common, it is customary to omit the parentheses: <em>Arrow types are right-associative</em>.</p>
+<p><strong>Practice</strong>. Determine the types for the following functions. Do not worry about implementing the functions, you just need to determine their type.</p>
+<ol style="list-style-type: decimal">
+<li><code>take</code> from the standard functions. Assume the elements in the list are integers.</li>
+<li><code>take</code> from the standard functions. Assume the elements in the list are integers.</li>
+<li><code>hasEnough</code> from last time. Assume the elements in the list are integers.</li>
+<li><code>isSubstring</code>: Given a string and another string, it returns whether the first string is contained somewhere within the second string.</li>
+<li><code>max3</code>: Given three numbers, returns the maximum of the tree.</li>
+<li><code>evaluate</code>: This function is called with two (curried arguments). The first argument is a function <code>f</code> that takes as input an integer, and returns as output an integer. The second argument is an integer. The result is what happens when we apply <code>f</code> to that second argument.</li>
+</ol>
+</body>
+</html>
