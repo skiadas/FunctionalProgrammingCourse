@@ -179,6 +179,12 @@ A curried function is basically *a function whose return value is again a functi
 
 > `f` is a function of one argument `x`, whose result is a new function of one argument `y`, whose result is adding the `x` to the `y`.
 
+So Haskell reads `f x y` as:
+```haskell
+(f x) y
+```
+In other words, `f` is applied to `x` and returns a function. That function is then applied to `y` to get us the result.
+
 This helps us understand the type of such a function:
 ```haskell
 f :: Int -> (Int -> Int)

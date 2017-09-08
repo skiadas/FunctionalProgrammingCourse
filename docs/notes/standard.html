@@ -172,6 +172,9 @@ add3 <span class="dv">10</span>                      <span class="co">-- same as
 <blockquote>
 <p><code>f</code> is a function of one argument <code>x</code>, whose result is a new function of one argument <code>y</code>, whose result is adding the <code>x</code> to the <code>y</code>.</p>
 </blockquote>
+<p>So Haskell reads <code>f x y</code> as:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(f x) y</code></pre></div>
+<p>In other words, <code>f</code> is applied to <code>x</code> and returns a function. That function is then applied to <code>y</code> to get us the result.</p>
 <p>This helps us understand the type of such a function:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">f ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>)</code></pre></div>
 <p>Since these functions are so common, it is customary to omit the parentheses: <em>Arrow types are right-associative</em>.</p>
