@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="advanced-haskell-typing-concepts">Advanced Haskell Typing concepts</h1>
+<p>In this section we discuss some more advanced topics related to Haskell’s typing model.</p>
+<p>We start with as discussion of the process of currying function parameters, which is possible because of the dominant nature of function values in functional programming. We then move on to discuss type variables which enable <em>generic programming</em> techniques. We end with a discussion of type classes and their significance.</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Sections 3.7-3.9</li>
+<li>Practice exercises (3.11): 1, 2, 3, 4, 5</li>
+</ul>
+<h2 id="curried-functions">Curried functions</h2>
+<p>Looking at the example of the <code>range</code> function above:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">range<span class="ot"> ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
+range (a, b) <span class="fu">=</span> [a<span class="fu">..</span>b]</code></pre></div>
+<p>You may be tempted to think of this function as having as input <em>two parameters</em>, the <code>a</code> and the <code>b</code>. In reality it has only <em>one parameter</em>, namely the <em>tuple</em> <code>(a, b)</code>. This is why the type for the function has one thing on the left side of the arrow, namely the compound type <code>(Int, Int)</code>.</p>
+<p>This is an important step: Compound types allow us the illusion of multiple parameters when in reality there is only one parameter.</p>
+<p>There is however one other way of allowing multiple parameters, which is called <em>currying</em> in honor of Haskell Brooks Curry once again. The main idea is that functions can be specified to take <em>multiple parameters one at a time</em>. An example is in order, using the function <code>take</code> we saw earlier. A typical call to <code>take</code> would look like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">take <span class="dv">3</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]</code></pre></div>
+<p>So we are calling <code>take</code>, providing it with two parameters, and get back the result list.</p>
+<p>However, the “curried” nature of the function lies in the fact that we could provide only the first argument, and thus create a new function that simply expects a list as input:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">prefix <span class="fu">=</span> take <span class="dv">3</span>           <span class="co">-- prefix is now a function</span>
+prefix [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]            <span class="co">-- This is the same as `take 3 [1..10]`</span></code></pre></div>
+<p>Providing only partial arguments to a curried function, and thus effectively creating a new function, is an extremely common practice, and the system is built so that this process is very efficient.</p>
+<p>Let us look at another example:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">f x y <span class="fu">=</span> x <span class="fu">+</span> y                <span class="co">-- function of two variables</span>
+add3 <span class="fu">=</span> f <span class="dv">3</span>                   <span class="co">-- new function</span>
+add3 <span class="dv">10</span>                      <span class="co">-- same as f 3 10</span></code></pre></div>
+<h3 id="types-for-carried-functions">Types for carried functions</h3>
+<p>A curried function is basically <em>a function whose return value is again a function</em>. When we write <code>f x y = x + y</code> what Haskell reads is:</p>
+<blockquote>
+<p><code>f</code> is a function of one argument <code>x</code>, whose result is a new function of one argument <code>y</code>, whose result is adding the <code>x</code> to the <code>y</code>.</p>
+</blockquote>
+<p>So Haskell reads <code>f x y</code> as:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(f x) y</code></pre></div>
+<p>In other words, <code>f</code> is applied to <code>x</code> and returns a function. That function is then applied to <code>y</code> to get us the result.</p>
+<p>This helps us understand the type of such a function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">f ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>)</code></pre></div>
+<p>Since these functions are so common, it is customary to omit the parentheses: <em>Arrow types are right-associative</em>.</p>
+<p><strong>Practice</strong>. Determine the types for the following functions. Do not worry about implementing the functions, you just need to determine their type.</p>
+<ol style="list-style-type: decimal">
+<li><code>take</code> from the standard functions. Assume the elements in the list are integers.</li>
+<li><code>drop</code> from the standard functions. Assume the elements in the list are integers.</li>
+<li><code>hasEnough</code> from the previous notes. Assume the elements in the list are integers.</li>
+<li><code>isSubstring</code>: Given a string and another string, it returns whether the first string is contained somewhere within the second string.</li>
+<li><code>max3</code>: Given three numbers, returns the maximum of the three.</li>
+<li><code>evaluate</code>: This function is called with two (curried) arguments. The first argument is a function <code>f</code> that takes as input an integer, and returns as output an integer. The second argument is an integer. The result is what happens when we apply <code>f</code> to that second argument.</li>
+</ol>
+<h2 id="polymorphism">Polymorphism</h2>
+<p><strong>Polymorphism</strong> is a general term describing how the same piece of code might behave differently depending on the arguments provided. The term usually refers to a function or operator call. There are fundamentally two different kinds of polymorphism:</p>
+<dl>
+<dt><strong>Parametric Polymorphism</strong></dt>
+<dd><p>refers to the situation where the same function code may act on values of different types but without changing the code. In that case the type of the corresponding value is a “parameter”. A good example of this is functions operating on lists: The function <code>head</code> does not particularly care what type of values your list contains, only that it contains a list. So it can operate on <em>any list type</em>, and the content type of the list type is in effect a parameter.</p>
+<p>In C++ parametric polymorphism is achieved via <em>templates</em>, and in Java via <em>generics</em> (<code>&lt;T&gt;</code>).</p>
+</dd>
+<dt><strong>Ad-hoc Polymorphism</strong></dt>
+<dd><p>refers to the situation where the same function symbol refers to multiple code chunks, and the decision on which code chunk to execute depends on the types of the arguments. A good example of this is the addition operation <code>+</code> or the equality operator <code>==</code>. Testing if two integers are equal requires a different code than testing if two strings are equal, yet they are both written the same way.</p>
+<p>In C++ and Java you have probably encountered this as function/operator overloading, where the meaning of an expression like <code>a.add(b)</code> depends on the types of <code>a</code> and <code>b</code>, and different functions will be executed depending on those types. One can further say that object-oriented programming requires this kind of polymorphism in an essential way, to direct method calls to the correct place.</p>
+</dd>
+</dl>
+<p>Almost every functional programming language implement parametric polymorphism in a similar way, via <em>type variables</em>. Support for ad-hoc polymorphism varies. Some languages don’t have it at all, and those that do implement it in different ways. Haskell uses a clever concept called <em>type classes</em> that we will discuss in a moment.</p>
+<h3 id="parametric-polymorphism-type-variables">Parametric Polymorphism: Type Variables</h3>
+<p>Some functions can do their job perfectly fine without needing to know precisely the type of value that they act on. A good example of that is the <code>tail</code> function for lists. A possible implementation for it could be simply:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">drop (x<span class="fu">:</span>xs) <span class="fu">=</span> xs</code></pre></div>
+<p>If Haskell tries to determine the type of this function, it will run into some trouble. It can tell that the input must be a list, and that the output must be a list <em>of the same type</em>. But it has no way of knowing what type of elements the list contains, nor does it care; it can do its job regardless.</p>
+<p>In order to assign a proper type to this function, we must expand our type system. We don’t want a <code>drop</code> function that only works on say <code>[Int]</code> values, nor one that only works on <code>[Char]</code> values. We need a function that only works on any <code>[...]</code> values.</p>
+<p>This is where <em>type variables</em> come in. A <strong>type variable</strong> is essentially a variable used to represent a type in a function signature. These are lowercase and typically consist of only one letter, like <code>a</code>, <code>b</code>, <code>t</code>. When a function is being called, these types are <strong>instantiated</strong> for a particular type.</p>
+<p>As an example, the type of the <code>drop</code> function would therefore be:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">drop<span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [t] <span class="ot">-&gt;</span> [t]</code></pre></div>
+<p>This says that drop accepts as input a value of any list type, and returns a value of <em>the same list type</em>. When the function is actually used, like in</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">drop <span class="dv">1</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]    <span class="co">-- t=Int.  Used as  drop :: [Int] -&gt; [Int]</span>
+drop <span class="dv">1</span> <span class="st">&quot;abc&quot;</span>        <span class="co">-- t=Char. Used as  drop :: [Char] -&gt; [Char]</span></code></pre></div>
+<p>a specific type is chosen in place of the variable, for each use of the function. But the body of the function that is executed does not change.</p>
+<p>If the body of the function does not provide any constraints on the types of some of the parameters, the function typically ends up with a parametric type (unless the programmer specified a more stringent type).</p>
+<p>We can also have <em>multiple type variables</em>, if there are elements in the function that have arbitrary but different types. An example is the <code>zip</code> function. It takes two lists of elements and returns a new list by forming pairs from elements one from each list. It looks roughly like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">zip (x<span class="fu">:</span>xs) (y<span class="fu">:</span>ys) <span class="fu">=</span> (x, y) <span class="fu">:</span> zip xs ys</code></pre></div>
+<p>In this case we don’t care what the types of the two lists are, and they can be different from each other. But the type of the result list depends on them. We could write the type for <code>zip</code> thus:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">zip<span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> [b] <span class="ot">-&gt;</span> [(a, b)]</code></pre></div>
+<p><strong>Practice</strong>: Determine the types of the following functions:</p>
+<ol style="list-style-type: decimal">
+<li><code>head</code>, <code>tail</code>.</li>
+<li><code>take</code>.</li>
+<li><code>length</code>.</li>
+<li><code>fst</code>. This function takes as input a tuple of two elements and returns the first element.</li>
+</ol>
+<h3 id="ad-hoc-polymorphism-overloaded-types-and-type-classes">Ad-hoc Polymorphism: Overloaded Types and Type Classes</h3>
+<p>Ad-hoc polymorphism is a bit trickier, especially in a language that performs type inference, as the system must be able to see an expression like <code>x+y</code> and infer some type information regarding <code>x</code> and <code>y</code>. This is accomplished by a couple of related ideas, namely <em>overloaded types</em> (often refered to as <em>bounded polymorphism</em>) and <em>type classes</em>.</p>
+<p>A <strong>overloaded type</strong> is a type that comes with a certain constraint. For instance the type of an <code>add</code> function may look like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">add ::</span> <span class="dt">Num</span> t <span class="ot">=&gt;</span> t <span class="ot">-&gt;</span> t <span class="ot">-&gt;</span> t
+add x y <span class="fu">=</span> x <span class="fu">+</span> y</code></pre></div>
+<p>What this tells us that is that the function add takes two arguments of a certain type and returns a value of that same type, but it can’t just be any type. It has the constraint <code>Num t</code>, which says that it must be a “number type”.</p>
+<p>Even the type of a single number by itself has a similar constraint, because that number can be thought of as one of the many number types:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dv">3</span><span class="ot"> ::</span> <span class="dt">Num</span> t <span class="ot">=&gt;</span> t</code></pre></div>
+<p>These constraints come from the so-called type-classes: A <strong>type class</strong> is a list of specifications for operations on a type. An <strong>instance</strong> of a type class is a specific type along with definitions for these operations.</p>
+<p>A good example of a type-class is the <code>Num</code> type class for numbers. Any instance of this class must provide implementations for the following functions:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- The Num class. An instance Num a must implement:</span>
+<span class="ot">(+) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+<span class="ot">(-) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+<span class="ot">(*) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+negate<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a
+abs<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a
+signum<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a         <span class="co">-- sign</span></code></pre></div>
+<p>If we wanted to, we could for instance make the <code>Char</code> type an instance of the Num class by specifying how each of these operations would work. From that point on we could be writing <code>'a' + 'b'</code> and the system won’t complain.</p>
+<h4 id="standard-type-classes">Standard Type Classes</h4>
+<p>Implementing your own type class is a more advanced feature. But there are many standard type classes that are in constant use, and we will see more as we move on. Here are some of the standard ones:</p>
+<dl>
+<dt>Num</dt>
+<dd><p>We already encountered this earlier. It contains the following functions:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(+) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+<span class="ot">(-) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+<span class="ot">(*) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+negate<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a
+abs<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a
+signum<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a</code></pre></div>
+</dd>
+<dt>Eq</dt>
+<dd><p>The “equality” type class. Values of types that implement Eq can be compared to each other. This contains the following functions:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+<span class="ot">(/=) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></code></pre></div>
+<p>You can see a “type error” if you try to compare two functions, as function types are not instances of the <code>Eq</code> class:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="fu">+</span>) <span class="fu">==</span> (<span class="fu">-</span>)    <span class="co">--- Look at the error</span></code></pre></div>
+</dd>
+<dt>Ord</dt>
+<dd><p>This represents ordered types. These are an extension of <code>Eq</code>, and in addition to those functions must also implement these:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(&lt;) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+<span class="ot">(&lt;=) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+<span class="ot">(&gt;) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+<span class="ot">(&gt;=) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+min<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+max<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></code></pre></div>
+</dd>
+<dt>Show</dt>
+<dd><p>This represents types whose value have a string representation. These are the only values that Haskell will print out for you without complaining. They need to implement a single function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">show<span class="ot"> ::</span> a <span class="ot">-&gt;</span> <span class="dt">String</span></code></pre></div>
+</dd>
+<dt>Read</dt>
+<dd><p>This represents types that know how to turn a string into a value. They need to implement a single method:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">read<span class="ot"> ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> a</code></pre></div>
+<p>Here’s an example use of this, to read in a tuple from a string representation:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">read <span class="st">&quot;(True, 5)&quot;</span><span class="ot"> ::</span> (<span class="dt">Bool</span>, <span class="dt">Int</span>)   <span class="co">-- We must specify the return type.</span></code></pre></div>
+<p>Integral</p>
+</dd>
+<dd><p>This is an extension of the <code>Num</code> class. It further requires the implementation of integer division operations:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">div<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+mod<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</code></pre></div>
+</dd>
+<dt>Fractional</dt>
+<dd><p>This is an extension of the <code>Num</code> class that supports fractional division and reciprocation:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(/) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+recip<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a</code></pre></div>
+</dd>
+</dl>
+<p>Many of these type classes extend to compound types if there is a specification on how to do so. For example tuples are instances of the class <code>Ord</code> as long as their components are, and the same for lists:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="dv">3</span>, <span class="dv">4</span>) <span class="fu">&gt;</span> (<span class="dv">2</span>, <span class="dv">5</span>)
+[<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>] <span class="fu">&gt;</span> [<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>]</code></pre></div>
+<p><strong>Practice</strong>: Figure out the types of the following functions, including type class specifications:</p>
+<ol style="list-style-type: decimal">
+<li><code>posDiff</code> defined by <code>posDiff x y = if x &gt; y then x - y else y - x</code>.</li>
+<li><p><code>maxList</code> defined on lists by:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">maxList (x<span class="fu">:</span>[]) <span class="fu">=</span> x
+maxList (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">&gt;</span> restMax <span class="kw">then</span> x <span class="kw">else</span> restMax
+            <span class="kw">where</span> restMax <span class="fu">=</span> maxList xs</code></pre></div></li>
+<li><p><code>has</code> that checks for the existence of an element in a list, and is defined by:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">has elem [] <span class="fu">=</span> <span class="dt">False</span>
+has elem (x<span class="fu">:</span>rest) <span class="fu">=</span> elem <span class="fu">==</span> x <span class="fu">||</span> has elem rest</code></pre></div></li>
+</ol>
+</body>
+</html>
