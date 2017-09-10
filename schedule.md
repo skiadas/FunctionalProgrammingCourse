@@ -1,6 +1,6 @@
 # Schedule
 
-A week-by-week breakdown of the material. A more detailed schedule can be [found here](detailedSchedule.md).
+A week-by-week breakdown of the material.
 
 ## Week  1 (01/11-01/15)
 
@@ -19,10 +19,10 @@ Mon
   ~ [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 
 Wed
-  ~ Conditionals. Guarded Expressions. (4.1-4.3)
+  ~ [Conditionals. Guarded Expressions.](notes/functions_conditionals.md) (4.1-4.3)
 
 Fri
-  ~ Pattern Matching. (4.4)
+  ~ [Pattern Matching.](notes/pattern_matching.md) (4.4)
 
 ## Week  3 (01/25-01/29)
 

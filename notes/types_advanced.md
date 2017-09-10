@@ -247,6 +247,6 @@ Many of these type classes extend to compound types if there is a specification 
 3. `has` that checks for the existence of an element in a list, and is defined by:
 
     ```haskell
-    has elem [] = False
+    has elem []       = False
     has elem (x:rest) = elem == x || has elem rest
     ```

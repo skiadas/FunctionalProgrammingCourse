@@ -210,7 +210,7 @@ recip<span class="ot"> ::</span> a <span class="ot">-&gt;</span> a</code></pre><
 maxList (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">&gt;</span> restMax <span class="kw">then</span> x <span class="kw">else</span> restMax
             <span class="kw">where</span> restMax <span class="fu">=</span> maxList xs</code></pre></div></li>
 <li><p><code>has</code> that checks for the existence of an element in a list, and is defined by:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">has elem [] <span class="fu">=</span> <span class="dt">False</span>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">has elem []       <span class="fu">=</span> <span class="dt">False</span>
 has elem (x<span class="fu">:</span>rest) <span class="fu">=</span> elem <span class="fu">==</span> x <span class="fu">||</span> has elem rest</code></pre></div></li>
 </ol>
 </body>

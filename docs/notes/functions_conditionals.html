@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="conditional-expressions-in-functions">Conditional Expressions in Functions</h1>
+<p>We begin our exploration of function-writing techniques with a technique probably familiar to you by now, namely <em>conditional expressions</em>. We also look at a variant of conditional expressions that is popular in Haskell functions, namely <em>guarded equations</em>.</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Sections 4.1-4.3</li>
+</ul>
+<h2 id="conditional-expressions">Conditional Expressions</h2>
+<p>Conditional expressions are one of the most standard control operations. We check the value of a boolean expression, and choose one of two branches depending on the result. This is done with the standard syntax <code>if &lt;test&gt; then &lt;TrueBranch&gt; else &lt;FalseBranch&gt;</code>.</p>
+<p>Note that in Haskell you cannot avoid having the <code>else</code> branch: The expression must evaluate to something one way or another.</p>
+<p>As a running example for this section, let us imagine an application that handles people’s accounts. In order to avoid using negative numbers when storing account information, each person’s account is stored as a pair <code>Account = (Bool, Double)</code>, where the boolean determines whether the account has zero or more funds, corresponding to the value <code>True</code> or whether it ows funds, corresponding to the value <code>False</code>. So the number on the second coordinate is always non-negative, and it corresponds to funds in the account in the <code>True</code> case and to funds owed in the <code>False</code> case.</p>
+<p>We can now imagine a number of functions we could write in such a setting:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Giving a new name to this tuple type</span>
+<span class="kw">type</span> <span class="dt">Account</span> <span class="fu">=</span> (<span class="dt">Bool</span>, <span class="dt">Double</span>)
+<span class="co">-- Initialize an account given an initial amount (possibly negative).</span>
+<span class="ot">initAccount ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+<span class="co">-- Deposits a *positive* amount to an account. Returns the &quot;new&quot; account.</span>
+<span class="ot">deposit ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+<span class="co">-- Withdraws a *positive* amount from an account. Returns the &quot;new&quot; account.</span>
+<span class="ot">withdraw ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+<span class="co">-- Returns whether the account has enough credit for a specific amount of withdrawal.</span>
+<span class="ot">hasEnoughFunds ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+<span class="co">-- Returns whether the account owes funds</span>
+<span class="ot">doesNotOwe ::</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></code></pre></div>
+<p><strong>Practice</strong>: Before we move on to implement these functions, write in pseudocode how they might go.</p>
+<p>Let’s think about how we might implement some of these functions:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">initAccount ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+initAccount amount <span class="fu">=</span>
+    <span class="kw">if</span> amount <span class="fu">&lt;</span> <span class="dv">0</span> <span class="kw">then</span> (<span class="dt">False</span>, <span class="fu">-</span>amount) <span class="kw">else</span> (<span class="dt">True</span>, amount)
+
+<span class="ot">deposit ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+deposit amountAdded (hasFunds, amount) <span class="fu">=</span>
+    <span class="kw">if</span> hasFunds
+    <span class="kw">then</span> (<span class="dt">True</span>, amount <span class="fu">+</span> amountAdded)
+    <span class="kw">else</span> initAccount (amountAdded <span class="fu">-</span> amount)</code></pre></div>
+<p>The above code also exhibits the two different styles when writing “if-then-else” expressions: You can put everything in one line if it is short enough to be readable, or you can vertically align the three keywords.</p>
+<p><strong>Practice</strong>: Write the <code>withdraw</code> and <code>hasEnoughFunds</code> functions. Write the <code>doesNotOwe</code> function by using the <code>hasEnoughFunds</code> function.</p>
+<h2 id="guarded-expressions">Guarded Expressions</h2>
+<p>A very common practice in Haskell is to use so-called guarded expressions. These are handy when you have more than one condition to test. Conditions are tested one at a time until a <code>True</code> case is found, then that particular path is followed. For example, here are the <code>initAccount</code> and <code>deposit</code> functions written with guarded expressions:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">initAccount ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+initAccount amount <span class="fu">|</span> amount <span class="fu">&lt;</span> <span class="dv">0</span> <span class="fu">=</span> (<span class="dt">False</span>, <span class="fu">-</span>amount)
+                   <span class="fu">|</span> otherwise  <span class="fu">=</span> (<span class="dt">True</span>, amount)
+
+<span class="ot">deposit ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+deposit amountAdded (hasFunds, amount)
+        <span class="fu">|</span> hasFunds  <span class="fu">=</span> (<span class="dt">True</span>, amount <span class="fu">+</span> amountAdded)
+        <span class="fu">|</span> otherwise <span class="fu">=</span> initAccount (amountAdded <span class="fu">-</span> amount)
+<span class="co">-- Alternative deposit without using initAccount. Not as nice</span>
+<span class="ot">deposit ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+deposit amountAdded (hasFunds, amount)
+        <span class="fu">|</span> hasFunds       <span class="fu">=</span> (<span class="dt">True</span>, amount <span class="fu">+</span> amountAdded)
+        <span class="fu">|</span> newBalance <span class="fu">&lt;</span> <span class="dv">0</span> <span class="fu">=</span> (<span class="dt">False</span>, <span class="fu">-</span>newBalance)
+        <span class="fu">|</span> otherwise      <span class="fu">=</span> (<span class="dt">True</span>, newBalance)
+        <span class="kw">where</span> newBalance <span class="fu">=</span> amountAdded <span class="fu">-</span> amount</code></pre></div>
+<p>In all these examples, not the use of the word <code>otherwise</code>. This is simply a synomym for <code>True</code>. Therefore branches with <code>otherwise</code> will always be taken.</p>
+<p><strong>Practice</strong>: Write the <code>withdraw</code> and <code>hasEnoughFunds</code> functions using guarded expressions instead.</p>
+<h3 id="example-the-collatz-function">Example: The Collatz Function</h3>
+<p>The <code>collatz</code> function is defined for natural numbers as follows: If the number is even, divide it by 2. If it is, multiply it by 3 and add 1. For example:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">collatz <span class="dv">4</span> <span class="fu">=</span> <span class="dv">2</span>
+collatz <span class="dv">5</span> <span class="fu">=</span> <span class="dv">16</span></code></pre></div>
+<p>Write a <code>collatz</code> function using guarded expressions.</p>
+<p>The <em>Collatz conjecture</em> is a famous conjecture that says that no matter what number start with, if we were to apply the <code>collatz</code> function over and over again we eventually end up at 1. This is still an unsolved problem. But we will explore it by writing a function that applies the same function over and over again and records the results, stopping if it ever reaches a prescribed value. We will learn how to write such functions later, but you should be able to follow its logic and understand its type:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">iter ::</span> <span class="dt">Eq</span> t <span class="ot">=&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> (t <span class="ot">-&gt;</span> t) <span class="ot">-&gt;</span> t <span class="ot">-&gt;</span> t <span class="ot">-&gt;</span> [t]
+iter times f stopAt start
+      <span class="fu">|</span> times <span class="fu">==</span> <span class="dv">0</span>      <span class="fu">=</span> []
+      <span class="fu">|</span> start <span class="fu">==</span> stopAt <span class="fu">=</span> []
+      <span class="fu">|</span> otherwise       <span class="fu">=</span> nextValue <span class="fu">:</span> iter (times <span class="fu">-</span> <span class="dv">1</span>) f stopAt nextValue
+      <span class="kw">where</span> nextValue <span class="fu">=</span> f start
+
+testCollatz <span class="fu">=</span> iter <span class="dv">1000</span> collatz <span class="dv">1</span></code></pre></div>
+<p>You can now test start numbers like so: <code>testCollatz 51</code>. Try many start numbers. Does the sequence seem to always reach 1?</p>
+</body>
+</html>

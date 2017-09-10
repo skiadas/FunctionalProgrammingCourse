@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="pattern-matching">Pattern Matching</h1>
+<p>Pattern matching is a powerful technique that allows us to follow different code paths depending on the <em>structure</em>, the <em>shape</em> of a value. For example when working with lists, a list can have either the shape <code>[]</code> of an empty list or the shape <code>x:xs</code> of a list with a first element followed by all the remaining elements. Patterns allow us to tap into those shapes.</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Sections 4.1-4.4</li>
+<li>Practice Problems: 4.8 1, 2, 3, 4, 5, 6</li>
+</ul>
+<h2 id="patterns-in-function-definitions">Patterns in Function Definitions</h2>
+<p>There are two common uses of patterns. The first, and most common one, is in function definitions. You can specify how the function should behave for different structures of its argument.</p>
+<p>As a first example, recall our definition of an <code>Account</code> as a pair <code>(Bool, Double)</code>, and our definition of a <code>deposit</code> function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">deposit ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+deposit amountAdded (hasFunds, amount)
+        <span class="fu">|</span> hasFunds  <span class="fu">=</span> (<span class="dt">True</span>, amount <span class="fu">+</span> amountAdded)
+        <span class="fu">|</span> otherwise <span class="fu">=</span> initAccount (amountAdded <span class="fu">-</span> amount)</code></pre></div>
+<p>This function looks at the pair, and associates the first entry with the variable <code>hasFunds</code> and the second entry with the variable <code>amount</code>. The guarded expression then checks to see if <code>hasFunds</code> is <code>True</code> or not.</p>
+<p>A pattern-matching approach would instead say: A pair of type <code>(Bool, Double)</code> has either the form <code>(True, aNumber)</code> or <code>(False, aNumber)</code> and I will take an action in each case. It looks like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">deposit ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+deposit amountAdded (<span class="dt">True</span>, funds) <span class="fu">=</span> (<span class="dt">True</span>, funds <span class="fu">+</span> amountAdded)
+deposit amountAdded (<span class="dt">False</span>, deficit) <span class="fu">=</span> initAccount (amountAdded <span class="fu">-</span> deficit)</code></pre></div>
+<blockquote>
+<p>A <strong>pattern</strong> specifies the form a value may take. It can contain literals as well as variables. Its form is compared to the form of the value, and if they match then the variables get <em>bound to</em> the corresponding values.</p>
+</blockquote>
+<p>As another example, imagine we wanted to write a <code>mergeAccounts</code> function that takes two accounts and merges them into one. It could look like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">mergeAccounts ::</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Account</span> <span class="ot">-&gt;</span> <span class="dt">Account</span>
+mergeAccounts (<span class="dt">True</span>, funds1) (<span class="dt">True</span>, funds2) <span class="fu">=</span> (<span class="dt">True</span>, funds1 <span class="fu">+</span> funds2)
+mergeAccounts (<span class="dt">False</span>, owed1) (<span class="dt">False</span>, owed2) <span class="fu">=</span> (<span class="dt">False</span>, owed1 <span class="fu">+</span> owed2)
+mergeAccounts (<span class="dt">True</span>, funds) (<span class="dt">False</span>, owed)   <span class="fu">=</span> initAccount (funds <span class="fu">-</span> owed)
+mergeAccounts (<span class="dt">False</span>, owed) (<span class="dt">True</span>, funds)   <span class="fu">=</span> initAccount (funds <span class="fu">-</span> owed)</code></pre></div>
+<h4 id="rock-paper-scissors">Rock-Paper-Scissors</h4>
+<p>As a further example, let us imagine a setup for the Rock-Paper-Scissors game. We will learn later more formally about defining new types, but for now imagine that we have a new type that takes exactly three possible values: <code>Rock</code>, <code>Paper</code> or <code>Scissors</code>. we could then write a function <code>beats</code> which is given two “hand” values and returns whether the first value beats the second. In order to implement this function we need to basically say that if the two values are in one of the three winning arrangements then the result is <code>True</code> and otherwise the result is <code>False</code>. This could look like the following. We will use the backtick notation as it reads more naturally:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Rock</span>     <span class="ot">`beats`</span> <span class="dt">Scissors</span> <span class="fu">=</span> <span class="dt">True</span>
+<span class="dt">Scissors</span> <span class="ot">`beats`</span> <span class="dt">Paper</span>    <span class="fu">=</span> <span class="dt">True</span>
+<span class="dt">Paper</span>    <span class="ot">`beats`</span> <span class="dt">Rock</span>     <span class="fu">=</span> <span class="dt">True</span>
+_        <span class="ot">`beats`</span> _        <span class="fu">=</span> <span class="dt">False</span></code></pre></div>
+<p>Notice here the last case: We have used underscores to indicate that we don’t care what goes there, the result doesn’t depend on in. We already captured the interesting cases earlier. This underscore is called the <strong>wildcard</strong> pattern.</p>
+<h3 id="list-patterns">List Patterns</h3>
+<p>We have already seen list patterns informally when we discussed an implementation for the <code>sum</code> function. Let us revisit that function now with all the extra knowledge we have obtained:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- sum function that adds all the elements in a list.</span>
+sum<span class="ot"> ::</span> <span class="dt">Num</span> t <span class="ot">=&gt;</span> [t] <span class="ot">-&gt;</span> t
+sum []     <span class="fu">=</span> <span class="dv">0</span>
+sum (x<span class="fu">:</span>xs) <span class="fu">=</span> x <span class="fu">+</span> sum xs</code></pre></div>
+<p>Let’s go through this line by line:</p>
+<ol style="list-style-type: decimal">
+<li>The function <code>sum</code> has the type <code>Num t =&gt; [t] -&gt; t</code>, because it takes a list of values that can be added and returns their sum. Thefore the contents of the list must have a type that has an instance of the <code>Num</code> class.</li>
+<li><p>There are two lines defining the <code>sum</code> function, depending on the shape/structure of the list parameter.</p>
+<ol style="list-style-type: lower-alpha">
+<li>If it is an empty list, then the <code>sum []</code> line matches it and the result is <code>0</code>.</li>
+<li>If it is not an empty list, then we check the next formula and see if it matches it. That formula looks for a list matching the pattern <code>(x:xs)</code>, and any non-empty list has that form. Therefore the right-hand-side of that expression will be evaluated, with the variable <code>x</code> bound to the first element and the variable <code>xs</code> bound to the list of the remaining elements.</li>
+</ol></li>
+</ol>
+<p>As another example, let us write a function <code>allTrue</code> that is given a list of booleans and is supposed to return <code>True</code> if they are all <code>True</code> (or if the list is empty) and <code>False</code> if there is at least one <code>False</code> value in the list. We can write this with pattern-matches thus:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">allTrue ::</span> [<span class="dt">Bool</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+allTrue []          <span class="fu">=</span> <span class="dt">True</span>
+allTrue (<span class="dt">True</span><span class="fu">:</span>rest) <span class="fu">=</span> allTrue rest
+allTrue (<span class="dt">False</span><span class="fu">:</span>_)   <span class="fu">=</span> <span class="dt">False</span></code></pre></div>
+<p>Let’s take a look at this one.</p>
+<ol style="list-style-type: decimal">
+<li>The first pattern is the same idea as before, handling the empty list case.</li>
+<li>The second pattern matches any list whose first entry is literally <code>True</code>, followed by anything. In that case we want to simply check the rest of the list, so we recursively call the <code>allTrue</code> function.</li>
+<li>The first pattern matches any list whose first entry is literally <code>False</code>. In this case the result of the function is supposed to be <code>False</code> regardless of what the rest of the list does. Since we don’t care what value the rest of the list takes, we use the wildcard pattern for it.</li>
+</ol>
+<p><strong>Practice</strong>: Write a function <code>anyTrue</code>, which returns <code>True</code> whenever there is <em>at least one</em> <code>True</code> value somewhere in the list. Start by writing the type of the function and the different pattern cases you would want to consider.</p>
+<p>Let us proceed to some more advanced pattern-matching with list patterns. One of the cool features is that you can dig deeper into a list with a single pattern. As an example, imagine we wanted to write a function <code>allEqual</code> that checks if all values in a list are equal to each other. The logic of it could go something like this:</p>
+<ol style="list-style-type: decimal">
+<li>If the list has 1 or fewer elements, then the answer is <code>True</code>.</li>
+<li>If the list has at least two elements, then we check that the <em>first two</em> elements are equal to each other, then drop the first element and expect all the rest to equal each other.</li>
+</ol>
+<p>This could look as follows:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">allEqual ::</span> <span class="dt">Eq</span> t <span class="ot">=&gt;</span> [t] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+allEqual []         <span class="fu">=</span> <span class="dt">True</span>
+allEqual (x<span class="fu">:</span>[])     <span class="fu">=</span> <span class="dt">True</span>
+allEqual (x<span class="fu">:</span>y<span class="fu">:</span>rest) <span class="fu">=</span> x <span class="fu">==</span> y <span class="fu">&amp;&amp;</span> allEqual (y<span class="fu">:</span>rest)</code></pre></div>
+<p><strong>Question</strong>: Why is it wrong to just say <code>allEqual rest</code> at the end?</p>
+<p><strong>Warning</strong>: It is very tempting to change the last pattern to say <code>(x:x:rest)</code>, expecting that this would only match if the first two elements of the list match. This <em>does not work</em>. You cannot repeat variables in a pattern. It would work with literals though, like <code>(True:True:rest)</code>.</p>
+<h3 id="practice">Practice</h3>
+<ol style="list-style-type: decimal">
+<li>Write pattern-matching definitions for the function <code>fst</code> that given a pair returns the first entry, and the function <code>snd</code> that given a pair returns the second entry. Don’t forget to use wildcards for values you dont need, and to start by writing the types of the functions.</li>
+<li>Using <code>allEqual</code> as a starting template, write a function <code>isIncreasing</code> that checks if a list of numbers is in increasing order, each next number in the list being larger than the ones before it.</li>
+<li>Using <code>allEqual</code> as a starting template, write a function <code>hasDups</code> that given a list of elements tests if the list has any <em>consecutive duplicates</em>, i.e. if there is ever a point in the list where two consecutive elements are equal.</li>
+<li>Using <code>allEqual</code> as a starting template, write a function <code>addStrange</code> that given a list of numbers looks at each pair (1st&amp;2nd, 3rd&amp;4th etc), and from each one picks the largest number, then adds those. If there is a single element remaining at the end, just use it.</li>
+</ol>
+</body>
+</html>
