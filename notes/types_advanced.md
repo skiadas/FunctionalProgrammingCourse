@@ -67,6 +67,76 @@ Since these functions are so common, it is customary to omit the parentheses: *A
 5. `max3`: Given three numbers, returns the maximum of the three.
 6. `evaluate`: This function is called with two (curried) arguments. The first argument is a function `f` that takes as input an integer, and returns as output an integer. The second argument is an integer. The result is what happens when we apply `f` to that second argument.
 
+### More examples of curried functions
+
+We will discuss in this section some more examples of curried functions. We will study these functions and more later.
+
+#### zip
+
+`zip` is a function that takes two lists and groups them pairwise:
+```haskell
+zip [1,2,3] ['a', 'b', 'c'] = [(1, 'a'), (2, 'b'), (3, 'c')]
+```
+We can provide `zip` with only its first argument:
+```haskell
+enumerate = zip [1..]
+-- Calling enumerate numbers the elements of the list we give it:
+enumerate "hey now!"
+```
+
+Let's construct the type of the function `zip`. We start with its first argument: It expects a list as its first argument:
+```haskell
+zip :: [t] -> ....
+```
+What is returned if we provide just the first argument is now a function that expects the second argument, which is another list:
+```haskell
+zip :: [t] -> ([s] -> ...)
+```
+Finally, the function returns tuples formed out of elements of the first list and the second list, so those tuples have type `(t, s)`. Therefore we end up with the following type for `zip`:
+```haskell
+zip :: [t] -> ([s] -> [(t, s)])
+-- usually written as:
+zip :: [t] -> [s] -> [(t, s)]
+```
+
+#### map
+
+`map` is a function that takes as arguments a function and a list, and it applies the function to each element of the list and creates a new list in the process:
+```haskell
+times2 x = x * x
+map times2 [2, 3, 4] -- results in [4, 9, 16]
+```
+We can create a new function by providing just the function part to the `map` function:
+```haskell
+square = map times2
+square [1, 2, 3, 4, 5] --  results in [1, 4, 9, 16, 25]
+cube = map (\x -> x * x * x)
+-- toUpper is a function Char -> Char
+import Data.Char (toUpper)
+-- This makes stringToUpper a function String -> String
+stringToUpper = map toUpper
+stringToUpper "hello there!"  -- result is "HELLO THERE!"
+```
+
+Let us now work out the type of `map`. It is a function that takes as input a function:
+```haskell
+map :: (... -> ...) -> (...)
+```
+That first argument function must have some input and output types:
+```haskell
+map :: (a -> b) -> (...)
+```
+Now `map` takes a second argument, which is in fact a list to whose elements we can apply the first argument function:
+```haskell
+map :: (a -> b) -> ([a] -> ...)
+```
+And finally it returns a list made out of the results of applying our function:
+```haskell
+map :: (a -> b) -> ([a] -> [b])
+-- usually written as:
+map :: (a -> b) -> [a] -> [b]
+```
+
 ## Polymorphism
 
 **Polymorphism** is a general term describing how the same piece of code might behave differently depending on the arguments provided. The term usually refers to a function or operator call. There are fundamentally two different kinds of polymorphism:

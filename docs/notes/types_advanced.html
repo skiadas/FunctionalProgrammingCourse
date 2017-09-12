@@ -95,6 +95,46 @@ add3 <span class="dv">10</span>                      <span class="co">-- same as
 <li><code>max3</code>: Given three numbers, returns the maximum of the three.</li>
 <li><code>evaluate</code>: This function is called with two (curried) arguments. The first argument is a function <code>f</code> that takes as input an integer, and returns as output an integer. The second argument is an integer. The result is what happens when we apply <code>f</code> to that second argument.</li>
 </ol>
+<h3 id="more-examples-of-curried-functions">More examples of curried functions</h3>
+<p>We will discuss in this section some more examples of curried functions. We will study these functions and more later.</p>
+<h4 id="zip">zip</h4>
+<p><code>zip</code> is a function that takes two lists and groups them pairwise:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">zip [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>] [<span class="ch">&#39;a&#39;</span>, <span class="ch">&#39;b&#39;</span>, <span class="ch">&#39;c&#39;</span>] <span class="fu">=</span> [(<span class="dv">1</span>, <span class="ch">&#39;a&#39;</span>), (<span class="dv">2</span>, <span class="ch">&#39;b&#39;</span>), (<span class="dv">3</span>, <span class="ch">&#39;c&#39;</span>)]</code></pre></div>
+<p>We can provide <code>zip</code> with only its first argument:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">enumerate <span class="fu">=</span> zip [<span class="dv">1</span><span class="fu">..</span>]
+<span class="co">-- Calling enumerate numbers the elements of the list we give it:</span>
+enumerate <span class="st">&quot;hey now!&quot;</span></code></pre></div>
+<p>Let’s construct the type of the function <code>zip</code>. We start with its first argument: It expects a list as its first argument:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">zip<span class="ot"> ::</span> [t] <span class="ot">-&gt;</span> <span class="fu">....</span></code></pre></div>
+<p>What is returned if we provide just the first argument is now a function that expects the second argument, which is another list:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">zip<span class="ot"> ::</span> [t] <span class="ot">-&gt;</span> ([s] <span class="ot">-&gt;</span> <span class="fu">...</span>)</code></pre></div>
+<p>Finally, the function returns tuples formed out of elements of the first list and the second list, so those tuples have type <code>(t, s)</code>. Therefore we end up with the following type for <code>zip</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">zip<span class="ot"> ::</span> [t] <span class="ot">-&gt;</span> ([s] <span class="ot">-&gt;</span> [(t, s)])
+<span class="co">-- usually written as:</span>
+zip<span class="ot"> ::</span> [t] <span class="ot">-&gt;</span> [s] <span class="ot">-&gt;</span> [(t, s)]</code></pre></div>
+<h4 id="map">map</h4>
+<p><code>map</code> is a function that takes as arguments a function and a list, and it applies the function to each element of the list and creates a new list in the process:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">times2 x <span class="fu">=</span> x <span class="fu">*</span> x
+map times2 [<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>] <span class="co">-- results in [4, 9, 16]</span></code></pre></div>
+<p>We can create a new function by providing just the function part to the <code>map</code> function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">square <span class="fu">=</span> map times2
+square [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>] <span class="co">--  results in [1, 4, 9, 16, 25]</span>
+cube <span class="fu">=</span> map (\x <span class="ot">-&gt;</span> x <span class="fu">*</span> x <span class="fu">*</span> x)
+<span class="co">-- toUpper is a function Char -&gt; Char</span>
+<span class="kw">import </span><span class="dt">Data.Char</span> (toUpper)
+<span class="co">-- This makes stringToUpper a function String -&gt; String</span>
+stringToUpper <span class="fu">=</span> map toUpper
+stringToUpper <span class="st">&quot;hello there!&quot;</span>  <span class="co">-- result is &quot;HELLO THERE!&quot;</span></code></pre></div>
+<p>Let us now work out the type of <code>map</code>. It is a function that takes as input a function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">map<span class="ot"> ::</span> (<span class="fu">...</span> <span class="ot">-&gt;</span> <span class="fu">...</span>) <span class="ot">-&gt;</span> (<span class="fu">...</span>)</code></pre></div>
+<p>That first argument function must have some input and output types:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">map<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="fu">...</span>)</code></pre></div>
+<p>Now <code>map</code> takes a second argument, which is in fact a list to whose elements we can apply the first argument function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">map<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> ([a] <span class="ot">-&gt;</span> <span class="fu">...</span>)</code></pre></div>
+<p>And finally it returns a list made out of the results of applying our function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">map<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> ([a] <span class="ot">-&gt;</span> [b])
+<span class="co">-- usually written as:</span>
+map<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]</code></pre></div>
 <h2 id="polymorphism">Polymorphism</h2>
 <p><strong>Polymorphism</strong> is a general term describing how the same piece of code might behave differently depending on the arguments provided. The term usually refers to a function or operator call. There are fundamentally two different kinds of polymorphism:</p>
 <dl>
