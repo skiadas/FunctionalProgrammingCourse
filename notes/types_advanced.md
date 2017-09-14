@@ -157,7 +157,7 @@ Almost every functional programming language implement parametric polymorphism i
 
 Some functions can do their job perfectly fine without needing to know precisely the type of value that they act on. A good example of that is the `tail` function for lists. A possible implementation for it could be simply:
 ```haskell
-drop (x:xs) = xs
+tail (x:xs) = xs
 ```
 If Haskell tries to determine the type of this function, it will run into some trouble. It can tell that the input must be a list, and that the output must be a list *of the same type*. But it has no way of knowing what type of elements the list contains, nor does it care; it can do its job regardless.
 
@@ -171,8 +171,8 @@ drop :: Int -> [t] -> [t]
 ```
 This says that drop accepts as input a value of any list type, and returns a value of *the same list type*. When the function is actually used, like in
 ```haskell
-drop 1 [1, 2, 3]    -- t=Int.  Used as  drop :: [Int] -> [Int]
-drop 1 "abc"        -- t=Char. Used as  drop :: [Char] -> [Char]
+drop 1 [1, 2, 3]    -- t=Int.  Used as  drop :: Int -> [Int] -> [Int]
+drop 1 "abc"        -- t=Char. Used as  drop :: Int -> [Char] -> [Char]
 ```
 a specific type is chosen in place of the variable, for each use of the function. But the body of the function that is executed does not change.
 

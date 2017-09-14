@@ -19,10 +19,14 @@ Mon
   ~ [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 
 Wed
-  ~ [Conditionals. Guarded Expressions.](notes/functions_conditionals.md) (4.1-4.3)
+  ~ [More advanced typing: Curried Functions. Polymorphism, Type classes. (cont)](notes/types_advanced.md) (3.6-3.9)
 
 Fri
-  ~ [Pattern Matching.](notes/pattern_matching.md) (4.4)
+  ~ [Conditionals. Guarded Expressions.](notes/functions_conditionals.md) (4.1-4.3)
+
+    [Pattern Matching.](notes/pattern_matching.md) (4.4)
+
+    [Assignment 1. Due 1/29](assignments/assignment1.md)
 
 ## Week  3 (01/25-01/29)
 

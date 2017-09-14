@@ -35,4 +35,4 @@ makePDFLink (Header 1 attrs xs) = Header 1 attrs $ addLink xs
 makePDFLink x = x
 
 main :: IO ()
-main = toJSONFilter (changeLinks . (walk makePDFLink))
+main = toJSONFilter changeLinks
