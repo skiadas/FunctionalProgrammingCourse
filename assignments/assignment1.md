@@ -43,7 +43,7 @@ Copy this code and save it into a new Haskell script file. It should have the ex
 --- Name:
 
 -- The next couple of lines define some new types. Do not change them.
-data Gender = Male | Female
+data Gender = Male | Female deriving (Show, Eq)
 type Person = (String, Int, Gender)
 
 -- An example person. Feel free to create more.
