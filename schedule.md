@@ -2,7 +2,7 @@
 
 A week-by-week breakdown of the material.
 
-## Week  1 (01/11-01/15)
+## Week  1 (09/04-09/09)
 
 Mon
   ~ [Introduction to Haskell and Fuctional Programming](notes/intro.md) (1.1-1.5)
@@ -13,7 +13,7 @@ Wed
 Fri
   ~ [Standard Haskell values and types.](notes/standard.md) (3.1-3.5)
 
-## Week  2 (01/18-01/22)
+## Week  2 (09/11-09/15)
 
 Mon
   ~ [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
@@ -24,56 +24,57 @@ Wed
 Fri
   ~ [Conditionals. Guarded Expressions.](notes/functions_conditionals.md) (4.1-4.3)
 
-    [Pattern Matching.](notes/pattern_matching.md) (4.4)
 
-    [Assignment 1. Due 1/29](assignments/assignment1.md)
+    [Assignment 1. Due 09/22](assignments/assignment1.md)
 
-## Week  3 (01/25-01/29)
+## Week  3 (09/18-09/22)
 
 Mon
-  ~ Anonymous Functions. Sections. (4.5-4.6)
+  ~ [Pattern Matching.](notes/pattern_matching.md) (4.4)
 
 Wed
+  ~ [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
+
+Fri
+  ~ [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
+
+## Week  4 (09/25-09/29)
+
+Mon
   ~ List comprehensions. (5.1-5.3)
 
-Fri
-  ~ More list comprehensions. (5.4-5.5)
+    More list comprehensions. (5.4-5.5)
 
-## Week  4 (02/01-02/05)
-
-Mon
+Wed
   ~ Numerical recursion. List recursion. (6.1-6.2)
 
-Wed
+Fri
   ~ Multiple argument recursion. Mutual recursion. (6.3-6.5)
 
-Fri
+## Week  5 (10/02-10/06)
+
+Mon
   ~ Recursion practice. (6.6)
 
-## Week  5 (02/08-02/12)
-
-Mon
+Wed
   ~ Higher-order functions. Processing Lists. (7.1-7.2)
 
-Wed
+Fri
   ~ Folding. (7.3-7.4)
 
-Fri
-  ~ Function composition. Examples. (7.5, 7.7)
 
-
-## Week  6 (02/15-02/19)
+## Week  6 (10/09-10/13)
 
 Mon
-  ~ Practice with Higher-order functions.
+  ~ Function composition. Examples. (7.5, 7.7)
 
 Wed
-  ~ Type Aliases and Custom Types. (8.1-8.3)
+  ~ Practice with Higher-order functions.
 
 Fri
   ~ Recursive Types. (8.4)
 
-## Week  7 (02/22-02/26)
+## Week  7 (10/16-10/20)
 
 Mon
   ~ Type-directed programming. Modules.
@@ -84,11 +85,11 @@ Wed
 Fri
   ~ Custom type classes. (8.5)
 
-## Week  8 (02/29-03/04)
+## Week  8 (10/23-10/27)
 
 BREAK
 
-## Week  9 (03/07-03/11)
+## Week  9 (10/30-11/03)
 
 Mon
   ~ TBD
@@ -99,7 +100,7 @@ Wed
 Fri
   ~ TBD
 
-## Week 10 (03/14-03/18)
+## Week 10 (11/06-11/10)
 
 Mon
   ~ TBD
@@ -110,7 +111,7 @@ Wed
 Fri
   ~ TBD
 
-## Week 11 (03/21-03/25)
+## Week 11 (11/13-11/17)
 
 Mon
   ~ TBD
@@ -121,7 +122,7 @@ Wed
 Fri
   ~ TBD
 
-## Week 12 (03/28-04/01)
+## Week 12 (11/20-11/24)
 
 Mon
   ~ TBD
@@ -132,7 +133,7 @@ Wed
 Fri
   ~ TBD
 
-## Week 13 (04/04-04/08)
+## Week 13 (11/27-12/01)
 
 Mon
   ~ TBD
@@ -144,7 +145,7 @@ Fri
   ~ TBD
 
 
-## Week 14 (04/11-04/15)
+## Week 14 (12/04-12/08)
 
 Mon
   ~ TBD

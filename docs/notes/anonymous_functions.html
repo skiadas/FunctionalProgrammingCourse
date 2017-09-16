@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="anonymous-functions-and-sections">Anonymous Functions and Sections</h1>
+<p>In this section we discuss two related and useful features, anonymous functions and sections. Anonymous functions allow us to quickly build ephemeral functions that may be used only once or twice. Sections allow us to create such functions from operators.</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Sections 4.5, 4.6</li>
+<li>Practice exercises (4.8): 7</li>
+</ul>
+<h2 id="anonymous-functions">Anonymous Functions</h2>
+<p>A common pattern that we will see in the future is the idea of “higher-order functions”. These functions take as input some function, along with other values, and often apply this function.</p>
+<p>Often times the functions passed as parameters to these higher-order functions are ephemeral, only used in this one instance and not really needing their own name. This is one of the motivations behind the idea of <em>anonymous functions</em>.</p>
+<p><strong>Anonymous functions</strong>, or <strong>lambda expressions</strong>, specify a, typically short, definition for a function and produce a function value. Unlike the named functions, this value will be lost if it is not stored somewhere.</p>
+<p>We can think of most of the function we have seen as defined via a lambda expression. For example:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">increment x <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span>
+<span class="co">-- It is the same as :</span>
+increment <span class="fu">=</span> \x <span class="ot">-&gt;</span> x <span class="fu">+</span> <span class="dv">1</span></code></pre></div>
+<p>We get to see here the syntax for anonymous functions: They start with a backslash, followed by the function parameters, followed by an arrow and finally the function body. We can even have multiple parameters, and in so doing can do the same thing in multiple ways:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">add x y <span class="fu">=</span> x <span class="fu">+</span> y
+add x <span class="fu">=</span> \y <span class="ot">-&gt;</span> x <span class="fu">+</span> y
+add <span class="fu">=</span> \x y <span class="ot">-&gt;</span> x <span class="fu">+</span> y
+add <span class="fu">=</span> \x <span class="ot">-&gt;</span> (\y <span class="ot">-&gt;</span> x <span class="fu">+</span> y)</code></pre></div>
+<p>All of these are in effect the same function, written in different ways. They do mentally serve different roles however. For example the second form makes it clear that we can call <code>add</code> with one argument, and what we get back is a new function of the <code>y</code> argument.</p>
+<p>In the above example we have saved all these functions with the name <code>add</code>. But we could instead use them directly, without ever giving a name to the function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(\x y <span class="ot">-&gt;</span> x <span class="fu">+</span> y) <span class="dv">5</span> <span class="dv">2</span>          <span class="co">-- Results in 7</span></code></pre></div>
+<p>Or similarly we can pass such a function directly into a higher-order function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">map (\x <span class="ot">-&gt;</span> x <span class="fu">*</span> x) [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]    <span class="co">-- Results in the squares from 1 to 10</span></code></pre></div>
+<p><strong>Practice</strong>: Write anonymous functions that perform the following tasks:</p>
+<ol style="list-style-type: decimal">
+<li>Given a number, check if the number is even by dividing modulo 2.</li>
+<li>Given two numbers, compare them and return the larger, using an <code>if-then-else</code> construct.</li>
+<li>Given a string, truncate it to its first 4 characters.</li>
+</ol>
+<h2 id="operator-sections">Operator Sections</h2>
+<p>Operator sections are a convenient syntax for creating anonymous functions out of operators.</p>
+<p>First of all, recall that operators differ from “normal” functions in that they are written using symbols rather than letters, and are typically used inline. However, we can always think of an operator as a “normal” function by putting it in parentheses. For example, the following two have the same result:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dv">3</span> <span class="fu">+</span> <span class="dv">5</span>
+(<span class="fu">+</span>) <span class="dv">3</span> <span class="dv">5</span></code></pre></div>
+<p>So the operator <code>+</code> is technically really a function <code>(+) :: Num t =&gt; t -&gt; t -&gt; t</code>, and as such it can be called by following it up with the parameters as in the second example above.</p>
+<p>Operator sections take this one step further: We can specify one of the two arguments to the operator by placing it on the correct side inside the parentheses:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="dv">1</span><span class="fu">+</span>)       <span class="co">--- Same as: \x -&gt; 1 + x</span>
+(<span class="dv">1</span><span class="fu">/</span>)       <span class="co">--- Same as: \y -&gt; 1 / y</span>
+(<span class="fu">:</span>lst)     <span class="co">--- Same as: \x -&gt; x:lst</span>
+(<span class="dv">4</span><span class="fu">:</span>)       <span class="co">--- Same as: \lst -&gt; 4:lst</span>
+(<span class="ot">`mod`</span> <span class="dv">2</span>)  <span class="co">--- Same as: \x -&gt; x `mod` 2</span>
+(mod <span class="dv">2</span>)    <span class="co">--- This is different! This is \x -&gt; mod 2 x</span></code></pre></div>
+<p>Notice that the <code>`mod`</code> example demonstrates that we can even produce sections from normal functions of two arguments, if we think of them as operators by surrounding them with backticks.</p>
+<p><strong>Practice</strong>: Write sections for the following operations:</p>
+<ol style="list-style-type: decimal">
+<li>Decreasing a number by 1.</li>
+<li>Testing if a number is greater than 2.</li>
+<li>Appending the list <code>[1, 2]</code> to the front of another list.</li>
+<li>Appending the list <code>[1, 2]</code> to the end of another list.</li>
+<li>Raising 2 to a given power.</li>
+</ol>
+</body>
+</html>
