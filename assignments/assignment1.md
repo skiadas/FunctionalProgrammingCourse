@@ -29,7 +29,7 @@ We describe here the functions that you have to write.
 10. Write a function `allCanDrink` that given a list of `Person`s returns whether they are all eligible to drink. You will find the function `all` useful. It has signature `all :: (a->Bool) -> [a] -> Bool`. So it takes a function that to each `a` returns a boolean (such functions are called predicates), then it takes a list of `a`s, and applies the function to all of them and determines if they were all `True`.
 11. Write a function `ageOne` that "ages" a person by one year. It should keep all other information about a person the same, but increase their age by 1. It returns the "new" person.
 12. Write a function `ageAll` that takes a list of `Person`s and ages them all by 1, and returns the new list of aged `Person`s.
-13. Use guarded expressions to write a function `isYoung` that takes a person and returns a string as follows: If the person is at most 5 years old the string should be "a toddler". If they are at most 18 years old it should be "a teenager". If they are over 18 years old it should be "young at heart".
+13. Use guarded expressions to write a function `isYoung` that takes a person and returns a string as follows: If the person is at most 5 years old the string should be `"a toddler"`. If they are at most 18 years old it should be `"a teenager"`. If they are over 18 years old it should be `"young at heart"`.
 14. Write a function `describe` which given a person "describes" them by producing a string as follows: `"This is <name>. He/She is "` and then the result of the `isYoung` function. Finally a closing dot at the end. You should use the appropriate pronoun for the given gender. Think of breaking this function up in smaller pieces using `where`. Remember that you can use `++` to concatenate lists, in particular to concatenate strings.
 15. Write a function `makePerson` that is given a pair of a name and a gender and creates a new person with age `0`.
 16. Write a function `makeMany` that is given a list of names and a list of genders, and produces a list of new people at age 0 from the corresponding pairs. You will want to use `zip`, `map` and `makePerson`.
@@ -113,11 +113,11 @@ name (pName, pAge, pGender) = pName
 
 -- Function 13
 -- Uncomment the next line
--- isYoung :: [Person] -> String
+-- isYoung :: Person -> String
 
 -- Function 14
 -- Uncomment the next line
--- describe :: [Person] -> String
+-- describe :: Person -> String
 
 -- Function 15
 -- Uncomment the next line

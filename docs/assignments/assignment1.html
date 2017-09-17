@@ -77,7 +77,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Write a function <code>allCanDrink</code> that given a list of <code>Person</code>s returns whether they are all eligible to drink. You will find the function <code>all</code> useful. It has signature <code>all :: (a-&gt;Bool) -&gt; [a] -&gt; Bool</code>. So it takes a function that to each <code>a</code> returns a boolean (such functions are called predicates), then it takes a list of <code>a</code>s, and applies the function to all of them and determines if they were all <code>True</code>.</li>
 <li>Write a function <code>ageOne</code> that “ages” a person by one year. It should keep all other information about a person the same, but increase their age by 1. It returns the “new” person.</li>
 <li>Write a function <code>ageAll</code> that takes a list of <code>Person</code>s and ages them all by 1, and returns the new list of aged <code>Person</code>s.</li>
-<li>Use guarded expressions to write a function <code>isYoung</code> that takes a person and returns a string as follows: If the person is at most 5 years old the string should be “a toddler”. If they are at most 18 years old it should be “a teenager”. If they are over 18 years old it should be “young at heart”.</li>
+<li>Use guarded expressions to write a function <code>isYoung</code> that takes a person and returns a string as follows: If the person is at most 5 years old the string should be <code>&quot;a toddler&quot;</code>. If they are at most 18 years old it should be <code>&quot;a teenager&quot;</code>. If they are over 18 years old it should be <code>&quot;young at heart&quot;</code>.</li>
 <li>Write a function <code>describe</code> which given a person “describes” them by producing a string as follows: <code>&quot;This is &lt;name&gt;. He/She is &quot;</code> and then the result of the <code>isYoung</code> function. Finally a closing dot at the end. You should use the appropriate pronoun for the given gender. Think of breaking this function up in smaller pieces using <code>where</code>. Remember that you can use <code>++</code> to concatenate lists, in particular to concatenate strings.</li>
 <li>Write a function <code>makePerson</code> that is given a pair of a name and a gender and creates a new person with age <code>0</code>.</li>
 <li>Write a function <code>makeMany</code> that is given a list of names and a list of genders, and produces a list of new people at age 0 from the corresponding pairs. You will want to use <code>zip</code>, <code>map</code> and <code>makePerson</code>.</li>
@@ -158,11 +158,11 @@ name (pName, pAge, pGender) <span class="fu">=</span> pName
 
 <span class="co">-- Function 13</span>
 <span class="co">-- Uncomment the next line</span>
-<span class="co">-- isYoung :: [Person] -&gt; String</span>
+<span class="co">-- isYoung :: Person -&gt; String</span>
 
 <span class="co">-- Function 14</span>
 <span class="co">-- Uncomment the next line</span>
-<span class="co">-- describe :: [Person] -&gt; String</span>
+<span class="co">-- describe :: Person -&gt; String</span>
 
 <span class="co">-- Function 15</span>
 <span class="co">-- Uncomment the next line</span>
