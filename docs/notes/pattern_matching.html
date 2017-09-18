@@ -112,6 +112,13 @@ allTrue (<span class="dt">False</span><span class="fu">:</span>_)   <span class=
 <li>The first pattern matches any list whose first entry is literally <code>False</code>. In this case the result of the function is supposed to be <code>False</code> regardless of what the rest of the list does. Since we don’t care what value the rest of the list takes, we use the wildcard pattern for it.</li>
 </ol>
 <p><strong>Practice</strong>: Write a function <code>anyTrue</code>, which returns <code>True</code> whenever there is <em>at least one</em> <code>True</code> value somewhere in the list. Start by writing the type of the function and the different pattern cases you would want to consider.</p>
+<h4 id="implementation-of-map">Implementation of <code>map</code></h4>
+<p>Before moving on, we can now give a straightforward implementation of the <code>map</code> function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">map<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
+map f []       <span class="fu">=</span> []
+map f (x<span class="fu">:</span>xs)   <span class="fu">=</span> f x <span class="fu">:</span> map f xs</code></pre></div>
+<p>This is a typical recursive function, and we will study recursive functions in more detail later. But in effect, we recursively build the correct list for the tail of our input, then fix it by appending the value from the head.</p>
+<h4 id="more-complex-patterns">More Complex Patterns</h4>
 <p>Let us proceed to some more advanced pattern-matching with list patterns. One of the cool features is that you can dig deeper into a list with a single pattern. As an example, imagine we wanted to write a function <code>allEqual</code> that checks if all values in a list are equal to each other. The logic of it could go something like this:</p>
 <ol style="list-style-type: decimal">
 <li>If the list has 1 or fewer elements, then the answer is <code>True</code>.</li>

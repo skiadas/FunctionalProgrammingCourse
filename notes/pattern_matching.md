@@ -81,6 +81,18 @@ Let's take a look at this one.
 
 **Practice**: Write a function `anyTrue`, which returns `True` whenever there is *at least one* `True` value somewhere in the list. Start by writing the type of the function and the different pattern cases you would want to consider.
 
+#### Implementation of `map`
+
+Before moving on, we can now give a straightforward implementation of the `map` function:
+```haskell
+map :: (a -> b) -> [a] -> [b]
+map f []       = []
+map f (x:xs)   = f x : map f xs
+```
+This is a typical recursive function, and we will study recursive functions in more detail later. But in effect, we recursively build the correct list for the tail of our input, then fix it by appending the value from the head.
+
+#### More Complex Patterns
+
 Let us proceed to some more advanced pattern-matching with list patterns. One of the cool features is that you can dig deeper into a list with a single pattern. As an example, imagine we wanted to write a function `allEqual` that checks if all values in a list are equal to each other. The logic of it could go something like this:
 
 1. If the list has 1 or fewer elements, then the answer is `True`.
