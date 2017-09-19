@@ -47,7 +47,7 @@ data Gender = Male | Female deriving (Show, Eq)
 type Person = (String, Int, Gender)
 
 -- An example person. Feel free to create more.
-susie = ("Susie", 22, Female)
+susie = ("Susie", 22, Female) :: Person
 
 -- Function 1
 name :: Person -> String

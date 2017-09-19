@@ -33,23 +33,25 @@ Mon
   ~ [Pattern Matching.](notes/pattern_matching.md) (4.4)
 
 Wed
-  ~ [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
+  ~ [More practice with Pattern Matching.](notes/more_pattern_matching.md)
 
 Fri
-  ~ [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
+  ~ [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
 
 ## Week  4 (09/25-09/29)
 
 Mon
+  ~ [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
+
+Wed
   ~ List comprehensions. (5.1-5.3)
 
     More list comprehensions. (5.4-5.5)
 
-Wed
+Fri
   ~ Numerical recursion. List recursion. (6.1-6.2)
 
-Fri
-  ~ Multiple argument recursion. Mutual recursion. (6.3-6.5)
+    Multiple argument recursion. Mutual recursion. (6.3-6.5)
 
 ## Week  5 (10/02-10/06)
 
