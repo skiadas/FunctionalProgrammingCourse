@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="version-control">Version Control</h1>
+<p>We will be using Git, and GitLab, to manage the homework assignments, and we will later use GitHub to manage to final class project.</p>
+<h2 id="version-control-and-git">Version Control and Git</h2>
+<p>We will discuss key functionality of version control systems, mostly in the context of a particular such system called Git, which is used to maintain a huge number of popular projects. While most version control systems have similar capabilities, their terminology tends to vary.</p>
+<p>A version control system typically offers the following functionalities:</p>
+<ol style="list-style-type: decimal">
+<li>You can identify a set of changes to your code as a single item, called a <strong>commit</strong>. This allows you to put together related changes into one.</li>
+<li>Each commit incrementally builds upon some previous commit, creating a tree of commits. This is known as a <strong>repository</strong>. Many websites like GitHub, GitLab and others, allow you to store and manage these repositories online, allowing teams from all over the world to collaborate. They also on occasion offer automatic web-page hosting. In fact the page you ar reading right now is published via a GitHub repository.</li>
+<li><p>The system comes built in with tools that allow us to do many things:</p>
+<ul>
+<li>We can see when each commit was made.</li>
+<li>We can who did the commit and what message they typed as a summary of the commit.</li>
+<li>We can see line-by-line how the state of the repository on a particular commit differs from its state at some other commit.</li>
+<li>We can see for each line of code precisely when it was changed, and by whom and for what reason.</li>
+</ul></li>
+<li><p>A <strong>branch</strong> is a pointer to a particular leaf on this tree that carries a particular meaning to us. In effect, a branch points to a particular view of our codebase.</p>
+<p>We typically advance our code by making a new commit at a leaf, advancing the branch pointer at the same time. We can easily switch from one branch to another, completely changing the contents of our project directory.</p>
+<p>New branches are easy to create and delete, and can be used for many reasons:</p>
+<ul>
+<li>A <code>master</code> branch typically represents the main working part of our code base. This is where stable additions can be made to our code.</li>
+<li>An <code>experimental</code> branch can be used to try out a new idea, without destroying our main code base.</li>
+<li>A <code>stable</code> branch can contain the last stable release of our project, while we dedicate another “main” branch to work towards the new version of our application. If an urgent fix is needed, we can switch to this stable branch and apply the fix, then go back to working on the main branch.</li>
+<li>A <code>deploy</code> branch may contain specific setting used for deploying an application. We can <strong>merge</strong> the main branch into the deploy branch when we are ready to deploy our next release.</li>
+<li>A particular subteam may have their own branch where they do their work, unaffected by what other subteams are doing. When they are ready to share their work with the main team they can create a <strong>pull request</strong> to the team lead to merge their changes into the main branch.</li>
+</ul></li>
+<li><p>Repositories are typically stored in a remote server. We create a <strong>clone</strong> of a repository on our computer in order to work on it. This clone contains both <strong>local branches</strong>, that we create to do our work before sharing it with the world, and also <strong>remote branches</strong> that are exact replicas of the branches in the remote repository.</p>
+<ul>
+<li>We can <strong>fetch</strong> from the remote repository, which updates the remote branches in our computer with any changes that others did to the remote repository. We can then <strong>merge</strong> these changes into our local work, or we can <strong>rebase</strong> our local work so that it is as if it happened <em>after</em> all those changes.</li>
+<li>The combination of fetching and merging/rebasing is often done with a single step, called a <strong>pull</strong>.</li>
+<li>When we want to share our changes with the remote repository, we do a <strong>push</strong>.</li>
+</ul></li>
+<li><p>Oftentimes a project deviates from its original. In our case, for the homework assignments, each student would be starting from an initial repository that the instructor creates, but then follow completely different paths with their solutions, that they each own and do not want to share with others. These are called forks, and the way to accomplish that is essentially for each student to create a copy of the repository on their own remote repository, that only they and the instructor have access to. They can then work at will with that repository and completely independently of the other students. So a <strong>fork</strong> is a new remote repository which was created as a spin-off of an existing remote repository in order to support independent development of the project in a different direction than the original.</p></li>
+</ol>
+<h3 id="setting-up-git-locally">Setting up Git locally</h3>
+<p>If you have not set up Git on your account before, you may need to do these steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>First we should make sure the system knows your name and email, to use in commits. These would typically be set by running the following:</p>
+<pre><code>git config --global user.name &quot;yournamehere&quot;
+git config --global user.email &quot;youremailhere&quot;</code></pre>
+<p>Make sure to use the same email that you plan to use for your online git repositories, that we will be creating shortly.</p></li>
+</ol>
+<h2 id="using-gitlab-and-other-online-project-management-systems">Using GitLab and other online project management systems</h2>
+<p>GitLab is an online hosting service for git repositories. It also offers project-management functionalities, for example you can organize your project work by creating issues, milestones, assigning tasks to users, labeling issues and so on.</p>
+<ol style="list-style-type: decimal">
+<li>The first thing you will need is a GitLab account. Go to <a href="https://www.gitlab.com" class="uri">https://www.gitlab.com</a> and register a new account, if you do not already have one.</li>
+<li>Sign in, and find the “functional-programming-assignments” project, which is at this link: <a href="https://gitlab.com/skiadas/functional-programming-assignments" class="uri">https://gitlab.com/skiadas/functional-programming-assignments</a></li>
+<li>In that page you should be seeing a link to “Fork” the project. Do so now, to create a fork of the project to your GitLab account. Make sure to set your project’s visibility to Private under Settings -&gt; Permissions (bottom of the left toolbar in GitLab).</li>
+<li>Find the GitKraken application in the Developer section, and start it. Create a GitKraken account if you don’t already have one. You can also create a GitHub account instead, and use that to log in.</li>
+<li>From within GitKraken, open the Preferences menu from the far right. Choose Authentication, then GitLab. Choose “Connect to GitLab”. Then log in to GitLab and select “Authorize”.</li>
+<li>Now we have linked GitKraken to GitLab. Exit the Preferences.</li>
+</ol>
+<p>Further instructions are part of the second assignment.</p>
+<h2 id="commit-workflow">Commit Workflow</h2>
+<p>We describe here the typical steps when making commits. A commits consists of two steps:</p>
+<ul>
+<li><strong>Staging</strong> the changes that you want to commit.</li>
+<li>Forming a commit out of the staged changes.</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Make sure all your files are saved, and that they are at a reasonably stable state (so one should be able to compile without errors, for example).</li>
+<li>Open up GitKraken, and make sure the WIP section is the one highlighted. This section contains the changes that have not been committed yet. You see a quick summary in the line itself, including how many files are brand new (green), how many have changes (yellow) and how many have been deleted (red).</li>
+<li>On the right side of the window, in the “Unstaged Files” section, you see the files in more detail. You can click on one file to see its contents and what changes there are in the file.</li>
+<li>You can “stage” changes in three ways:
+<ul>
+<li>Stage all files at once via the “Stage all changes” button</li>
+<li>Stage individual files by clicking the “Stage File” button to their right</li>
+<li>Stage individual lines within a file by looking at the file contents and clicking the plus/minus symbols on the left of the lines.</li>
+</ul></li>
+<li>You may have made more changes in your files than what this commit should contain. Pick carefully those changes that go together.</li>
+<li>Once you have staged all the changes that should go together, enter a “Summary” for the commit message at the bottom right. The summary has a small length, and it should be a short and succint description of what the commit is about. If there is an issue associated with the commit, then the description should include that information and we will see how to do that in the future.</li>
+<li>Click the “Stage files/changes to commit” button at the bottom.</li>
+<li>If you left something out of the commit, you can follow the above steps but check the “Amend” checkbox at the bottom right. Then the changes will be added to the previous commit rather than creating a new commit. You should only do this if you have NOT pushed your changes yet.</li>
+<li>When you are certain of your commits, use the “Push” button at the top to send your changes to the GitLab server.</li>
+</ol>
+</body>
+</html>

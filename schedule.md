@@ -36,12 +36,16 @@ Wed
   ~ [More practice with Pattern Matching.](notes/more_pattern_matching.md)
 
 Fri
-  ~ [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
+  ~ [Version Control](notes/version_control.md)
+
+    [Assignment 2. Due 09/29](assignments/assignment2.md)
 
 ## Week  4 (09/25-09/29)
 
 Mon
-  ~ [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
+  ~ [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
+
+    [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
 
 Wed
   ~ List comprehensions. (5.1-5.3)
