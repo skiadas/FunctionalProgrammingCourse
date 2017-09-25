@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="recursion">Recursion</h1>
+<p>In this section we discuss various aspects of recursive functions. We assume that students already have a working knowledge of the basics of recursion.</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Sections 6.1-6.6</li>
+<li>Practice exercises (6.8): 2, 3, 4, 6, 7, 8</li>
+</ul>
+<h2 id="what-is-recursion">What is Recursion</h2>
+<p>Recursion is a fundamental building block of functions, and its idea is simple. Let us recall the basic idea behind a function:</p>
+<blockquote>
+<p>A function takes inputs of a certain type, and produces outputs of a certain type, and we need to specify how those outputs relate to the inputs.</p>
+</blockquote>
+<p>The key logic that separates one function from another is how the function processes those inputs, and how it reacts to different kinds of inputs. We have already seen one key technique for writing functions in the form of pattern-matching and guarded expressions: We consider different <em>forms</em> that the input values can take, and act accordingly.</p>
+<p>Recursion builds on this idea, but with a more specific idea in mind.</p>
+<blockquote>
+<p>Recursive functions express their outputs based on their input by taking into account the outputs they would produce on “simpler inputs”. A recursive function gives itself a simpler version of the problem it has to answer. It builds on the resulting output to produce its own output.</p>
+</blockquote>
+<p>All recursive functions contain three key elements:</p>
+<ul>
+<li>A description of which cases are “simpler” than others.</li>
+<li>A description of what the “base cases”, the simplest cases are, and what the output is in those cases.</li>
+<li>A description on how to compute the output for the given input by using the outputs for some smaller inputs. These are the “recursive cases”.</li>
+</ul>
+<p>As a simple example, consider a function that adds all the numbers from a list:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">sum<span class="ot"> ::</span> <span class="dt">Num</span> t <span class="ot">=&gt;</span> [t] <span class="ot">-&gt;</span> t
+sum []     <span class="fu">=</span> <span class="dv">0</span>
+sum (x<span class="fu">:</span>xs) <span class="fu">=</span> x <span class="fu">+</span> sum xs</code></pre></div>
+<p>In this example, we have one base case, that of the empty list. And the result is 0. We also have a recursive case. If our function has the form of a non-empty list <code>(x:xs)</code>, then we call ourselves on the “simpler” input <code>xs</code> (simpler because it has one less value in it). Obtaining that result up, we then combine it with the <code>x</code> value to get our final answer.</p>
+<p>So in this example the “simpler cases” are cases with smaller lists. Once we know how to do those, we can also handle longer lists.</p>
+<p>A different example of the same idea is trying to add up all the numbers from 1 to n. We could do this as follows:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">addUpTo<span class="ot"> n ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+addUpTo n <span class="fu">|</span> n <span class="fu">&lt;=</span> <span class="dv">0</span>      <span class="fu">=</span> <span class="dv">0</span>
+          <span class="fu">|</span> n <span class="fu">&gt;</span> <span class="dv">0</span>       <span class="fu">=</span> n <span class="fu">+</span> addUpTo (n<span class="fu">-</span><span class="dv">1</span>)</code></pre></div>
+<p>So in this example we have a base case of <code>n&lt;=0</code>. And a recursive case which decreases the <code>n</code> by 1. The “simpler cases” here amount to smaller values of the integer input <code>n</code>.</p>
+<p>To understand how the evaluation of the above function would go, here’s a typical run for <code>n=3</code>:</p>
+<pre><code>addUpTo 3
+3 + addUpTo 2
+3 + (2 + addUpTo 1)
+3 + (2 + (1 + addUpTo 0))
+3 + (2 + (1 + 0))
+3 + (2 + 1)
+3 + 3
+6</code></pre>
+<p>The book contains many more examples of recursive functions, I urge you to study them. We will now discuss the different patterns exhibited by these examples.</p>
+<h2 id="different-forms-of-recursion">Different Forms of Recursion</h2>
+<p>Recursive functions can be broadly categorized in two different dimensions. This results in four different cases.</p>
+<h3 id="input-classification">Input classification</h3>
+<p>The simplest distinguishing aspect is the kind of input value. This fits broadly in two types:</p>
+<ul>
+<li><strong>Numerical</strong> recursion has inputs which are numbers. We typically recurse to “simpler cases” by making the number smaller, until it reaches something like <code>0</code>. The function <code>addUpTo</code> is a good example of this kind of recursion.</li>
+<li><strong>Structural</strong> recursion has inputs that are more complex data structures themselves built in a recursive manner from smaller structures. Working through a list like in the example of <code>sum</code> is a good example of structural recursion.</li>
+</ul>
+<h3 id="state-classification">State classification</h3>
+<p>A recursive function can also be categorized in how it handles “state”. Is there some information passed from one level of the recursion to the next, or not?</p>
+<ul>
+<li><strong>Stateless</strong> recursion, the most normal kind of recursion, does not communicate any kind of state from one function call to the next. A function simply calls itself on a “smaller” input, reads back the output and perhaps changes it a bit before returning itself. Both the <code>addUpTo</code> function and the <code>sum</code> function above are examples of stateless recursion.</li>
+<li><strong>Stateful</strong> recursion maintains some sort of accumulated “state” for the problem, and passes it on from function to function during the recursive calls. We have not really seen examples of this recursion yet, but we are about to do so. Stateful recursion often requires a helper function that receives the extra accumulated-state parameter, and often tends to be tail recursive.</li>
+</ul>
+<p>As an example of stateful recursion, we will implement the earlier functions using stateful recursion instead.</p>
+<p>For the <code>addUpTo</code> function, we consider a <em>helper</em> function, <code>addHelper</code>. This function takes two arguments: The number <code>n</code> and a second number, <code>sumSoFar</code>, which keeps track of what the sum of the numbers is so far. The <code>addHelper</code> function then simply adds <code>n</code> to this sum, then decrements <code>n</code> and calls itself again. When <code>n</code> reaches 0, the function reads the answer from <code>sumSoFar</code>. Finally the <code>addUpTo</code> function simply kick-starts the process by calling <code>addHelper</code> and giving it an initial sum of 0. Here’s how the code would look like:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">addHelper ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+addHelper n sumSoFar <span class="fu">|</span> n <span class="fu">&lt;=</span> <span class="dv">0</span>      <span class="fu">=</span> sumSoFar
+                     <span class="fu">|</span> n <span class="fu">&gt;</span> <span class="dv">0</span>       <span class="fu">=</span> addHelper (n <span class="fu">-</span> <span class="dv">1</span>) (n <span class="fu">+</span> sumSoFar)
+
+<span class="ot">addUpTo ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+addUpTo n <span class="fu">=</span> addHelper n <span class="dv">0</span></code></pre></div>
+<p>Here’s how a typical computation might go.</p>
+<pre><code>addUpTo 3
+addHelper 3       0
+addHelper (3 - 1) (3 + 0)
+addHelper 2       (3 + 0)
+addHelper (2 - 1) (2 + (3 + 0))
+addHelper 1       (2 + (3 + 0))
+addHelper (1 - 1) (1 + (2 + (3 + 0)))
+addHelper 0       (1 + (2 + (3 + 0)))
+1 + (2 + (3 + 0))
+1 + (2 + 3)
+1 + 5
+6</code></pre>
+<p>This looks a bit awkward because of the <em>lazy evaluation</em> nature of Haskell. In a so-called <em>strict evaluation</em> language, the same steps would look as follows:</p>
+<pre><code>addUpTo 3
+addHelper 3       0
+addHelper (3 - 1) (3 + 0)
+addHelper 2       3
+addHelper (2 - 1) (2 + 3)
+addHelper 1       5
+addHelper (1 - 1) (1 + 5)
+addHelper 0       6
+6</code></pre>
+<p>The key aspect to note here is that there are no “unfinished computations”. If we compare to the stateless <code>addUpTo</code> example from earlier, that example had a series of additions that had to occur at the end, once the function stopped calling itself. Not so in this case, at least if lazy evaluation was not an issue. This is one of the main advantages of stateful recursion.</p>
+<p>If the function <code>addHelper</code> is not needed on its own, then we can define it within a <code>where</code> clause to avoid exposing its name on the rest of the program:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">addUpTo ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+addUpTo n <span class="fu">=</span> addHelper n <span class="dv">0</span>
+    <span class="kw">where</span> addHelper n sumSoFar <span class="fu">|</span> n <span class="fu">&lt;=</span> <span class="dv">0</span>      <span class="fu">=</span> sumSoFar
+                               <span class="fu">|</span> n <span class="fu">&gt;</span> <span class="dv">0</span>       <span class="fu">=</span> addHelper (n <span class="fu">-</span> <span class="dv">1</span>) (n <span class="fu">+</span> sumSoFar)</code></pre></div>
+<p>In general it is a good idea to define elements <em>as locally as possible</em>.</p>
+<p>Let us follow a similar approach for the <code>sum</code> function. We will use a helper that adds up the elements we have encountered so far. Then the function simply adds the current next element to that total, and recursively calls itself on the rest of the list. Here’s how that would look like:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">sum<span class="ot"> ::</span> <span class="dt">Num</span> t <span class="ot">=&gt;</span> [t] <span class="ot">-&gt;</span> t
+sum lst <span class="fu">=</span> sumHelper lst <span class="dv">0</span>
+    <span class="kw">where</span> sumHelper [] sumSoFar     <span class="fu">=</span> sumSoFar
+          sumHelper (x<span class="fu">:</span>xs) sumSoFar <span class="fu">=</span> sumHelper xs (x <span class="fu">+</span> sumSoFar)</code></pre></div>
+<p>Here’s how execution of this function would have gone if we didn’t have lazy evaluation:</p>
+<pre><code>sum [1, 2, 3]
+sumHelper [1, 2, 3] 0
+sumHelper [2, 3]    1
+sumHelper [3]       3
+sumHelper []        6
+6</code></pre>
+<p>These examples should demonstrate a key fact:</p>
+<blockquote>
+<p>Stateful recursion in functional programming is similar to iteration/accumulation in imperative programming.</p>
+</blockquote>
+<p>Namely in a stateful recursion you effectively do the following:</p>
+<ul>
+<li>Use an <em>accumulator</em> to keep track of your state/progress.</li>
+<li>Initialize the accumulator to a start value like 0 or an empty list.</li>
+<li>Go through each element and add its contribution to the accumulator.</li>
+<li>When you run out of elements, return the accumulator value.</li>
+</ul>
+<h2 id="writing-recursive-functions">Writing recursive functions</h2>
+<p>There is typically a standard set of steps to consider when writing recursive functions. We describe them here, and you will get to practice them in what follows:</p>
+<ul>
+<li>Start by considering and writing down the type of the function.</li>
+<li>If you decide that you need stateful recursion:
+<ul>
+<li>Consider the type of the helper function.</li>
+<li>Write the initial call to the helper function from your main function.</li>
+<li>Follow the next steps for the helper function instead of the main function.</li>
+</ul></li>
+<li>Consider and write down the different cases, typically at least a base case and a recursive case, but some times more start cases. As you do so, be mindful of the type of the function and what types the inputs would have.</li>
+<li>Write down definitions in each case. Be mindful of the return/output type of your function, as that is what type the expression for each case should return.</li>
+<li>Trace by hand how your function would behave on a small example. Make sure to follow exactly the rules you have written for your function, and not how you <em>think</em> it should behave.</li>
+</ul>
+<p>We will try to follow these steps to write a function <code>reverse</code>, that takes in a list and reverses it. We will first write a straightforward but quite inefficient method using stateless recursion. Then we’ll write a faster method using stateful recursion. The second method works better because of the particular nature of the problem.</p>
+<p>We start with the type of the function, and the different cases we should consider:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">reverse<span class="ot"> ::</span> [t] <span class="ot">-&gt;</span> [t]
+reverse []       <span class="fu">=</span> <span class="fu">...</span>
+reverse (x<span class="fu">:</span>xs)   <span class="fu">=</span> <span class="fu">...</span></code></pre></div>
+<p>We make not that the dotted parts must have type <code>[t]</code>. We will keep this in mind as we work out the logic for them.</p>
+<p>The empty list case is simple: The reverse of the empty list would be the list itself.</p>
+<p>The case of a non-empty list is a little more complicated, but basically we have to do the following: Reverse the tail of the list (<code>xs</code>), then append <code>x</code> to the end. Since there is no way to append an element to the end of a list, we would instead have to concatenate two lists together:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">reverse<span class="ot"> ::</span> [t] <span class="ot">-&gt;</span> [t]
+reverse []       <span class="fu">=</span> []
+reverse (x<span class="fu">:</span>xs)   <span class="fu">=</span> reverse xs <span class="fu">++</span> [x]</code></pre></div>
+<p>We next trace out how this would work on a particular example:</p>
+<pre><code>reverse [1, 2, 3]
+reverse [2, 3] ++ [1]
+(reverse [3] ++ [2]) ++ [1]
+((reverse [] ++ [3]) ++ [2]) ++ [1]
+(([] ++ [3]) ++ [2]) ++ [1]
+([3] ++ [2]) ++ [1]
+[3, 2] ++ [1]
+[3, 2, 1]</code></pre>
+<p>This unfortunately is quite inefficient. The reason for this has to do with how list append works: <code>xs ++ ys</code> requires that we create a copy of the list <code>xs</code>.</p>
+<p>Let us now consider a <code>reverse2</code> function that avoids list concatenations. It does so by recognizing that a helper function can help us add the elements in the final list one at a time, since the first element in the input list needs to end up being the last element of the output list. We can therefore start with something like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">reverse2 ::</span> [t] <span class="ot">-&gt;</span> [t]
+reverse2 lst <span class="fu">=</span> reverse2&#39; lst []
+   <span class="co">-- Type of reverse2&#39;:  [t] -&gt; [t] -&gt; [t]</span>
+   <span class="kw">where</span> reverse2&#39; []     ys   <span class="fu">=</span> <span class="fu">...</span>
+         reverse2&#39; (x<span class="fu">:</span>xs) ys   <span class="fu">=</span> <span class="fu">...</span></code></pre></div>
+<p>Now we need to fill in the dotted parts. The <code>ys</code> holds the already reversed part of the list, and the <code>xs</code> is the list we are processing. If that list is already empty, then we have reversed the entire list, so <code>ys</code> is our final asnwer. Otherwise, we just need to move the first element, <code>x</code>, over to the <code>ys</code>, and we continue the recursion with the tail:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">reverse2 ::</span> [t] <span class="ot">-&gt;</span> [t]
+reverse2 lst <span class="fu">=</span> reverse2&#39; lst []
+   <span class="co">-- Type of reverse2&#39;:  [t] -&gt; [t] -&gt; [t]</span>
+   <span class="kw">where</span> reverse2&#39; []     ys   <span class="fu">=</span> ys
+         reverse2&#39; (x<span class="fu">:</span>xs) ys   <span class="fu">=</span> reverse2&#39; xs (x<span class="fu">:</span>ys)</code></pre></div>
+<h2 id="practice-problems">Practice problems</h2>
+<ol style="list-style-type: decimal">
+<li>Write a function <code>normalExpo</code> that given a base <code>b</code> and an exponent <code>e</code> compute the power <code>b^e</code> by only using multiplication. You should do this by induction on the exponent <code>e</code> until it drops to 0, in which case the answer is <code>1</code> (<span class="math inline">\(b^0 = 1\)</span>).</li>
+<li>Write a function <code>fastExpo</code> that given a base <code>b</code> and an exponent <code>e</code> compute the power <code>b^e</code> just using basic multiplication but trying to do fewer multiplications. It does so as follows:
+<ul>
+<li>The case of <code>e=0</code> is the base case, with result 1.</li>
+<li>If the exponent <code>e</code> is even, <code>e=2d</code>, then it uses the fact that <span class="math inline">\(b^{2d}=(b^2)^d\)</span> to instead compute the result of raising the number <code>b*b</code> to the <code>d</code> power (this would be a recursive call).</li>
+<li>If the exponent <code>e</code> is odd, <code>e=2d+1</code>, then it uses the formula <span class="math inline">\(b^{2d+1} = b\cdot (b^2)^d\)</span> to instead compute the result of raising the number <code>b*b</code> to the <code>d</code> power, but then multiplying the final answer by <code>b</code>.</li>
+</ul></li>
+<li>Write a function <code>unzip</code> that given a list of pairs returns a pair of lists, essentially doing the opposite of <code>zip</code>.</li>
+<li>Write a function <code>splitWith :: (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])</code> that takes a list and a predicate and returns a pair of lists consisting respectively of those elements that return True/False under the predicate.</li>
+</ol>
+</body>
+</html>

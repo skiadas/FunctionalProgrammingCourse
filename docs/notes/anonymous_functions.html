@@ -61,6 +61,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>A common pattern that we will see in the future is the idea of “higher-order functions”. These functions take as input some function, along with other values, and often apply this function.</p>
 <p>Often times the functions passed as parameters to these higher-order functions are ephemeral, only used in this one instance and not really needing their own name. This is one of the motivations behind the idea of <em>anonymous functions</em>.</p>
 <p><strong>Anonymous functions</strong>, or <strong>lambda expressions</strong>, specify a, typically short, definition for a function and produce a function value. Unlike the named functions, this value will be lost if it is not stored somewhere.</p>
+<blockquote>
+<p>Anonymous functions can appear anywhere where a value/expression is expected.</p>
+</blockquote>
 <p>We can think of most of the function we have seen as defined via a lambda expression. For example:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">increment x <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span>
 <span class="co">-- It is the same as :</span>

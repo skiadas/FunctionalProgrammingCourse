@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="list-comprehensions">List Comprehensions</h1>
+<p>In this section we discuss a very effective approach to working with lists, namely list comprehensions. List comprehensions in essence allow us to loop over the elements of the list and describe what should happen for each element.</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Sections 5.1-5.4</li>
+<li>Optional reading: 5.5</li>
+<li>Practice exercises (5.6): 1, 2, 3, 4, 5, 9</li>
+</ul>
+<h2 id="list-comprehensions-1">List Comprehensions</h2>
+<p>A <strong>list comprehension</strong> is a special syntax that is used to construct new lists out of existing lists. A list comprehension has the form:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">[expr <span class="fu">|</span> <span class="fu">...</span>, <span class="fu">...</span>, <span class="fu">...</span>]</code></pre></div>
+<p>Namely there are square brackets enclosing the whole expression, then a vertical line separating the expression in two parts. The left part is an expression describing the form that the resulting values would take. The right part consists of a sequence of terms, that fall in two categories:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Generator</strong> terms look like this: <code>x &lt;- lst</code>. They suggest that the variable <code>x</code> should traverse the elements of the list <code>lst</code>, then everything to its <em>right</em> would happen for that <code>x</code>.</li>
+<li><strong>Guard</strong> terms consist of a predicate (a function that returns a <code>Bool</code>) that depends on the other variables used. A guard expression specifies a filter: Any values that don’t satisfy the predicate (return <code>False</code>) will not be used.</li>
+</ol>
+<p>The terms on the right of the vertical line are traversed from left to right. Later entries can use previous entries.</p>
+<p>As a first example, let us start with a list of strings and return pairs of those strings along with their lengths:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">someNames <span class="fu">=</span> [<span class="st">&quot;Billie&quot;</span>, <span class="st">&quot;Jo&quot;</span>, <span class="st">&quot;Peter&quot;</span>]
+[(name, length name) <span class="fu">|</span> name <span class="ot">&lt;-</span> someNames] <span class="co">--- Produces [(&quot;Billie&quot;,6), (&quot;Jo&quot;,2), (&quot;Peter&quot;,5)]</span></code></pre></div>
+<p>As another example, using a guard this time, let us form pairs of names from the list, but only where the first name is shorter than the second:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">[(name1, name2) <span class="fu">|</span> name1 <span class="ot">&lt;-</span> someNames, name2 <span class="ot">&lt;-</span> someNames, length name1 <span class="fu">&lt;</span> length name2]
+<span class="co">-- Result is [(&quot;Jo&quot;,&quot;Billie&quot;), (&quot;Jo&quot;,&quot;Peter&quot;), (&quot;Peter&quot;,&quot;Billie&quot;)]</span></code></pre></div>
+<p>We saw list comprehensions early on when we looked at the quicksort algorithm. Recall what that looked like:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Quicksort in Haskell</span>
+qsort []     <span class="fu">=</span> []
+qsort (x<span class="fu">:</span>xs) <span class="fu">=</span> qsort smaller <span class="fu">++</span> [x] <span class="fu">++</span> qsort larger
+               <span class="kw">where</span> smaller <span class="fu">=</span> [a <span class="fu">|</span> a <span class="ot">&lt;-</span> xs, a <span class="fu">&lt;=</span> x]
+                     larger  <span class="fu">=</span> [b <span class="fu">|</span> b <span class="ot">&lt;-</span> xs, b <span class="fu">&gt;</span> x]</code></pre></div>
+<p>This example uses two list comprehensions to pick apart the elements of the list that are <code>smaller</code> than the pivot <code>x</code> and the elements of the list that are <code>larger</code> than the pivot.</p>
+<p>As a further example, we can concatenate a list of lists into one list like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">concat<span class="ot"> ::</span> [[a]] <span class="ot">-&gt;</span> [a]
+concat xss <span class="fu">=</span> [x <span class="fu">|</span> xs <span class="ot">&lt;-</span> xss, x <span class="ot">&lt;-</span> xs]</code></pre></div>
+<p>So this says: Put together all the <code>x</code> where <code>x</code> goes through the elements of the list <code>xs</code> as <code>xs</code> goes through the lists contained in <code>xss</code>.</p>
+<p>As another standard example, we often want to traverse all pairs <code>(i, j)</code> of integers where the indices come from a range from 1 to say 10, but only when <code>j</code> is at least equal to <code>i</code>. We can do this in Haskell with list comprehensions in two different ways: One is using a guard to rule out the cases we don’t need, the other makes the second list depend on the first.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">[(i, j) <span class="fu">|</span> i <span class="ot">&lt;-</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>], j <span class="ot">&lt;-</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>], i <span class="fu">&lt;=</span> j]
+[(i, j) <span class="fu">|</span> i <span class="ot">&lt;-</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>], j <span class="ot">&lt;-</span> [i<span class="fu">..</span><span class="dv">5</span>]]</code></pre></div>
+<p>Now let us consider a more complex problem: We are given a string, i.e. a list of characters, and we wonder if any character appears twice. One way to do this via list comprehensions is as follows:</p>
+<ul>
+<li>Form the pairs <code>(c, i)</code> where <code>c</code> is a character and <code>i</code> is its index into the string. we can do this with <code>zip</code>.</li>
+<li>Use a list comprehension to look at all pairs of such pairs from the list, where the characters are the same but the indices are not.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">aString <span class="fu">=</span> <span class="st">&quot;hey there my good fellow&quot;</span>
+indexedString <span class="fu">=</span> zip aString [<span class="dv">1</span><span class="fu">..</span>]
+[(c, i, j) <span class="fu">|</span> (c, i) <span class="ot">&lt;-</span> indexedString, (d, j) <span class="ot">&lt;-</span> indexedString, c <span class="fu">==</span> d, i <span class="fu">&lt;</span> j ]</code></pre></div>
+<p>Let us take a different and somewhat uglier approach:</p>
+<ul>
+<li>Start with a list comprehension that goes through each character in the string.</li>
+<li>For each such character, for a list comprehension that finds all characters in the string that are equal to that one, and records the length minus 1. In order to use this in a list comprehension we must turn it into a list with one element.</li>
+<li>Only keep those with “length minus 1” positive.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">[(c, n) <span class="fu">|</span> c <span class="ot">&lt;-</span> aString, n <span class="ot">&lt;-</span> [length [d <span class="fu">|</span> d <span class="ot">&lt;-</span> aString, d <span class="fu">==</span> c] <span class="fu">-</span> <span class="dv">1</span>], n <span class="fu">&gt;</span> <span class="dv">0</span>]</code></pre></div>
+<p>Another common application of the <code>zip</code> function has to do with forming consecutive pairs from a list. If we do <code>zip lst (tail lst)</code> we get all consecutive pairs. We can then perform some operation on those pairs. For example, we can test if a list is sorted:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">sorted ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+sorted lst <span class="fu">=</span> all [x <span class="fu">&lt;=</span> y <span class="fu">|</span> (x, y) <span class="ot">&lt;-</span> zip lst (tail lst)]</code></pre></div>
+<p>In fact we would ideally make the formation of the pairs into its own function:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">pairs ::</span> [a] <span class="ot">-&gt;</span> [(a, a)]
+pairs []  <span class="fu">=</span> []
+pairs lst <span class="fu">=</span> zip lst (tail lst)
+
+<span class="ot">sorted ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+sorted lst <span class="fu">=</span> all [x <span class="fu">&lt;=</span> y <span class="fu">|</span> (x, y) <span class="ot">&lt;-</span> pairs lst]</code></pre></div>
+<p>As one last example, let us write a function that given two lists of numbers produces what is known as the “scalar” or “dot” product of the lists. It pairwise multiplies the numbers, one from each list, then adds those products. In order to do this with a list comprehension, we will use <code>zip</code> to put together the pairs of numbers, then a list comprehension to multiply the pairs, then <code>sum</code> to add all those products:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">dotProduct ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span>
+dotProduct xs ys <span class="fu">=</span> sum [x<span class="fu">*</span>y <span class="fu">|</span> (x, y) <span class="ot">&lt;-</span> zip xs ys]</code></pre></div>
+<p>Question: Would it be correct to use two generators here (i.e. <code>x&lt;-xs, y&lt;-ys</code>)? ```</p>
+<h3 id="application-finding-prime-numbers">Application: Finding prime numbers</h3>
+<p>We can write a primitive set of functions for finding prime numbers using list comprehensions. First of all recall what a prime number is:</p>
+<blockquote>
+<p>A prime number <code>n</code> is a number that is only divisible by <code>1</code> and itself. So a prime number has exactly two factors, <code>1</code> and <code>n</code>.</p>
+</blockquote>
+<p>We will approach the problem from two different points of view:</p>
+<h4 id="take-1-compute-the-factors">Take 1: Compute the factors</h4>
+<p>We start by writing a function that collects all the factors of a number <code>n</code>: these are those that divide perfectly into <code>n</code>, and we can use a list comprehension for that:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">factors ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
+factors n <span class="fu">=</span> [x <span class="fu">|</span> x <span class="ot">&lt;-</span> [<span class="dv">1</span><span class="fu">..</span>n], n <span class="ot">`mod`</span> x <span class="fu">==</span> <span class="dv">0</span>]</code></pre></div>
+<p>Next we will write a function <code>isPrime</code>. This tests if a number if prime, by computing its factors and comparing them to the list <code>[1, n]</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">prime ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prime n <span class="fu">=</span> factors n <span class="fu">==</span> [<span class="dv">1</span>, n]</code></pre></div>
+<p>Lastly, we can ask the system to give us all the primes via a list comprehension. As the result is going to be infinite, we should use <code>take</code> to see the first few values:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">primes ::</span> [<span class="dt">Int</span>]
+primes <span class="fu">=</span> [n <span class="fu">|</span> n <span class="ot">&lt;-</span> [<span class="dv">2</span><span class="fu">..</span>], prime n]
+take <span class="dv">50</span> primes  <span class="co">-- The first 50 prime numbers</span></code></pre></div>
+<h4 id="take-2-sieve-of-eratosthenes">Take 2: Sieve of Eratosthenes</h4>
+<p>Let us try a different approach, as the approach above requires computing all the factors for each number, and that can take time. This alternative approach is called the sieve of Eratosthenes, and it’s based on a simple idea:</p>
+<ol style="list-style-type: decimal">
+<li>Start with all the numbers from <code>2</code> and on.</li>
+<li>The first number on the list is prime, as there are no number before it that divide into it. Mark it as such, then proceed to delete all its multiples (e.g. pick 2 as prime then delete 4, 6, 8, etc).</li>
+<li>Repeat step 2 with the remaining numbers.</li>
+</ol>
+<p>The beautiful thing is that this is easy to write in Haskell. We start with a <code>sieve</code> function: It takes a non-empty list of all the remaining integers. Then the first integer in that list is prime, and it removes all the remaining (infinitely many) integers before calling itself on the remaining list. We then just kickstart the whole thing by providing the infinite list <code>[2..]</code>.</p>
+<p>This looks as follows:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">sieve ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
+sieve (p<span class="fu">:</span>xs) <span class="fu">=</span> p <span class="fu">:</span> sieve [x <span class="fu">|</span> x <span class="ot">&lt;-</span> xs, x <span class="ot">`mod`</span> p <span class="fu">/=</span> <span class="dv">0</span>]
+
+<span class="ot">primes ::</span> [<span class="dt">Int</span>]
+primes <span class="fu">=</span> sieve [<span class="dv">2</span><span class="fu">..</span>]</code></pre></div>
+<p>You can read more about this approach in section 15.6 from the book. This is using the powerful <strong>lazy evaluation</strong> approach that Haskell takes. The list comprehensions in the <code>sieve</code> computation are actually infinite lists. But Haskell will not compute them until it absolutely has to.</p>
+<p>We can also carry out timing tests and see that this method is a lot faster and less resource-intensive than the previous one.</p>
+<h2 id="application-the-fibonacci-numbers">Application: The Fibonacci numbers</h2>
+<p>Another favorite application of list comprehensions is the computation of the Fibonacci sequence. Recall that this sequence works as follows: We start with <code>1</code> and <code>1</code>, then we generate each next number by adding the two previous numbers. So:</p>
+<pre><code>1 + 1 = 2
+1 + 2 = 3
+2 + 3 = 5
+3 + 5 = 8
+...</code></pre>
+<p>We can implement this sequence very efficiently in Haskell using a list comprehension. The trick is to start with two explicit terms, and then to form a zip of the list and its tail, which results in pairs of consecutive terms. We then simply add the numbers in the pair to get the next element. This looks as follows:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">fib <span class="fu">=</span> <span class="dv">1</span> <span class="fu">:</span> <span class="dv">1</span> <span class="fu">:</span> [a <span class="fu">+</span> b <span class="fu">|</span> (a, b) <span class="ot">&lt;-</span> zip fib (tail fib)]
+take <span class="dv">40</span> fib</code></pre></div>
+<h2 id="practice">Practice</h2>
+<ol style="list-style-type: decimal">
+<li>Write a function <code>count :: Eq a =&gt; a -&gt; [a] -&gt; Int</code> that is given an element of type <code>a</code> and a list of such elements, and it returns how many times the elment occurs. You should be able to make a list comprehension of all the occurences of that character, then compute the length of that list.</li>
+<li>Pythagorean triples are triples of integers <code>(a, b, c)</code> such that <span class="math inline">\(a^2+b^2=c^2\)</span>. Write a function <code>triples</code> that given an integer limit <code>n</code> generates all triples where the numbers are up to <code>n</code>.</li>
+</ol>
+</body>
+</html>

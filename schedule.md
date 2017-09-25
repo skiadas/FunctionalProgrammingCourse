@@ -43,19 +43,15 @@ Fri
 ## Week  4 (09/25-09/29)
 
 Mon
+  ~ [Recursion](notes/recursion.md) (6.1-6.6)
+
+Wed
   ~ [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
 
     [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
 
-Wed
-  ~ List comprehensions. (5.1-5.3)
-
-    More list comprehensions. (5.4-5.5)
-
 Fri
-  ~ Numerical recursion. List recursion. (6.1-6.2)
-
-    Multiple argument recursion. Mutual recursion. (6.3-6.5)
+  ~ [List comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
 
 ## Week  5 (10/02-10/06)
 

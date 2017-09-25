@@ -15,6 +15,8 @@ Often times the functions passed as parameters to these higher-order functions a
 
 **Anonymous functions**, or **lambda expressions**, specify a, typically short, definition for a function and produce a function value. Unlike the named functions, this value will be lost if it is not stored somewhere.
 
+> Anonymous functions can appear anywhere where a value/expression is expected.
+
 We can think of most of the function we have seen as defined via a lambda expression. For example:
 ```haskell
 increment x = x + 1
