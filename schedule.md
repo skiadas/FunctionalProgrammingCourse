@@ -46,29 +46,28 @@ Mon
   ~ [Recursion](notes/recursion.md) (6.1-6.6)
 
 Wed
-  ~ [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
-
-    [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
+  ~ [Recursion (cont)](notes/recursion.md) (6.1-6.6)
 
 Fri
-  ~ [List comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
+  ~ [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
 
 ## Week  5 (10/02-10/06)
 
 Mon
-  ~ Recursion practice. (6.6)
+  ~ [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
 
 Wed
-  ~ Higher-order functions. Processing Lists. (7.1-7.2)
+  ~ [List comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
 
 Fri
-  ~ Folding. (7.3-7.4)
-
+  ~ Higher-order functions. Processing Lists. (7.1-7.2)
 
 ## Week  6 (10/09-10/13)
 
 Mon
-  ~ Function composition. Examples. (7.5, 7.7)
+  ~ Folding. (7.3-7.4)
+
+    Function composition. Examples. (7.5, 7.7)
 
 Wed
   ~ Practice with Higher-order functions.
