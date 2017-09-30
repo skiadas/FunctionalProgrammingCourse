@@ -51,10 +51,13 @@ Wed
 Fri
   ~ [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
 
+    [Assignment 3. Due 10/13](assignments/assignment3.md)
+
 ## Week  5 (10/02-10/06)
 
 Mon
   ~ [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
+
 
 Wed
   ~ [List comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
