@@ -121,7 +121,7 @@ Option types solve these problems for us. The `Maybe` type is defined as follows
 ```haskell
 data Maybe a = Nothing | Just a
 ```
-So a value of type `Maybe Int` is either `Nothing` or something like `Just 5`. Then the (proper) type for the `lookup` function above is. For completeness we include its implementation:
+So a value of type `Maybe Int` is either `Nothing` or something like `Just 5`. Then the (proper) type for the `lookup` function above is (for completeness we include its implementation):
 ```haskell
 lookup :: Eq a => a -> [(a, b)] -> Maybe b
 lookup key []                = Nothing
@@ -135,6 +135,13 @@ reportLookupResult :: (Eq a, Show b) => a -> [(a, b)] -> String
 reportLookupResult key lst = handleResult (lookup key lst)
     where handleResult Nothing = "No matches found!"
           handleResult (Just someb) = "Found one: " ++ show someb
+```
+
+A standard example of this is a "safe division" function, which does not allow you to divide by 0. It would look like this:
+```haskell
+safeDivide :: Num t => t -> t -> Maybe t
+safeDivide _ 0  = Nothing
+safeDivide n m  = Just (n / m)
 ```
 
 #### Standard functions for Maybe

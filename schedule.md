@@ -63,14 +63,23 @@ Wed
   ~ [List comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
 
 Fri
-  ~ Higher-order functions. Processing Lists. (7.1-7.2)
+  ~ [Functions as values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 
 ## Week  6 (10/09-10/13)
 
 Mon
+  ~  Higher-order functions. Processing Lists. (7.1-7.2)
+
+Wed
   ~ Folding. (7.3-7.4)
 
-    Function composition. Examples. (7.5, 7.7)
+Fri
+  ~ MIDTERM
+
+## Week  7 (10/16-10/20)
+
+Mon
+  ~ Function composition. Examples. (7.5, 7.7)
 
 Wed
   ~ Practice with Higher-order functions.
@@ -78,7 +87,7 @@ Wed
 Fri
   ~ Recursive Types. (8.4)
 
-## Week  7 (10/16-10/20)
+## Week  8 (10/23-10/27)
 
 Mon
   ~ Type-directed programming. Modules.
@@ -88,10 +97,6 @@ Wed
 
 Fri
   ~ Custom type classes. (8.5)
-
-## Week  8 (10/23-10/27)
-
-BREAK
 
 ## Week  9 (10/30-11/03)
 

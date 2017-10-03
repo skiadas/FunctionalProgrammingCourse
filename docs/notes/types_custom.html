@@ -121,7 +121,7 @@ toFahrenheit (<span class="dt">C</span> cTemp) <span class="fu">=</span> <span c
 <p>So for example <code>lookup</code> has no way of telling its users “hey my answer may be null so you better handle that possibility”. Similarly the typechecker has no way of knowing if a function that uses the result of lookup bothers to check for the null case.</p>
 <p>Option types solve these problems for us. The <code>Maybe</code> type is defined as follows:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Maybe</span> a <span class="fu">=</span> <span class="dt">Nothing</span> <span class="fu">|</span> <span class="dt">Just</span> a</code></pre></div>
-<p>So a value of type <code>Maybe Int</code> is either <code>Nothing</code> or something like <code>Just 5</code>. Then the (proper) type for the <code>lookup</code> function above is. For completeness we include its implementation:</p>
+<p>So a value of type <code>Maybe Int</code> is either <code>Nothing</code> or something like <code>Just 5</code>. Then the (proper) type for the <code>lookup</code> function above is (for completeness we include its implementation):</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">lookup<span class="ot"> ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [(a, b)] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b
 lookup key []                <span class="fu">=</span> <span class="dt">Nothing</span>
 lookup key ((target, value) <span class="fu">:</span> rest)
@@ -132,6 +132,10 @@ lookup key ((target, value) <span class="fu">:</span> rest)
 reportLookupResult key lst <span class="fu">=</span> handleResult (lookup key lst)
     <span class="kw">where</span> handleResult <span class="dt">Nothing</span> <span class="fu">=</span> <span class="st">&quot;No matches found!&quot;</span>
           handleResult (<span class="dt">Just</span> someb) <span class="fu">=</span> <span class="st">&quot;Found one: &quot;</span> <span class="fu">++</span> show someb</code></pre></div>
+<p>A standard example of this is a “safe division” function, which does not allow you to divide by 0. It would look like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">safeDivide ::</span> <span class="dt">Num</span> t <span class="ot">=&gt;</span> t <span class="ot">-&gt;</span> t <span class="ot">-&gt;</span> <span class="dt">Maybe</span> t
+safeDivide _ <span class="dv">0</span>  <span class="fu">=</span> <span class="dt">Nothing</span>
+safeDivide n m  <span class="fu">=</span> <span class="dt">Just</span> (n <span class="fu">/</span> m)</code></pre></div>
 <h4 id="standard-functions-for-maybe">Standard functions for Maybe</h4>
 <p>There are a number of standard functions for the Maybe type. We declare them here, and ask you to implement them for practice:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Empty or one-element list</span>

@@ -69,7 +69,7 @@ indexedString = zip aString [1..]
 Let us take a different and somewhat uglier approach:
 
 - Start with a list comprehension that goes through each character in the string.
-- For each such character, for a list comprehension that finds all characters in the string that are equal to that one, and records the length minus 1. In order to use this in a list comprehension we must turn it into a list with one element.
+- For each such character, form a list comprehension that finds all characters in the string that are equal to that one, and records the length minus 1. In order to use this in a list comprehension we must turn it into a list with one element.
 - Only keep those with "length minus 1" positive.
 
 ```haskell
@@ -97,7 +97,16 @@ dotProduct xs ys = sum [x*y | (x, y) <- zip xs ys]
 ```
 
 Question: Would it be correct to use two generators here (i.e. `x<-xs, y<-ys`)?
-```
+
+### Practice
+
+Use list comprehensions for all of these.
+
+1. Write a function `combine :: Num t => [t] -> [t]` that takes a list of numbers and forms a new list consisting of all possible sums of two **distinct** numbers from the original list.
+2. Write a function `count :: Eq a => a -> [a] -> Int` that is given an element of type `a` and a list of such elements, and it returns how many times the elment occurs. You should be able to make a list comprehension of all the occurences of that character, then compute the length of that list.
+3. Write a function `applyAll :: [a -> b] -> [a] -> [b]` that takes in a list of functions of type `a -> b` and a list of `a` values and returns the list of all `b`-values that we can obtain by applying each of the functions to each of the `a` values.
+4. Write a function `applyAll2 :: [a -> a -> b] -> [a] -> [b]` that takes in a list of binary functions (e.g. most operators) and a list of `a`-values, and returns the list of results of applying each of the binary functions to all possible pairs of values from the list `a`. Example call (result order doesn't matter): `applyAll2 [(+), (-), (*)] [1, 2] = [2, 0, 1, 3, -1, 2, 3, 1, 2, 4, 0, 4]`
+5. Write a function `applyAllPairwise :: [a -> b -> c] -> [a] -> [b] -> [c]` that takes in a list of functions of type `a -> b -> c` and a list of `a`-values and `b`-values, and applies each function to each consecutive pair of `a`, `b` values. Use the `zip` function to form those pairs.  Example call: `applyAllPairwise [mod, div, (+)] [2, 5] [1, 2, 3] = [0, 1, 2, 2, 3, 7]`
 
 ### Application: Finding prime numbers
 
@@ -164,7 +173,6 @@ fib = 1 : 1 : [a + b | (a, b) <- zip fib (tail fib)]
 take 40 fib
 ```
 
-## Practice
+## More practice
 
-1. Write a function `count :: Eq a => a -> [a] -> Int` that is given an element of type `a` and a list of such elements, and it returns how many times the elment occurs. You should be able to make a list comprehension of all the occurences of that character, then compute the length of that list.
-2. Pythagorean triples are triples of integers `(a, b, c)` such that $a^2+b^2=c^2$. Write a function `triples` that given an integer limit `n` generates all triples where the numbers are up to `n`.
+1. Pythagorean triples are triples of integers `(a, b, c)` such that $a^2+b^2=c^2$. Write a function `triples` that given an integer limit `n` generates all triples where the numbers are up to `n`.
