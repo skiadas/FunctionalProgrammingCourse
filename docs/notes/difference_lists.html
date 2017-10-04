@@ -52,20 +52,26 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <body>
 <h1 id="functions-as-values-difference-lists">Functions as Values: Difference Lists</h1>
 <p>In this section we discuss an example where our primitive values are themselves functions. We will see Difference Lists, which are an approach to efficiently appending on the right.</p>
-<p>We will also discuss the concept of function composition in this context.</p>
+<p>We will also discuss the concept of function composition in this context, and the “point-free programming style” that it allows.</p>
 <h2 id="reading">Reading</h2>
 <ul>
 <li>Section 7.5</li>
 </ul>
 <h2 id="difference-lists">Difference Lists</h2>
-<p>We can already seen the list append operation:</p>
+<p>We have already seen the list append operation:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="fu">++</span>)<span class="fu">:</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]
 [] <span class="fu">++</span> ys        <span class="fu">=</span> ys
 (x<span class="fu">:</span>xs) <span class="fu">++</span> ys    <span class="fu">=</span> x <span class="fu">:</span> (xs <span class="fu">++</span> ys)</code></pre></div>
-<p>Looking at this a bit further it becomes clear that appending requires the copying of the entire first list, and therefore is affected by the length of the first list, but is is not at all affected by the length of the second list.</p>
-<p>In general, lists are set up so that it is easy to add elements to their left, but not to their right.</p>
-<p>But in many practical applications we want the opposite. Imagine reading through a configuration file and creating a resulting web page as you go. You will be constantly adding new entries to the end of the string, which corresponds to the right-side of a list. As the length of the string grows, adding one more character to the end becomes expensive as all the earlier parts get copied each time. We saw the same problem when we tried to reverse a list in a naive way.</p>
-<p>A solution to this problem is presented by difference lists. The idea of a difference list is that it does not try and do the appending right away, but it simply sets up something that will happen in the future. These steps are then performed in reverse order. For instance suppose that there are 4 strings to be added in total in this process, A, B, C, D. Instead of saying:</p>
+<p>Looking at this a bit further it becomes clear that appending requires the copying of the entire first list, and therefore is affected by the length of the first list, but it is not at all affected by the length of the second list.</p>
+<blockquote>
+<p>In general, lists are set up so that it is easy/efficient to add elements to their left, but not to their right. But adding to the right of a list has a cost proportional to the length of the list.</p>
+</blockquote>
+<p>In many practical applications we want to in fact add to the right of a list. Imagine reading through a configuration file and creating a resulting web page as you go. You will be constantly adding new entries to the end of the string, which corresponds to the right side of a list. As the length of the string grows, adding one more character to the end becomes expensive as all the earlier parts get copied each time. We saw the same problem when we tried to reverse a list in a naive way.</p>
+<p>A solution to this problem is presented by difference lists. The idea of a difference list is that it does not try and do the appending right away, but it simply sets up something that will happen in the future. These steps are then performed in reverse order. So instead of continuously appending to the right of the previously constructed list, you first construct all the parts that go to the right, and only then append the list to their left.</p>
+<blockquote>
+<p>Difference lists delay the appends and perform them in reverse order, growing the list towards the left than towards the right.</p>
+</blockquote>
+<p>For instance suppose that there are 4 strings to be added in total in this process, A, B, C, D. Instead of saying:</p>
 <pre><code>Start with A
 Append B to the end of A
 Append C to the end of (A++B)
@@ -77,18 +83,22 @@ Remember that you will put B to the left of the remaining result, before adding 
 Remember that you will put C to the left of the remaining result, before adding the B.
 Remember that you will put D to the left of the remaining result, before adding the C.
 Since you have no more strings to add, start with an empty string [] and work backwards:
-Add the D to []
-Add the C to (D ++ [])
-Add the B to (C ++ (D ++ []))
-Add the A to (B ++ (C ++ (D ++ [])))
+Add the D to the left of []
+Add the C to the left of (D ++ [])
+Add the B to the left of (C ++ (D ++ []))
+Add the A to the left of (B ++ (C ++ (D ++ [])))
 Return the result.</code></pre>
 <p>So the key difference here is that the list appends end up happening from right to left, which is more efficient in the long run. But in order to achieve that, we had to delay the appending of the strings as we encountered them, until we reached the end.</p>
 <p>This leads us to the structure of <em>difference lists</em>. A difference list is effectively a promise to append a list later:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> dList a <span class="fu">=</span> [a] <span class="ot">-&gt;</span> [a]</code></pre></div>
-<p>It is meant to say “You give me the rest of the list, and I’ll add the extra bits to it”. The actual value is a function, that is given a list representing the rest of the result and adjusts it, hopefully by adding its bit to the front.</p>
+<p>It is meant to say “You give me the rest of the list, and I’ll add the extra bits to its left”. The actual value is a function, that is given a list representing the rest of the result and adjusts it, hopefully by adding its bit to the front.</p>
+<p>This is a key mental shift. Our “values” are really functions. We want to think of them as a value, but at the same time they are functions that we need to feed with inputs at some point in time. But before we do that we need to be able to for instance append them. So we will need to find a way to define how to “append” one of these functions to another one of these functions, and produce yet another one of these functions as the result.</p>
+<p>We should start with a way to obtain the actual list from a difference list, This is simple you just need to start with the empty list, then the difference list will produce its result (conceptually we are thinking of it as appending to the left of an empty list):</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">toList ::</span> dList a <span class="ot">-&gt;</span> [a]
+toList f <span class="fu">=</span> f []</code></pre></div>
 <p>We can now write two functions, to form a difference list from a list, or from a single element. The type for such a function would be:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">fromList ::</span> [a] <span class="ot">-&gt;</span> dList a</code></pre></div>
-<p>If we unravel what this means, since <code>dList a</code> is simply functions <code>[a] -&gt; [a]</code>, we get:</p>
+<p>If we unravel what this means, keeping in mind that values of type <code>dList a</code> are actually functions <code>[a] -&gt; [a]</code>, we get:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">fromList ::</span> [a] <span class="ot">-&gt;</span> ([a] <span class="ot">-&gt;</span> [a])
 fromList xs  <span class="fu">=</span> \ys <span class="ot">-&gt;</span> xs <span class="fu">++</span> ys
 <span class="co">-- Can also write as:</span>
@@ -105,27 +115,27 @@ fromElem x ys <span class="fu">=</span> x <span class="fu">:</span> ys
 fromElem <span class="fu">=</span> (<span class="fu">:</span>)</code></pre></div>
 <p>So we think of a single element as a difference list by saying “I will prepend this element to any list you give me.”</p>
 <p>We have encountered an important idea. These methods are our familiar <code>++</code> and <code>:</code> operators, but now considered in a new light because of the new types we have.</p>
-<p>But still, we have not defined our most important operation, namely that of appending two lists together. Now we need to append two difference lists together. Remember that they are both functions. And we must also return a function:</p>
+<p>But still, we have not defined our most important operation, namely that of appending two difference lists together. So let us do this now. Remember that they are both functions. And we must also return a function:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">append ::</span> dList a <span class="ot">-&gt;</span> dList a <span class="ot">-&gt;</span> dList a
 <span class="co">-- If we &quot;unalias&quot;:</span>
 <span class="ot">append ::</span> ([a] <span class="ot">-&gt;</span> [a]) <span class="ot">-&gt;</span> ([a] <span class="ot">-&gt;</span> [a]) <span class="ot">-&gt;</span> ([a] <span class="ot">-&gt;</span> [a])
 append f1 f2 <span class="fu">=</span> \ys <span class="ot">-&gt;</span> <span class="fu">...</span></code></pre></div>
-<p>This is probably the most complicated function we have written yet, in terms of types. Let us think of what it needs to do: It takes as input two difference lists, and it is supposed to produce a new difference list which amounts to appending <code>f2</code> at the end of <code>f1</code>. What we really mean by it, since we think of both lists instead as their effects on a list to their right, is that we should first do what <code>f2</code> asks us to do, then use <code>f1</code>. So the code ends up looking like this:</p>
+<p>This is probably the most complicated function we have written yet, in terms of types. Let us think of what it needs to do: It takes as input two difference lists, and it is supposed to produce a new difference list which amounts to appending <code>f2</code> at the end of <code>f1</code>. What we really mean by it, since we think of both lists instead as their effects on a list to their right, is that we should first do what <code>f2</code> asks us to do, then use <code>f1</code> on the result of that. So the code ends up looking like this:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">append ::</span> dList a <span class="ot">-&gt;</span> dList a <span class="ot">-&gt;</span> dList a
 append f1 f2 <span class="fu">=</span> \ys <span class="ot">-&gt;</span> f1 (f2 ys)
 <span class="co">-- Can also write:</span>
 append f1 f2 ys <span class="fu">=</span> f1 (f2 ys)</code></pre></div>
 <p>Let us see it in action in the example where both dLists came from lists. In order to think of their combination, we apply the dList to a list <code>zs</code>.</p>
-<pre><code>append (fromList xs) (fromList ys) zs
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">append (fromList xs) (fromList ys) zs
 (fromList xs) ((fromList ys) zs)
-(fromList xs) ((\ws -&gt; ys ++ ws) zs)
-(fromList xs) (ys ++ zs)
-(\ws -&gt; xs ++ ws) (ys ++ zs)
-xs ++ (ys ++ zs)</code></pre>
+(fromList xs) ((\ws <span class="ot">-&gt;</span> ys <span class="fu">++</span> ws) zs)
+(fromList xs) (ys <span class="fu">++</span> zs)
+(\ws <span class="ot">-&gt;</span> xs <span class="fu">++</span> ws) (ys <span class="fu">++</span> zs)
+xs <span class="fu">++</span> (ys <span class="fu">++</span> zs)</code></pre></div>
 <p>So, when the time finally comes to compute the list concatenations, they end up being in the proper order!</p>
 <h2 id="function-composition">Function Composition</h2>
 <p>The operation <code>append</code> earlier actually ended up corresponding to a very common operation, that of <strong>function composition</strong>. In function composition you have two functions, and you build a new function from them by applying one function first, then applying the second function to the result of the first. This is so common that it has a simple notation, namely that of a single dot:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(.) ::</span> (b<span class="ot">-&gt;</span>c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(.) ::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)
 f <span class="fu">.</span> g <span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g x)
 <span class="co">-- Can also write as</span>
 f <span class="fu">.</span> g x <span class="fu">=</span> f (g x)</code></pre></div>
