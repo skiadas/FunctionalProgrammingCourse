@@ -60,10 +60,10 @@ Mon
 
 
 Wed
-  ~ [List comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
+  ~ [List Comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
 
 Fri
-  ~ [Functions as values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
+  ~ [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 
 ## Week  6 (10/09-10/13)
 

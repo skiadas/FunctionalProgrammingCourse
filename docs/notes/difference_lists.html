@@ -144,11 +144,12 @@ sumSquares xs <span class="fu">=</span> sum (map (<span class="fu">^</span><span
 <span class="co">-- &quot;Point-free&quot; using function composition</span>
 sumSquares <span class="fu">=</span> sum <span class="fu">.</span> map (<span class="fu">^</span><span class="dv">2</span>)</code></pre></div>
 <p>This type of programming has a certain elegance to it: We define a function via composition of known functions, without ever having to mention the function’s actual parameter. This is often called <strong>point-free style</strong>, some times also called <strong>tacit programming</strong>.</p>
+<p>It is also at times hard to read, so use it with caution.</p>
 <h3 id="practice">Practice</h3>
 <ol style="list-style-type: decimal">
 <li>Give a point-free definition of a function that is given a list of numbers finds the maximum of the first 3 elements.</li>
 <li>Give a point-free definition of a function that given a list of lists returns a list containing the heads of those lists (you do not need function composition here, this is simply a curried function with only some parameters provided).</li>
-<li>Consider the following “string scrambling” process: For each character, convert it to an integer via the method <code>ord :: Char -&gt; Int</code>, then double that integer, finally convert the corresponding integer back to a character via <code>chr :: Int -&gt; Char</code>. Do this for each character in the string. This is a partially applied <code>map</code>, where the provided function is point-free and composes the functions <code>ord, chr</code> together with a section for the multiplication.</li>
+<li>Consider the following “string scrambling” process: For each character, convert it to an integer via the method <code>ord :: Char -&gt; Int</code>, then double that integer, finally convert the corresponding integer back to a character via <code>chr :: Int -&gt; Char</code>. Do this for each character in the string. Write this function of type <code>String -&gt; String</code> that performs this combined task. You can do this as a partially applied <code>map</code>, where the provided function is point-free and composes the functions <code>ord, chr</code> together with a section for the multiplication.</li>
 </ol>
 </body>
 </html>

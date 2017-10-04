@@ -139,8 +139,10 @@ sumSquares = sum . map (^2)
 
 This type of programming has a certain elegance to it: We define a function via composition of known functions, without ever having to mention the function's actual parameter. This is often called **point-free style**, some times also called **tacit programming**.
 
+It is also at times hard to read, so use it with caution.
+
 ### Practice
 
 1. Give a point-free definition of a function that is given a list of numbers finds the maximum of the first 3 elements.
 2. Give a point-free definition of a function that given a list of lists returns a list containing the heads of those lists (you do not need function composition here, this is simply a curried function with only some parameters provided).
-3. Consider the following "string scrambling" process: For each character, convert it to an integer via the method `ord :: Char -> Int`, then double that integer, finally convert the corresponding integer back to a character via `chr :: Int -> Char`. Do this for each character in the string. This is a partially applied `map`, where the provided function is point-free and composes the functions `ord, chr` together with a section for the multiplication.
+3. Consider the following "string scrambling" process: For each character, convert it to an integer via the method `ord :: Char -> Int`, then double that integer, finally convert the corresponding integer back to a character via `chr :: Int -> Char`. Do this for each character in the string. Write this function of type `String -> String` that performs this combined task. You can do this as a partially applied `map`, where the provided function is point-free and composes the functions `ord, chr` together with a section for the multiplication.
