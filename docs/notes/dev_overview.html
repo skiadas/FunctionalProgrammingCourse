@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="overview-of-software-development-practices">Overview of Software Development Practices</h1>
+<h2 id="relevant-links">Relevant Links</h2>
+<ul>
+<li><a href="http://learning.acm.org/books/book_detail.cfm?id=1096143&amp;type=safari">Code Complete, 2nd Edition</a> A bible/handbook on software development. Must read for any developer.</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<h3 id="overview-of-software-development-practices-1">Overview of Software Development Practices</h3>
+<p>Writing new code to perform some task is but a small, albeit important, part of being a software developer. But a considerable part of your work involves other tasks. The key common element in all of these is the need to manage a large code base:</p>
+<blockquote>
+<p>Software development practices need to consider a reality of tens or hundreds of thousands of lines of code to be managed over many years by multiple programmers, along with an ever-changing set of requirements.</p>
+</blockquote>
+<p>Here is a brief listing of some common needs:</p>
+<ul>
+<li>Decide the program requirements.</li>
+<li>Keep track of progress towards meeting the requirements.</li>
+<li>Review other people’s code.</li>
+<li>Have others review your code.</li>
+<li>Add new features without breaking existing features.</li>
+<li>Manage listing and priority of fixing for existing problems.</li>
+<li>Rework existing code without breaking functionality.</li>
+<li>Incorporate your code changes into a larger codebase, without conflicts with other people’s changes.</li>
+<li>Review and incorporate someone else’s code contributions into your code base.</li>
+</ul>
+<p>A number of common practices have been developed in response to these needs:</p>
+<dl>
+<dt>Modularity</dt>
+<dd>Designing an application as a set of loosely couple modules, each with its own clear requirements and interactions. If each part of your code depends on as little as possible, it is easier to make changes without breaking stuff.
+</dd>
+<dt>Testing</dt>
+<dd><em>Unit tests</em> that test single functions in the code, as well as <em>functional/integration tests</em> that test overall behavior and module interaction. These offer a certain degree of reliability when changing code: If you break something, your tests will tell you about it (usually).
+</dd>
+<dt>Version Control</dt>
+<dd>Version control allows you to see the evolution of code over time: Who committed what and when, and how that differs from before. You can revert changes, merge changes, etc.
+</dd>
+<dt>Issue/Bug Tracking</dt>
+<dd>There should be a simple mechanism for identifying issues that need to be addressed, documenting a discussion of those issues, setting up priorities and assignments.
+</dd>
+<dt>Coding Standards</dt>
+<dd>It is important that everyone follows a common and clear coding standard. When reviewing someone’s code, it is hard enough to try to understand what they are trying to do without getting distracted by the lack of a semicolon or some weird spacing between terms, or a bizarre control flow structure.
+</dd>
+<dt>Documentation</dt>
+<dd>When a project involves many constituents and a long passage of time, proper documentation is crucial. This occurs at various levels: user manuals, function and module documentations that turn into developer docs, and inline comments on complex code parts are all important components of a large project.
+</dd>
+<dt>Pair Programming</dt>
+<dd>Working with another programmer at your side as you consider each line of code prevents errors early on, and helps programmers learn from each other and establish common patterns.
+</dd>
+</dl>
+<p>We will try to touch on all those in this class, both during the labs and as you work on your term project. In particular, <a href="https://hanover-cs.github.io/Comps_Documents/development_rubric.html">this rubric</a> (<a href="https://hanover-cs.github.io/Comps_Documents/development_rubric.pdf">pdf version</a>) will be used to evaluate your project (and your senior projects when you get to them).</p>
+</body>
+</html>

@@ -56,22 +56,24 @@ Fri
 ## Week  5 (10/02-10/06)
 
 Mon
-  ~ [Type Aliases and Custom Types. Option Type.](notes/types_custom.md) (8.1-8.3)
+  ~ [Type Aliases and Custom Types.](notes/types_custom.md) (8.1-8.3)
 
 
 Wed
-  ~ [List Comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
+  ~ [The Maybe (Option) Type.](notes/types_custom.md)
 
 Fri
-  ~ [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
+  ~ [List Comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
 
 ## Week  6 (10/09-10/13)
 
 Mon
-  ~  Higher-order functions. Processing Lists. (7.1-7.2)
+  ~ [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 
 Wed
-  ~ Folding. (7.3-7.4)
+  ~ [Overview of Software Development Practies](notes/dev_overview.md)
+
+    [Testing](notes/testing.md)
 
 Fri
   ~ MIDTERM
@@ -79,7 +81,9 @@ Fri
 ## Week  7 (10/16-10/20)
 
 Mon
-  ~ Function composition. Examples. (7.5, 7.7)
+  ~ Higher-order functions. Processing Lists. (7.1-7.2)
+
+    Folding. (7.3-7.4)
 
 Wed
   ~ Practice with Higher-order functions.

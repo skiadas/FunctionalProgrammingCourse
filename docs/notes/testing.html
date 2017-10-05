@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="testing-basics">Testing Basics</h1>
+<p>We discuss here some basic ideas around testing, that you will further work on in the lab and in future labs and projects.</p>
+<h2 id="automated-tests">Automated Tests</h2>
+<p>When we refer to tests, we typically mean automated tests. Those tests fall into various categories:</p>
+<dl>
+<dt>Unit Tests</dt>
+<dd><p>Unit tests test a single tiny individual component of your application. You typically want to have unit tests for every bit of your code that is part of your application’s <em>interface</em>.</p>
+<p>You should avoid testing for things that are too implementation-dependent.</p>
+<p>Unit tests are a crucial part of the refactoring process, whose goal is to rearrange and rewrite sections of your code. A solid suite of unit tests can allow you to do this freely without worrying about breaking code. “Your tests will catch that”. And version control allows you to recover if you’ve messed things up too much.</p>
+</dd>
+<dt>Integration Tests</dt>
+<dd>Integration tests test bigger parts of your application, making sure that different parts come together naturally.
+</dd>
+<dt>Timing Tests</dt>
+<dd><p>Timing tests are used in algorithm implementations to assess the efficiency of the algorithms.</p>
+<p>They can also be used to try to find bottlenecks in your application, though some of the browser profiling tools might be better.</p>
+</dd>
+<dt>Deployment Tests</dt>
+<dd>Deployment tests are meant to ensure that your application performs well on various browsers / deployment environments. Hard to do.
+</dd>
+</dl>
+<p>We will focus on unit tests for now.</p>
+<h2 id="test-driven-development">Test-Driven Development</h2>
+<p>In Test-Driven Development, you typically would follow these steps:</p>
+<ul>
+<li>Decide on a small piece of functionality you want to add.</li>
+<li>Make a GitHub issue about it.
+<ul>
+<li>If you prefer, you can create one bigger more “logical” issue, and create a “task list” in it, following the <a href="https://github.com/blog/1375%0A-task-lists-in-gfm-issues-pulls-comments">example at this blog post</a>. Then check those items off as you implement them.</li>
+</ul></li>
+<li>Write a test for the code you want to introduce.</li>
+<li>Run your tests, and watch this new test fail. This makes us more certain that the test does indeed detect the feature we want to add.</li>
+<li>Optionally, make a git commit of the test, using “ref #…” to reference the issue you created.
+<ul>
+<li>This is a bit of a style decision, whether to commit the tests separately or whether to do one commit containing both test and new code.</li>
+</ul></li>
+<li>Write a minimal set of code that would make the test pass.</li>
+<li>Check that all your tests pass.</li>
+<li>Make a commit, using “ref #…” to reference the issue you created. Say “close #…” if it was a “single-problem issue”.
+<ul>
+<li>This gives you a safe backup point to revert to.</li>
+</ul></li>
+<li>Consider any refactoring that you might want to do to clean things up.</li>
+<li>Do the refactoring, and make sure your tests still all pass.</li>
+<li>Commit (optionally creating an issue first to explain what the refactoring was about).</li>
+</ul>
+<p>This is some of the general theory behind testing and test-driven development. We will now look at testing in Haskell.</p>
+<h2 id="testing-in-haskell">Testing in Haskell</h2>
+<p>Haskell offers a number of different testing systems that you can use. In this lab we will focus on two:</p>
+<dl>
+<dt>HSpec</dt>
+<dd><a href="https://hspec.github.io/">HSpec</a> is a standard “testing specifications” framework. It aims to express tests in as readable a form as possible.
+</dd>
+<dt>QuickCheck</dt>
+<dd><a href="http://www.cse.chalmers.se/~rjmh/QuickCheck/manual.html">QuickCheck</a> is an awesome library that allows us to test “properties” and to automatically generate many test values. It can be used on its own in the <code>ghci</code> interpreter, or as part of a testing framework like HSpec.
+</dd>
+</dl>
+<h3 id="testing-with-quickcheck">Testing with QuickCheck</h3>
+<p>We start by taking a look at QuickCheck. QuickCheck operates by testing “properties”. A <strong>property</strong> is simply a function that returns a boolean (we have been calling these “predicates”). In order for QuickCheck to do its work, it needs to be able to generate various inputs. QuickCheck already knows about many standard inputs, and you can provide it with “generators” for your custom input types.</p>
+<p>Let us take a look at an example in the interpreter. We start by loading the QuickCheck module into our module:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Test.QuickCheck</span></code></pre></div>
+<p>In order to use QuickCheck we must define “properties”. These are meant to be functions that should be true about <strong>any</strong> input you give them. QuickCheck can’t typically check all inputs, but it will check at random 100 inputs.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- This is of course a &quot;wrong&quot; property, as it is not always true.</span>
+<span class="ot">prop_allNumbersAreLessThan10 ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+prop_allNumbersAreLessThan10 x <span class="fu">=</span>  x <span class="fu">&lt;</span> <span class="dv">10</span></code></pre></div>
+<p>It is customary to start the name of these properties via <code>prop</code>.</p>
+<p>We can now load our module in <code>gchi</code> and test this property:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">quickCheck prop_allNumbersAreLessThan10</code></pre></div>
+<p>You get back an answer that looks like this:</p>
+<pre><code>*** Failed! Falsifiable (after 15 tests and 1 shrink):
+10</code></pre>
+<p>So QuickCheck will tell you that the test failed after trying 15 input values. You can try <code>verboseCheck</code> to see the actual values tried:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">verboseCheck prop_allNumbersAreLessThan10</code></pre></div>
+<p>Note that these tests are not perfect: They only test a small number of inputs. For example if we were using 100 instead of 10, we would have gotten back the answer that everything is OK! The test never checked numbers bigger than 100.</p>
+<h4 id="generators">Generators</h4>
+<p>We can help QuickCheck along by providing “custom generators” for it. Generators have type <code>Gen a</code>. There are a number of built-in functions that allow us to create new generators:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Random element between the two given values (inclusive)</span>
+<span class="ot">choose ::</span> <span class="dt">Random</span> a <span class="ot">=&gt;</span> (a, a) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+<span class="co">-- Randomly chooses one of the generators from the list</span>
+<span class="ot">oneOf ::</span> [<span class="dt">Gen</span> a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+<span class="co">-- Randomly chooses a generator from the list, using the &quot;weights&quot; to determine frequency</span>
+<span class="ot">frequency ::</span> [(<span class="dt">Int</span>, <span class="dt">Gen</span> a)] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+<span class="co">-- Randomly chooses an element from the list</span>
+<span class="ot">elements ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+<span class="co">-- Generates a value that passes the predicate</span>
+<span class="ot">suchThat ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
+<span class="co">-- Generates a value if the function returns a Just v</span>
+<span class="ot">suchThatMap ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b) <span class="ot">-&gt;</span> <span class="dt">Gen</span> b
+<span class="co">-- Generates a list of elements of random length</span>
+<span class="ot">listOf ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]
+<span class="ot">listOf1 ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]            <span class="co">-- Guaranteed non-empty</span>
+<span class="ot">vectorOf ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]    <span class="co">-- Specified length</span>
+<span class="ot">shuffle ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]              <span class="co">-- Random permutation of the list</span>
+<span class="co">-- Arbitrary t means that quickCheck knows how to generate values of type t</span>
+<span class="ot">arbitrary ::</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Gen</span> a
+<span class="ot">vector ::</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]
+<span class="ot">orderedList ::</span> (<span class="dt">Ord</span> a, <span class="dt">Arbitrary</span> a) <span class="ot">=&gt;</span> <span class="dt">Gen</span> [a]</code></pre></div>
+<p>You can use a specific generator as follows:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">genSmallNumbers ::</span> <span class="dt">Gen</span> <span class="dt">Int</span>
+genSmallNumbers <span class="fu">=</span> choose (<span class="dv">1</span>, <span class="dv">9</span>)
+
+<span class="co">-- Note the different type</span>
+<span class="ot">prop_allNumbersAreLessThan10 ::</span> <span class="dt">Property</span>
+prop_allNumbersAreLessThan10 <span class="fu">=</span> forAll genSmallNumbers <span class="fu">$</span> \x <span class="ot">-&gt;</span> x <span class="fu">&lt;</span> <span class="dv">10</span></code></pre></div>
+<p>In this instance we tell it to use our <code>genSmallNumbers</code> generator to produces the <code>x</code>. That generator in turn only produces numbers between 1 and 9. Thefore QuickCheck will actually succeed in this instance.</p>
+<p>Lets try to write a generator that returns powers of a certain base (one easy way to get somewhat large numbers). We will use the <code>do</code> syntax for this, which you are probably not too familiar with, and we will discuss it more later.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">genPowers ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Int</span>
+genPowers base <span class="fu">=</span> <span class="kw">do</span>
+    expo <span class="ot">&lt;-</span> choose (<span class="dv">1</span>, <span class="dv">40</span>)
+    return (base <span class="fu">^</span> (<span class="ot">expo ::</span> <span class="dt">Int</span>))
+
+<span class="ot">prop_allNumbersAreLessThan100 ::</span> <span class="dt">Property</span>
+prop_allNumbersAreLessThan100 <span class="fu">=</span> forAll (genPowers <span class="dv">2</span>) <span class="fu">$</span> \x <span class="ot">-&gt;</span> x <span class="fu">&lt;</span> <span class="dv">100</span></code></pre></div>
+<p>Calling <code>quickCheck</code> on <code>prop_allNumbersAreLessThan100</code> will now actually fail (as it should) after just a few tries.</p>
+</body>
+</html>
