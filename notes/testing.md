@@ -139,3 +139,9 @@ prop_allNumbersAreLessThan100 :: Property
 prop_allNumbersAreLessThan100 = forAll (genPowers 2) $ \x -> x < 100
 ```
 Calling `quickCheck` on `prop_allNumbersAreLessThan100` will now actually fail (as it should) after just a few tries.
+
+There are many more features that QuickCheck provides. You'll want to look at its manual for more.
+
+### Specification Testing with HSpec
+
+HSpec is used in order to write more systematic tests, using QuickCheck or direct cases along the way, and produce suitable input. With HSpec you would be creating a separate test file

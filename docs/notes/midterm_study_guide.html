@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="midterm-study-guide">Midterm Study Guide</h1>
+<p>You should read all the notes we have discussed so far (up to but NOT including list comprehensions), and the corresponding textbook sections. These questions are here to help guide your studies, but are not meant to be exhaustive of everything you should know (though they do try to touch all the areas).</p>
+<ol style="list-style-type: decimal">
+<li>What are the primary features that differentiate functional programming from iterative/procedural programing? Demonstrate with examples of each feature that demonstrate the differences.</li>
+<li>Describe 5 ways in which Haskell differs from most other languages.</li>
+<li>Describe what <strong>lazy evaluation</strong> is and demonstrate with a specific example where a function behaves differently depending on whether the language uses lazy or strict (non-lazy) evaluation.</li>
+<li>List at least 7 methods that operate on lists, write their type and explain what they do.</li>
+<li>Describe what <strong>type inference</strong> is and demonstrate its use in relation to the function <code>f x y = if x then y + 1 else 4</code>. Practice with other functions.</li>
+<li>What are the differences between <strong>lists</strong> and **tuples?</li>
+<li>In Haskell a function that is meant to have two integer inputs can be written in two different ways. Describe those ways and the corresponding types for the function.</li>
+<li>Describe what <strong>currying</strong> for a function is, and why it can be useful.</li>
+<li>Write the types of the following functions, and describe their use: <code>zip</code>, <code>map</code>, <code>filter</code>, <code>(++)</code>. Write recursive implementations for these functions.</li>
+<li>Explain what <strong>parametric polymorphism</strong> and <strong>ad-hoc polymorphism</strong> are and how they differ. Provide concrete examples from any language you wish. Also describe how these two features are present in Haskell.</li>
+<li>List the standard <strong>type classes</strong> and the functions they contain, along with the type of those functions.</li>
+<li>How does a <strong>type class</strong> relate to a type?</li>
+<li>Describe what guarded expressions are, what their general syntax is and how they work.</li>
+<li>Describe what <strong>pattern matching</strong> is and provide examples.</li>
+<li>Write, including type class constraints, the types of the following functions, and write recursive implementations for them:
+<ol style="list-style-type: lower-alpha">
+<li>A function that finds the maximum element in a list.</li>
+<li>A function that determines if a list is sorted.</li>
+<li>A <code>lookup</code> function that searches for a key in a key-value list, and if it finds a match returns the corresponding value, as a <code>Maybe</code> type.</li>
+</ol></li>
+<li><em>Without using list comprehensions</em>, write a function that given two lists of type <code>[a]</code> and <code>[b]</code> respectively returns a list of type <code>[(a, b)]</code> consisting of all possible pairs of an element from the one list and an element from the other list.</li>
+<li>A recursion can be <strong>numeric</strong> or <strong>structural</strong>, and can be <strong>stateless</strong> or <strong>stateful</strong>. Describe what these mean, and provide examples for all four possible combinations (e.g. a stateless numeric recursion example, a stateless structural recursion example and so on).</li>
+<li>Describe via an example how stateful recursion is very analogous to using a for loop in other languages. Identify particular elements of this analogy.</li>
+<li>What are <strong>type aliases</strong>? What are <strong>custom data types</strong>? How do they differ?</li>
+<li>Describe the <code>Maybe</code> type and why it is useful. What problem does it solve? What are its advantages over other solutions to the same problem?</li>
+</ol>
+</body>
+</html>

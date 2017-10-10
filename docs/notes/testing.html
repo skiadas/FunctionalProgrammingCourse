@@ -164,5 +164,8 @@ genPowers base <span class="fu">=</span> <span class="kw">do</span>
 <span class="ot">prop_allNumbersAreLessThan100 ::</span> <span class="dt">Property</span>
 prop_allNumbersAreLessThan100 <span class="fu">=</span> forAll (genPowers <span class="dv">2</span>) <span class="fu">$</span> \x <span class="ot">-&gt;</span> x <span class="fu">&lt;</span> <span class="dv">100</span></code></pre></div>
 <p>Calling <code>quickCheck</code> on <code>prop_allNumbersAreLessThan100</code> will now actually fail (as it should) after just a few tries.</p>
+<p>There are many more features that QuickCheck provides. You’ll want to look at its manual for more.</p>
+<h3 id="specification-testing-with-hspec">Specification Testing with HSpec</h3>
+<p>HSpec is used in order to write more systematic tests, using QuickCheck or direct cases along the way, and produce suitable input. With HSpec you would be creating a separate test file</p>
 </body>
 </html>

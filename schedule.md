@@ -76,7 +76,7 @@ Wed
     [Testing](notes/testing.md)
 
 Fri
-  ~ MIDTERM
+  ~ MIDTERM ([study guide](notes/midterm_study_guide.md))
 
 ## Week  7 (10/16-10/20)
 
