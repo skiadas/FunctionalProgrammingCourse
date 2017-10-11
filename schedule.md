@@ -71,9 +71,7 @@ Mon
   ~ [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 
 Wed
-  ~ [Overview of Software Development Practies](notes/dev_overview.md)
-
-    [Testing](notes/testing.md)
+  ~ [Functions as Values: Difference Lists, Composition (cont)](notes/difference_lists.md) (7.5)
 
 Fri
   ~ MIDTERM ([study guide](notes/midterm_study_guide.md))
@@ -81,17 +79,30 @@ Fri
 ## Week  7 (10/16-10/20)
 
 Mon
+  ~ [Overview of Software Development Practies](notes/dev_overview.md)
+
+    [Testing](notes/testing.md)
+
+Wed
   ~ Higher-order functions. Processing Lists. (7.1-7.2)
 
     Folding. (7.3-7.4)
 
-Wed
+Fri
   ~ Practice with Higher-order functions.
 
-Fri
+## Week  8 (10/23-10/27)
+
+Mon
   ~ Recursive Types. (8.4)
 
-## Week  8 (10/23-10/27)
+Wed
+  ~ Interactive Programming: Modeling state without mutation (10.?)
+
+Fri
+  ~ Practice with Interactive Programming (10.?)
+
+## Week  9 (10/30-11/03)
 
 Mon
   ~ Type-directed programming. Modules.
@@ -101,17 +112,6 @@ Wed
 
 Fri
   ~ Custom type classes. (8.5)
-
-## Week  9 (10/30-11/03)
-
-Mon
-  ~ TBD
-
-Wed
-  ~ TBD
-
-Fri
-  ~ TBD
 
 ## Week 10 (11/06-11/10)
 
