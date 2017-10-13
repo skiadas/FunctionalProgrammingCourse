@@ -124,6 +124,13 @@ putStrLn s <span class="fu">=</span> <span class="kw">do</span> putStr s
 sequence_ (ac<span class="fu">:</span>acs) <span class="fu">=</span> <span class="kw">do</span> ac
                         sequence_ acs</code></pre></div>
 <p>You should notice a similarity between this function and <code>putStr</code> earlier. In fact, think of how you could implement <code>putStr</code> using <code>sequence_</code> and a list comprehension (or map) to form a list of actions out of a list of characters.</p>
-<p><strong>Practice</strong>: Implement <code>putStr</code> using <code>sequence_</code>. The types should help guide you in the process.</p>
+<h3 id="practice">Practice</h3>
+<ol style="list-style-type: decimal">
+<li>Implement <code>putStr</code> using <code>sequence_</code>. The types should help guide you in the process.</li>
+<li>Implement a function <code>getUntil :: (Char -&gt; Bool) -&gt; IO Char -&gt; IO String</code> that keeps collecting characters until a character is found that makes the predicate <code>False</code>. It then returns the concatenation of those characters.</li>
+<li>Use the function <code>getUntil</code> to provide an alternative implementation of <code>getLine</code>.</li>
+<li>Implement the action <code>sequence :: [IO a] -&gt; IO [a]</code>. It takes a list of actions, performs them all, and collects the results into one list.</li>
+<li>Implement the action <code>(&lt;$&gt;) :: (a -&gt; b) -&gt; IO a -&gt; IO b</code>. It performs the action, then passes it throug the function before returning it.</li>
+</ol>
 </body>
 </html>
