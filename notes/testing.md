@@ -144,4 +144,4 @@ There are many more features that QuickCheck provides. You'll want to look at it
 
 ### Specification Testing with HSpec
 
-HSpec is used in order to write more systematic tests, using QuickCheck or direct cases along the way, and produce suitable input. With HSpec you would be creating a separate test file
+HSpec is used in order to write more systematic tests, using QuickCheck or direct cases along the way, and produce suitable input. With HSpec you would be creating a separate test file with a suitable `main` method. We will discuss this kind of testing setup later, after we discuss IO in more detail.

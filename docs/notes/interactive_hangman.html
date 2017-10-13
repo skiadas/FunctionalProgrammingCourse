@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="interactive-programming-examples">Interactive Programming Examples</h1>
+<p>In this section we will implement a larger interactive game, Hangman. As we do so we will see how one structures such programs so as to separate the pure components from the unpure ones.</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Section 10.6</li>
+</ul>
+<h2 id="hangman">Hangman</h2>
+<p>The Hangman game we implement will be somewhat different from the version in the book, but it has many things in common. The game starts by asking the user for a string. It then offers the user a fixed number of chances to guess a single character from the string, and it visually shows all matched characters from the string.</p>
+<p>Usually implementing a program like that consists of two levels:</p>
+<ul>
+<li>The user interaction component, starting from the <code>main</code> action and decomposing that further into smaller actions until you get to more basic components.</li>
+<li>The pure component of the application, which takes as input the kinds of elements that the user would be entering and produces suitable outputs. This may be one function or more typically many smaller utility functions.</li>
+</ul>
+<p>One can start working from either direction, and more often than not move back and forth between the two approaches.</p>
+<p>We start with the top-level approach:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">main ::</span> <span class="dt">IO</span> ()
+main <span class="fu">=</span> <span class="kw">do</span>
+    word <span class="ot">&lt;-</span> readHiddenWord
+    guessWord word
+    main</code></pre></div>
+<p>We need to implement two actions. One that reads a word from the user, without showing it, and another that interacts with the user as they are trying to guess it. The main function then simply performs these two operations, and calls itself again for an infinite set of attempts.</p>
+<h3 id="reading-the-word">Reading The Word</h3>
+<p>The first half of the project has to do with implementing <code>readHiddenWord</code>. We will break that part further in smaller chunks:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">readHiddenWord ::</span> <span class="dt">IO</span> <span class="dt">String</span>
+readHiddenWord <span class="fu">=</span> <span class="kw">do</span>
+    putStrLn <span class="st">&quot;Enter word to guess: &quot;</span>
+    withoutEcho readWord</code></pre></div>
+<p>The first part in this action is fairly straightforward, we put in a prompt for the user. The second part is a call to the function <code>withoutEcho</code>, which we will write, and the action <code>readWord</code> which we will also write. <code>withoutEcho</code> takes as input an action, and performs that action returning its value. But before doing so it turns off the default “echo” process that is in place (namely that whenever you press a character in the keyboard that character also appears on the screen). <code>readWord</code> reads a character, then prints an asterisk in its place, and returns the character.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">withoutEcho ::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a
+withoutEcho action <span class="fu">=</span> <span class="kw">do</span>
+    hSetEcho stdin <span class="dt">False</span>
+    v <span class="ot">&lt;-</span> action
+    hSetEcho stdin <span class="dt">True</span>
+    return v</code></pre></div>
+<p>The action <code>hSetEcho</code> is a built in action that is given a “stream”, standard input in this case, and a new boolean value, and it sets the echo-ing state of that stream.</p>
+<p><code>readWord</code> simply reads the character and puts a start in its place. It must however still print newlines:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">readWord ::</span> <span class="dt">IO</span> <span class="dt">String</span>
+readWord <span class="fu">=</span> <span class="kw">do</span>
+    c <span class="ot">&lt;-</span> getChar
+    <span class="kw">if</span> c <span class="fu">==</span> <span class="ch">&#39;\n&#39;</span>
+        <span class="kw">then</span> <span class="kw">do</span> putChar <span class="ch">&#39;\n&#39;</span>
+                return <span class="st">&quot;&quot;</span>
+        <span class="kw">else</span> <span class="kw">do</span> putChar <span class="ch">&#39;*&#39;</span>
+                cs <span class="ot">&lt;-</span> readWord
+                return (c<span class="fu">:</span>cs)</code></pre></div>
+<p>This finishes the first part of the application, that of reading in a guess from the user. We could test this out by using a dummy <code>withoutEcho</code> for now.</p>
+<h3 id="interactive-guessing">Interactive Guessing</h3>
+<p>The second part of the project requires that we implement the <code>guessWord</code> action. Let us think of what that might involve:</p>
+<ul>
+<li>We must keep track of the characters that the user has guessed. We could also keep a count of how many guesses the user has made, but we can simply find that out from the list of guessed characters. This means that our main function should take a second argument in addition to the word, namely the list of guesses, which probably will start life as empty.</li>
+<li>We must have a way of comparing the list of guessed characters with the word, and see if all characters in the word have been guessed. This will be a pure function.</li>
+<li>We must have a way of forming visual representation of the word where all not-yet-guessed characters are replaced by an underscore. This will also be a pure function.</li>
+</ul>
+<p>Let us see how <code>guessWord</code> would look like, with all this in mind. The heart of the matter is the <code>guessLoop</code> action (<strong>Question</strong>: Why did we write <code>[Char]</code> instead of <code>String</code> for the second parameter to <code>guessLoop</code>?).</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">guessWord ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+guessWord word <span class="fu">=</span> guessLoop word []
+
+<span class="ot">guessLoop ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+guessLoop word guesses <span class="fu">=</span> <span class="kw">do</span>
+    putGuesses guesses
+    putMaskedWord word guesses
+    <span class="kw">if</span> isFullyGuessed word guesses
+        <span class="kw">then</span> putStrLn <span class="st">&quot;Congratulations, you guessed it!&quot;</span>
+        <span class="kw">else</span> <span class="kw">if</span> length guesses <span class="fu">&gt;=</span> <span class="dv">15</span>
+            <span class="kw">then</span> <span class="kw">do</span> putStrLn <span class="st">&quot;I&#39;m sorry, you have run out of guesses!&quot;</span>
+                    putStrLn (<span class="st">&quot;The word was: &quot;</span> <span class="fu">++</span> word)
+            <span class="kw">else</span> readNextGuess word guesses
+
+<span class="ot">putGuesses ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+putGuesses guesses <span class="fu">=</span> <span class="kw">do</span>
+    putStr <span class="st">&quot;Guessed: &quot;</span>
+    putEachGuess guesses
+
+<span class="ot">putEachGuess ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+putEachGuess <span class="fu">=</span> putStrLn <span class="fu">.</span> intercalate <span class="st">&quot;, &quot;</span> <span class="fu">.</span> map (<span class="fu">:</span>[])
+
+<span class="ot">putMaskedWord ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+putMaskedWord word <span class="fu">=</span> putStrLn <span class="fu">.</span> maskedWord word
+
+<span class="ot">readNextGuess ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+readNextGuess word guesses <span class="fu">=</span> <span class="kw">do</span>
+    hSetBuffering stdin <span class="dt">NoBuffering</span>
+    guess <span class="ot">&lt;-</span> getChar
+    putChar <span class="ch">&#39;\n&#39;</span>
+    <span class="kw">if</span> guess <span class="ot">`elem`</span> guesses
+        <span class="kw">then</span> <span class="kw">do</span> putStrLn <span class="st">&quot;Character already guessed!&quot;</span>
+                guessLoop word guesses
+        <span class="kw">else</span> guessLoop word (guess<span class="fu">:</span>guesses)</code></pre></div>
+<p>We used some function compositions there, and also the <code>hSetBuffering</code> action to set the input to do no buffering (so that we can immediately read every character typed rather than wait for the whole line). Note the structure of the <code>putEachGuess</code> action. In order for this to work, we had to import the corresponding modules:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">System.IO</span>
+<span class="kw">import </span><span class="dt">Data.List</span> (intercalate)</code></pre></div>
+<p>All that remains are the pure functions. We need one function to mask a word given some guesses, and one function to check if a words is fully guessed from its guesses. Both are simple:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">isFullyGuessed ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isFullyGuessed word guesses <span class="fu">=</span> all (<span class="ot">`elem`</span> guesses) word
+
+<span class="ot">maskedWord ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">String</span>
+maskedWord word guesses <span class="fu">=</span> map handleChar word
+    <span class="kw">where</span> handleChar c <span class="fu">|</span> c <span class="ot">`elem`</span> guesses   <span class="fu">=</span> c
+                       <span class="fu">|</span> otherwise          <span class="fu">=</span> <span class="ch">&#39;_&#39;</span></code></pre></div>
+<p>Now we have a working hangman implementation!</p>
+<h3 id="variations">Variations</h3>
+<p>Here are some variations we can try on the game:</p>
+<ol style="list-style-type: decimal">
+<li>Have the number of guesses somehow depend on the length of the word. For example allow up to twice the number of guesses than the word length, with a minimum of 8 guesses.</li>
+<li>Only count how many guesses were missed towards the allowed count of guesses. This would require that the count be kept as a separate parameter to the problem.</li>
+</ol>
+</body>
+</html>

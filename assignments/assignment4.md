@@ -20,4 +20,4 @@ At this point you should have the following setup:
 
 You should continue using Issues, Milestones, Labels, and Boards to manage the progress on your project. Everything you work on should be part of an issue you have created before you start work, and that issue should have a suitable label and it should be a part of a milestone.
 
-You will need to have unit tests for all functions described in the assignment. Make sure to read the [Testing Notes](notes/testing.md) before working on the assignment.
+You will need to have unit tests for all functions described in the assignment. Make sure to read the [Testing Notes](notes/testing.md) before working on the assignment. You are expected to write QuickCheck properties as a means of testing your functions.

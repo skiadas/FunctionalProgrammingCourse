@@ -79,28 +79,30 @@ Fri
 ## Week  7 (10/16-10/20)
 
 Mon
-  ~ [Overview of Software Development Practies](notes/dev_overview.md)
+  ~ [Overview of Software Development Practices](notes/dev_overview.md)
 
     [Testing](notes/testing.md)
 
 Wed
-  ~ Higher-order functions. Processing Lists. (7.1-7.2)
+  ~ [Interactive Programming](notes/interactive.md) (10.1-10.5)
 
-    Folding. (7.3-7.4)
 
 Fri
-  ~ Practice with Higher-order functions.
+  ~ [Practice with Interactive Programming](notes/interactive_hangman.md) (10.6)
+
 
 ## Week  8 (10/23-10/27)
 
 Mon
-  ~ Recursive Types. (8.4)
+  ~ Higher-order functions. Processing Lists. (7.1-7.2)
+
+    Folding. (7.3-7.4)
 
 Wed
-  ~ Interactive Programming: Modeling state without mutation (10.?)
+  ~  Practice with Higher-order functions.
 
 Fri
-  ~ Practice with Interactive Programming (10.?)
+  ~ Recursive Types. (8.4)
 
 ## Week  9 (10/30-11/03)
 
