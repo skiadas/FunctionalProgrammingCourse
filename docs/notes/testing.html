@@ -53,7 +53,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1 id="testing-basics">Testing Basics</h1>
 <p>We discuss here some basic ideas around testing, that you will further work on in the lab and in future labs and projects.</p>
 <h2 id="automated-tests">Automated Tests</h2>
-<p>When we refer to tests, we typically mean automated tests. Those tests fall into various categories:</p>
+<p>When we refer to tests, we typically mean automated tests.</p>
+<blockquote>
+<p>Automated tests can be run automatically without requiring user interaction, and typically produce output that can be automatically consumed by other applications for the generation of reports and test summaries.</p>
+</blockquote>
+<p>Those tests fall into various categories:</p>
 <dl>
 <dt>Unit Tests</dt>
 <dd><p>Unit tests test a single tiny individual component of your application. You typically want to have unit tests for every bit of your code that is part of your application’s <em>interface</em>.</p>
@@ -154,7 +158,7 @@ genSmallNumbers <span class="fu">=</span> choose (<span class="dv">1</span>, <sp
 <span class="co">-- Note the different type</span>
 <span class="ot">prop_allNumbersAreLessThan10 ::</span> <span class="dt">Property</span>
 prop_allNumbersAreLessThan10 <span class="fu">=</span> forAll genSmallNumbers <span class="fu">$</span> \x <span class="ot">-&gt;</span> x <span class="fu">&lt;</span> <span class="dv">10</span></code></pre></div>
-<p>In this instance we tell it to use our <code>genSmallNumbers</code> generator to produces the <code>x</code>. That generator in turn only produces numbers between 1 and 9. Thefore QuickCheck will actually succeed in this instance.</p>
+<p>In this instance we tell it to use our <code>genSmallNumbers</code> generator to produce the <code>x</code>. That generator in turn only produces numbers between 1 and 9. Therefore QuickCheck will actually succeed in this instance.</p>
 <p>Lets try to write a generator that returns powers of a certain base (one easy way to get somewhat large numbers). We will use the <code>do</code> syntax for this, which you are probably not too familiar with, and we will discuss it more later.</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">genPowers ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Int</span>
 genPowers base <span class="fu">=</span> <span class="kw">do</span>

@@ -79,17 +79,15 @@ Fri
 ## Week  7 (10/16-10/20)
 
 Mon
+  ~ [Interactive Programming](notes/interactive.md) (10.1-10.5)
+
+Wed
+  ~ [Practice with Interactive Programming](notes/interactive_hangman.md) (10.6)
+
+Fri
   ~ [Overview of Software Development Practices](notes/dev_overview.md)
 
     [Testing](notes/testing.md)
-
-Wed
-  ~ [Interactive Programming](notes/interactive.md) (10.1-10.5)
-
-
-Fri
-  ~ [Practice with Interactive Programming](notes/interactive_hangman.md) (10.6)
-
 
 ## Week  8 (10/23-10/27)
 

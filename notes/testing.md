@@ -4,7 +4,11 @@ We discuss here some basic ideas around testing, that you will further work on i
 
 ## Automated Tests
 
-When we refer to tests, we typically mean automated tests. Those tests fall into various categories:
+When we refer to tests, we typically mean automated tests.
+
+> Automated tests can be run automatically without requiring user interaction, and typically produce output that can be automatically consumed by other applications for the generation of reports and test summaries.
+
+Those tests fall into various categories:
 
 Unit Tests
   ~ Unit tests test a single tiny individual component of your application. You typically want to have unit tests for every bit of your code that is part of your application's *interface*.
@@ -126,7 +130,7 @@ genSmallNumbers = choose (1, 9)
 prop_allNumbersAreLessThan10 :: Property
 prop_allNumbersAreLessThan10 = forAll genSmallNumbers $ \x -> x < 10
 ```
-In this instance we tell it to use our `genSmallNumbers` generator to produces the `x`. That generator in turn only produces numbers between 1 and 9. Thefore QuickCheck will actually succeed in this instance.
+In this instance we tell it to use our `genSmallNumbers` generator to produce the `x`. That generator in turn only produces numbers between 1 and 9. Therefore QuickCheck will actually succeed in this instance.
 
 Lets try to write a generator that returns powers of a certain base (one easy way to get somewhat large numbers). We will use the `do` syntax for this, which you are probably not too familiar with, and we will discuss it more later.
 ```haskell
