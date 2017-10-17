@@ -85,22 +85,20 @@ Wed
   ~ [Practice with Interactive Programming](notes/interactive_hangman.md) (10.6)
 
 Fri
-  ~ [Overview of Software Development Practices](notes/dev_overview.md)
-
-    [Testing](notes/testing.md)
+  ~ [Recursive Types](notes/recursive_types.md) (8.4)
 
 ## Week  8 (10/23-10/27)
 
 Mon
-  ~ Higher-order functions. Processing Lists. (7.1-7.2)
-
-    Folding. (7.3-7.4)
+  ~ Folding. (7.3-7.4)
 
 Wed
-  ~  Practice with Higher-order functions.
+  ~ Practice with Higher-order functions.
 
 Fri
-  ~ Recursive Types. (8.4)
+  ~ [Overview of Software Development Practices](notes/dev_overview.md)
+
+    [Testing](notes/testing.md)
 
 ## Week  9 (10/30-11/03)
 

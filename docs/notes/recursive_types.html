@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="recursive-types">Recursive Types</h1>
+<p>In this section we will consider recursively defined types, which allow us to describe structures of arbitrary size, like lists and trees. We will in particular build search trees using the mechanism of recursive types.</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Section 8.4</li>
+<li>Practice exercises (8.9): 3, 5</li>
+</ul>
+<h2 id="recursive-types-1">Recursive Types</h2>
+<p>A recursive type is a custom data type that refers to itself in one of its variants. In this way, a value of a particular type is either one of the basic options for that type, or a combination of simpler values, possibly of the same type.</p>
+<p>For instance, imagine we did not have a built-in list type. We could define a list by saying:</p>
+<ul>
+<li>A value of type <code>List a</code> may be an empty list.</li>
+<li>A value of type <code>List a</code> may also consist of the combination (“cons”) of a value of type <code>a</code> (the head) followed by a value of type <code>List a</code> (the tail).</li>
+</ul>
+<p>We could write this using a custom data type declaration as follows:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Empty</span> <span class="fu">|</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a)</code></pre></div>
+<p>So for instance here are analogs of the lists <code>[0]</code> and <code>[1,2]</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Cons</span> <span class="dv">0</span> <span class="dt">Empty</span>
+<span class="dt">Cons</span> <span class="dv">1</span> (<span class="dt">Cons</span> <span class="dv">2</span> <span class="dt">Empty</span>)</code></pre></div>
+<p>In fact we could essentially define the built-in lists as follows (<code>[] a</code> is basically the same as <code>[a]</code>):</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> [] a <span class="fu">=</span> [] <span class="fu">|</span> (<span class="fu">:</span>) a [a]</code></pre></div>
+<p>As another example, imagine a type meant to represent arithmetic expressions. We could define such a type with something like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Expr</span> <span class="fu">=</span> <span class="dt">Numb</span> <span class="dt">Double</span>          <span class="co">-- A number (we only handle double precision numbers)</span>
+          <span class="fu">|</span> <span class="dt">Var</span> <span class="dt">String</span>           <span class="co">-- A (lowercase) variable (x, y, xy, err, etc)</span>
+          <span class="fu">|</span> <span class="dt">Parens</span> <span class="dt">Expr</span>          <span class="co">-- A parenthesized expression</span>
+          <span class="fu">|</span> <span class="dt">Func</span> <span class="dt">String</span> <span class="dt">Expr</span>     <span class="co">-- A function call (e.g. sin x)</span>
+          <span class="fu">|</span> <span class="dt">Binop</span> <span class="dt">Expr</span> <span class="dt">Char</span> <span class="dt">Expr</span> <span class="co">-- A binary operator between two expressions</span></code></pre></div>
+<p>Then the expression <code>x+3</code> would be represented as <code>Binop (Var &quot;x&quot;) &quot;+&quot; (Numb 3)</code>. Notice how the last three cases all refer to the type <code>Expr</code> itself.</p>
+<h2 id="binary-search-trees">Binary Search Trees</h2>
+<p>We will now use recursive types to implement binary search trees. Recall that a binary search tree is a binary tree, so each node has two (possibly empty) children, and each node also contains a value. In a binary search tree all values within the left child are less than the value at the node, and all values within the right child are greater than the value at the node.</p>
+<p><strong>Practice</strong>: Draw at least 3 different binary search trees consisting of the numbers <code>4, 6, 10, 23, 40</code>.</p>
+<p>We will represent a tree via a custom data type, with two variants: One representing the “empty” node and one representing an actual value node with a value and two children:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Tree</span> a <span class="fu">=</span> <span class="dt">E</span> <span class="fu">|</span> <span class="dt">N</span> (<span class="dt">Tree</span> a) a (<span class="dt">Tree</span> a)</code></pre></div>
+<p>We can now build trees recursively by using these constructors <code>E</code> and <code>N</code>. For example, let us start with a simple function <code>singleton</code> that turns a single value into a node containing that value and with empty children:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">singleton ::</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a
+singleton v <span class="fu">=</span> <span class="dt">N</span> <span class="dt">E</span> v <span class="dt">E</span></code></pre></div>
+<p>Let us also write a function that tests if a “tree” is a “leaf”. A leaf is a tree both of whose children are empty:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">isLeaf ::</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isLeaf (<span class="dt">N</span> <span class="dt">E</span> _ <span class="dt">E</span>) <span class="fu">=</span> <span class="dt">True</span>
+isLeaf _         <span class="fu">=</span> <span class="dt">False</span></code></pre></div>
+<p>Finally, let’s write a function that turns a binary tree into a list:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">toList ::</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> [a]
+toList <span class="dt">E</span>              <span class="fu">=</span> []
+toList <span class="dt">N</span> left v right <span class="fu">=</span> (toList left) <span class="fu">++</span> (<span class="ot">v ::</span> toList right)</code></pre></div>
+<p>We will later see other lists like this.</p>
+<p>Now let us proceed to write an <code>insert</code> method, that inserts a new element into the proper place in the tree. It would need to have type: <code>Ord a =&gt; Tree a -&gt; a -&gt; Tree a</code>, so it takes an element and a tree, and returns a new tree with the element inserted in the correct spot. This will have various cases:</p>
+<ul>
+<li>If we are dealing with a normal node, compare the value at the node with the given value. If they are equal, then the number is already there and does not need to be inserted again. If the searched value is smaller than the one in the node, then we try to insert in the left child, else we insert in the right child.</li>
+<li>If we are dealing with an empty node, then we just form a new element.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">insert ::</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Tree</span> a
+insert <span class="dt">E</span> v              <span class="fu">=</span> <span class="dt">N</span> <span class="dt">E</span> v <span class="dt">E</span>  <span class="co">-- Could also do as: insert E = singleton</span>
+insert (<span class="dt">N</span> left v&#39; right) v
+            <span class="fu">|</span> v <span class="fu">==</span> v&#39;   <span class="fu">=</span> <span class="dt">N</span> left v&#39; right
+            <span class="fu">|</span> v <span class="fu">&lt;</span> v&#39;    <span class="fu">=</span> <span class="dt">N</span> (insert left v) v&#39; right
+            <span class="fu">|</span> v <span class="fu">&gt;</span> v&#39;    <span class="fu">=</span> <span class="dt">N</span> left v&#39; (insert right v)</code></pre></div>
+<h3 id="practice">Practice</h3>
+<ol style="list-style-type: decimal">
+<li>Write a function <code>contains :: Ord a =&gt; a -&gt; Tree a -&gt; Bool</code> that given a tree and element searches for that element in the tree.</li>
+<li>Write a function <code>any :: (a -&gt; Bool) -&gt; Tree a -&gt; Bool</code> that given a tree and a predicate returns <code>True</code> if there is at least one element in the tree for which the predicate is <code>True</code>, and <code>False</code> otherwise (including empty trees). Do not use ordering.</li>
+<li>Write a function <code>all :: (a -&gt; Bool) -&gt; Tree a -&gt; Bool</code> that given a tree and a predicate returns <code>True</code> if for all elements in the tree the predicate is <code>True</code>, and <code>False</code> otherwise. It should be <code>True</code> for empty trees (there is no element that can make the predicate <code>False</code>). Do not use ordering.</li>
+<li>Write a function <code>min :: Ord a =&gt; Tree a -&gt; a</code> that given a binary search tree finds the smallest element. It should error on an empty tree. You would more or less have to traverse the left children. Draw some tree examples before attempting this.</li>
+<li>Write a function <code>deleteMin :: Ord a =&gt; Tree a -&gt; a</code> that given a binary search tree removes the smallest element. It should error on an empty tree. You would more or less have to traverse the left children. Draw some tree examples before attempting this.</li>
+</ol>
+</body>
+</html>

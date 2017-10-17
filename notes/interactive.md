@@ -114,7 +114,7 @@ You should notice a similarity between this function and `putStr` earlier. In fa
 ### Practice
 
 1. Implement `putStr` using `sequence_`. The types should help guide you in the process.
-2. Implement a function `getUntil :: (Char -> Bool) -> IO Char -> IO String` that keeps collecting characters until a character is found that makes the predicate `False`. It then returns the concatenation of those characters.
+2. Implement a function `getUntil :: (Char -> Bool) -> IO Char -> IO String` that keeps collecting characters as long as the predicate is `True`. It then returns the concatenation of those characters.
 3. Use the function `getUntil` to provide an alternative implementation of `getLine`.
 4. Implement the action `sequence :: [IO a] -> IO [a]`. It takes a list of actions, performs them all, and collects the results into one list.
-5. Implement the action `(<$>) :: (a -> b) -> IO a -> IO b`. It performs the action, then passes it throug the function before returning it.
+5. Implement the action `(<$>) :: (a -> b) -> IO a -> IO b`. It performs the action, then passes it through the function before returning it.
