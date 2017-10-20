@@ -13,7 +13,7 @@ The Hangman game we implement will be somewhat different from the version in the
 Usually implementing a program like that consists of two levels:
 
 - The user interaction component, starting from the `main` action and decomposing that further into smaller actions until you get to more basic components.
-- The pure component of the application, which takes as input the kinds of elements that the user would be entering and produces suitable outputs. This may be one function or more typically many smaller utility functions.
+- The pure component of the application, which takes as input the kinds of elements that the user would be entering and produces suitable outputs. This may be one function or typically many smaller utility functions.
 
 One can start working from either direction, and more often than not move back and forth between the two approaches.
 

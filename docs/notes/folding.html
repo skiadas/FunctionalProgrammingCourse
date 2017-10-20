@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="folding">Folding</h1>
+<p>In this section we will look at the important idea of a folding operation, which provides a systematic way to process all elements in a list, or any other recursive structure.</p>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Sections 7.3, 7.4</li>
+<li>Practice exercises (7.9): 3, 4, 6</li>
+</ul>
+<h2 id="folding-lists">Folding Lists</h2>
+<p>Folding is meant to capture a quite generic pattern when traversing lists. This pattern could go as follows:</p>
+<ul>
+<li>We want to process the elements of a list of type <code>[a]</code> and return a value of a certain type <code>b</code>.</li>
+<li>We have an initial value to get as the result for the case of the empty list.</li>
+<li>For a non-empty list:
+<ul>
+<li>We get a value of type <code>b</code> from recursively working on the tail of the list.</li>
+<li>We have a way to combine that value with the head of the list to produce a new value. This would be done via a function of type: <code>a -&gt; b -&gt; b</code>.</li>
+</ul></li>
+</ul>
+<p>There are many examples of this pattern: Computing the sum of numbers, the product of numbers, reversing a list, etc.</p>
+<p>All these functions have the following “generic” implementation:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">f []     <span class="fu">=</span> v
+f (x<span class="fu">:</span>xs) <span class="fu">=</span> x <span class="fu">#</span> f xs    <span class="co">-- &quot;#&quot; is the function a -&gt; b -&gt; b</span></code></pre></div>
+<p>This is exactly what the function <code>foldr</code> does for us. Here is its type and definition:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">foldr<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</code></pre></div>
+<p>It takes in order:</p>
+<ul>
+<li>A function to be used for combining an <code>a</code> value with a <code>b</code> value, to produce a new <em>updated</em> <code>b</code> value.</li>
+<li>An initial <code>b</code> value.</li>
+<li><code>A list of</code>a` values to process.</li>
+</ul>
+<p>And here is the implementation:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">foldr f v []     <span class="fu">=</span> v
+foldr f v (x<span class="fu">:</span>xs) <span class="fu">=</span> f x (foldr f v xs)</code></pre></div>
+<p>Visually you should think of <code>foldr (#) v</code> as replacing the list “colon” operator with <code>#</code>, and the empty list with <code>v</code>, like so: ```haskell 1 : (2 : (3 : [])) – A list 1 # (2 # (3 # v)) – The “foldr (#) v” of that list</p>
+<p>As an example, <code>foldr (+) 0</code> is the same as <code>sum</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">sum []     <span class="fu">=</span> <span class="dv">0</span>
+sum (x<span class="fu">:</span>xs) <span class="fu">=</span> (<span class="fu">+</span>) x (sum xs)   <span class="co">--- usually written as &quot;x + sum xs&quot;</span>
+<span class="co">-- visually:</span>
+<span class="dv">1</span> <span class="fu">+</span> (<span class="dv">2</span> <span class="fu">+</span> (<span class="dv">3</span> <span class="fu">+</span> <span class="dv">0</span>))</code></pre></div>
+<p>Let us think of how we can write the function <code>map</code> using <code>foldr</code>. It would look in general something like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">map<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
+map f xs <span class="fu">=</span> foldr (\x ys <span class="ot">-&gt;</span> <span class="fu">...</span>) [] xs</code></pre></div>
+<p>where the function in the parentheses must be of type <code>a -&gt; [b] -&gt; [b]</code> (the “result type” that <code>foldr</code> calls <code>b</code> is in our case <code>[b]</code>).</p>
+<p>So, we provide the empty list as an initial value: After all that should be the result if the <code>xs</code> is an empty list. Then we tell <code>foldr</code> that we will iterate over the list of the <code>xs</code>. Finally we need to tell it how to combine the current <code>a</code> value (<code>x</code>), and the list that is the result of processing the rest of the values, (<code>ys</code>), into the new list:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">map f xs <span class="fu">=</span> foldr (\x ys <span class="ot">-&gt;</span> f x <span class="fu">:</span> ys) [] xs
+<span class="co">--- We can also write this as:</span>
+map f <span class="fu">=</span> foldr (\x ys <span class="ot">-&gt;</span> f x <span class="fu">:</span> ys) []
+<span class="co">-- We can also write it as:</span>
+map f <span class="fu">=</span> foldr (\x <span class="ot">-&gt;</span> (f x <span class="fu">:</span>)) []</code></pre></div>
+<p><strong>Practice</strong>: Implement <code>length</code> and <code>filter</code> via <code>foldr</code>.</p>
+<h3 id="foldl">foldl</h3>
+<p><code>foldl</code> is the sibling of <code>foldr</code>. It performs a similar process but does so in the opposite direction, from left to right. Symbolically we could say something like:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">foldl (<span class="fu">#</span>) y [x1, x2, x3] <span class="fu">=</span> (((y <span class="fu">#</span> x1) <span class="fu">#</span> x2) <span class="fu">#</span> x3)</code></pre></div>
+<p>Its type and standard implementation follow:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">foldl<span class="ot"> ::</span> (b <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b
+foldl _ v []     <span class="fu">=</span> v
+foldl f v (x<span class="fu">:</span>xs) <span class="fu">=</span> foldl f (f v x) xs</code></pre></div>
+<p><strong>Practice</strong>: Understand the above definition and make sure it typechecks.</p>
+<p><strong>Practice</strong>: Implement <code>reverse</code> using <code>foldl</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">reverse <span class="fu">=</span> foldl (\ys y <span class="ot">-&gt;</span> <span class="fu">...</span>) []</code></pre></div>
+<p><strong>Challenge</strong>: For those particularly motivated, there is a remarkable way to implement <code>foldl</code> via actually using <code>foldr</code>. The essential idea is to foldr appropriate functions, each new function building on the previous one. When these functions get called on the initial value, they end up performing the folds in the left-to-right order. If you are interested in learning more about this, here are two relevant links: <a href="https://wiki.haskell.org/Foldl_as_foldr_alternative">Foldl as foldr alternative</a>, <a href="http://www.cs.nott.ac.uk/~pszgmh/fold.pdf">A tutorial on the universality and expressiveness of fold</a>. But for now here is the implementation (Just understanding how the types work is an exercise in its own right, note how <code>foldr</code> appears to be applied to 4 arguments!):</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">foldl f yinit xs <span class="fu">=</span> foldr construct id xs yinit
+    <span class="kw">where</span> construct x g y <span class="fu">=</span> g (f y x)
+          id y <span class="fu">=</span> y</code></pre></div>
+<h2 id="folding-trees">Folding Trees</h2>
+<p>Recall how we defined trees in the past:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Tree</span> a <span class="fu">=</span> <span class="dt">E</span> <span class="fu">|</span> <span class="dt">N</span> (<span class="dt">Tree</span> a) a (<span class="dt">Tree</span> a)</code></pre></div>
+<p>It is natural for us to want to traverse the trees. The most universal way to do so is to define folding functions analogous to <code>foldr</code> or <code>foldl</code>. We will need three such functions, as trees can be traversed in three ways:</p>
+<dl>
+<dt>Inorder</dt>
+<dd>With <em>inorder traversal</em>, the nodes on the left child are visited first, then the root, then the nodes on the right child (left-root-right).
+</dd>
+<dt>Preorder</dt>
+<dd>With <em>preorder traversal</em>, the root is visited first, then the nodes on the left child, then the ones on the right child (root-left-right).
+</dd>
+<dt>Postorder</dt>
+<dd>with <em>postorder traversal</em>, the nodes on the left child are visited first, then the ones on the right child, and finally the root (left-right-root).
+</dd>
+</dl>
+<p>Let’s take a look at how we can implement each of these:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">foldin ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Tree</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b
+foldin _ <span class="dt">E</span> v                <span class="fu">=</span> v
+foldin f (<span class="dt">N</span> left x right) v <span class="fu">=</span> v3
+    <span class="kw">where</span> v1 <span class="fu">=</span> foldin f left v
+          v2 <span class="fu">=</span> f x v1
+          v3 <span class="fu">=</span> foldin f right v2</code></pre></div>
+<p>We could actually also write these in a “point-free” way, avoiding direct references to <code>v</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">foldin _ <span class="dt">E</span>             <span class="fu">=</span> id          <span class="co">-- The identity function</span>
+foldin f (<span class="dt">N</span> left x right) <span class="fu">=</span> foldin f right <span class="fu">.</span> f x <span class="fu">.</span> foldin f left</code></pre></div>
+<p><strong>Practice</strong>: Implement the other two traversals, <code>foldpre</code> and <code>foldpost</code>.</p>
+</body>
+</html>

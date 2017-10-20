@@ -82,28 +82,28 @@ Mon
   ~ [Interactive Programming](notes/interactive.md) (10.1-10.5)
 
 Wed
-  ~ [Practice with Interactive Programming](notes/interactive_hangman.md) (10.6)
+  ~ [Interactive Programming](notes/interactive.md) (10.1-10.5)
 
 Fri
-  ~ [Recursive Types](notes/recursive_types.md) (8.4)
+  ~ [Practice with Interactive Programming](notes/interactive_hangman.md) (10.6)
 
 ## Week  8 (10/23-10/27)
 
 Mon
-  ~ Folding. (7.3-7.4)
+  ~ BREAK
 
 Wed
-  ~ Practice with Higher-order functions.
+  ~ [Recursive Types](notes/recursive_types.md) (8.4)
 
 Fri
-  ~ [Overview of Software Development Practices](notes/dev_overview.md)
-
-    [Testing](notes/testing.md)
+  ~ [Folding](notes/folding.md) (7.3-7.4)
 
 ## Week  9 (10/30-11/03)
 
 Mon
-  ~ Type-directed programming. Modules.
+  ~ [Overview of Software Development Practices](notes/dev_overview.md)
+
+    [Testing](notes/testing.md)
 
 Wed
   ~ Information hiding and abstraction with modules.
