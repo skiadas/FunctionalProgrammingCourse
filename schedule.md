@@ -95,6 +95,8 @@ Mon
 Wed
   ~ [Recursive Types](notes/recursive_types.md) (8.4)
 
+    [Assignment 3. Due 11/03](assignments/assignment3.md)
+
 Fri
   ~ [Folding](notes/folding.md) (7.3-7.4)
 
