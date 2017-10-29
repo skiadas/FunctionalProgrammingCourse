@@ -103,20 +103,22 @@ Fri
 ## Week  9 (10/30-11/03)
 
 Mon
+  ~ [Folding](notes/folding.md) (7.3-7.4)
+
+Wed
   ~ [Overview of Software Development Practices](notes/dev_overview.md)
 
     [Testing](notes/testing.md)
 
-Wed
-  ~ Information hiding and abstraction with modules.
+    [Specification Testing with HSpec](notes/testing_hspec.md)
 
 Fri
-  ~ Custom type classes. (8.5)
+  ~ Information hiding and abstraction with modules.
 
 ## Week 10 (11/06-11/10)
 
 Mon
-  ~ TBD
+  ~ Custom type classes. (8.5)
 
 Wed
   ~ TBD
@@ -141,10 +143,10 @@ Mon
   ~ TBD
 
 Wed
-  ~ TBD
+  ~ THANKSGIVING
 
 Fri
-  ~ TBD
+  ~ THANKSGIVING
 
 ## Week 13 (11/27-12/01)
 
