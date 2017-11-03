@@ -244,6 +244,7 @@ class  (Eq a) => Ord a  where
 ```
 
 Notice how we only need to specify `==` or `/=`, as they each have default implementations in terms of each other. Similarly, `compare` is all that is needed for `Ord a` (though we can certainly define more functions if we had concerns about efficiency). We also throw in a "Show" instance.
+
 ```haskell
 instance Eq Fraction where
     Frac a b == Frac c d  = a == c && b == d
