@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="functors-applicatives-and-monads">Functors, Applicatives, and Monads</h1>
+<p>In this section we discuss three important type classes that pertain to container types. They each express a key idea:</p>
+<ul>
+<li>Functors express the idea that we can <code>map</code> a function over a container type, by applying the function to its contents.</li>
+<li>Applicatives express the idea of mapping a function over possibly multiple arguments.</li>
+<li>Monads express the idea of sequencing effectful operations.</li>
+</ul>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Sections 12.1-12.3</li>
+<li>Practice exercises (12.5): 1, 4, 7</li>
+<li>Optional practice: 2, 3, 8</li>
+</ul>
+<h2 id="container-types-and-the-state-monad">Container Types and the State “Monad”</h2>
+<p>Before we start exploring functors, let us consider three important container types that share certain features. All three types express the idea of “producing a value of a given type”, but they do so in different ways:</p>
+<dl>
+<dt><code>Maybe a</code></dt>
+<dd>The Maybe type expresses the idea that the operation we performed may or may not have produced a value (i.e. it may have failed).
+</dd>
+<dt>[a]</dt>
+<dd>The list type expresses the idea that the operation we performed may have returned more than one possible values (but all of the same type). A good example is the list comprehensions we discussed earlier in the course. A list is a convenient way to represent these possibly multiple results.
+</dd>
+<dt><code>IO a</code></dt>
+<dd>The <code>IO</code> type expresses the idea that our operation interacts with the world in some way, and produces a value of type <code>a</code>.
+</dd>
+<dt><code>ST a</code></dt>
+<dd>The State “monad” (we will discuss what that means later) is another example. It is meant to somehow maintain and update some “state”, and also return a value of type <code>a</code>. We will discuss this type now in some more detail.
+</dd>
+</dl>
+<p>The idea of the State type is similar to our view of <code>IO</code> as a function that changed the “world” in some way and also produced a value of type <code>a</code>. The State type makes that more precise. It can work with very generic “states”, but for simplicity we will assume that we have a specific state type, namely integers. We can then make the following definitions:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">State</span> <span class="fu">=</span> <span class="dt">Int</span>
+<span class="kw">newtype</span> <span class="dt">ST</span> a <span class="fu">=</span> <span class="dt">S</span> (<span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>))</code></pre></div>
+<p>So a value of type <code>ST a</code> is a function that takes the current state, and produces a value of type a along with a new (updated) state. For technical reasons we place that function inside an <code>S</code> tag. We can easily write a function that removes the tag:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">app ::</span> <span class="dt">ST</span> a <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="ot">-&gt;</span> (a, <span class="dt">State</span>)
+app (<span class="dt">S</span> st) x <span class="fu">=</span> st x
+<span class="co">-- Could also have done: app (S st) = st</span></code></pre></div>
+<p>TODO</p>
+<h2 id="functors">Functors</h2>
+<p>TODO</p>
+<h2 id="applicatives">Applicatives</h2>
+<p>TODO</p>
+<h2 id="monads">Monads</h2>
+<p>TODO</p>
+</body>
+</html>

@@ -108,23 +108,21 @@ Mon
 Wed
   ~ [Overview of Software Development Practices](notes/dev_overview.md)
 
-    [Testing](notes/testing.md)
-
-    [Specification Testing with HSpec](notes/testing_hspec.md)
-
 Fri
-  ~ Information hiding and abstraction with modules.
+  ~ [Information hiding and abstraction with modules](notes/modules.md)
 
 ## Week 10 (11/06-11/10)
 
 Mon
-  ~ Custom type classes. (8.5)
+  ~ [Testing](notes/testing.md)
+
+    [Specification Testing with HSpec](notes/testing_hspec.md)
 
 Wed
-  ~ TBD
+  ~ [Functors, Applicatives, Monads](notes/functors_monads.md)
 
 Fri
-  ~ TBD
+  ~ Custom type classes. (8.5)
 
 ## Week 11 (11/13-11/17)
 

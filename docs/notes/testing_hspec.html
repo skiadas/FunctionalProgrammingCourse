@@ -61,6 +61,18 @@ main <span class="fu">=</span> hspec <span class="fu">$</span> <span class="kw">
 
     it <span class="st">&quot;can parse floating-point numbers&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
       read <span class="st">&quot;2.5&quot;</span> <span class="ot">`shouldBe`</span> (<span class="fl">2.5</span><span class="ot"> ::</span> <span class="dt">Float</span>)</code></pre></div>
+<p>Our start point is the function <code>hspec</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">hspec ::</span> <span class="dt">Spec</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre></div>
+<p>It takes as input a <strong>specification</strong>, which is in effect a tree of tests with descriptions, and returns an <code>IO ()</code> action that runs the tests.</p>
+<p>In the example above, the argument to the <code>hspec</code> function is everything that follows the first dollar sign, namely:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">do</span>
+  describe <span class="st">&quot;Prelude.read&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+    it <span class="st">&quot;can parse integers&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      read <span class="st">&quot;10&quot;</span> <span class="ot">`shouldBe`</span> (<span class="dv">10</span><span class="ot"> ::</span> <span class="dt">Int</span>)
+
+    it <span class="st">&quot;can parse floating-point numbers&quot;</span> <span class="fu">$</span> <span class="kw">do</span>
+      read <span class="st">&quot;2.5&quot;</span> <span class="ot">`shouldBe`</span> (<span class="fl">2.5</span><span class="ot"> ::</span> <span class="dt">Float</span>)</code></pre></div>
+<p>This uses the <code>do</code> notation that we are familiar with from <code>IO</code>, but it is now used to express a value of type <code>Spec</code>.</p>
 <p>TODO</p>
 </body>
 </html>
