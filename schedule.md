@@ -116,24 +116,22 @@ Fri
 Mon
   ~ [Testing](notes/testing.md)
 
-    [Specification Testing with HSpec](notes/testing_hspec.md)
+Wed
+  ~ [Testing](notes/testing.md)
+
+Fri
+  ~ Lab catchup
+
+## Week 11 (11/13-11/17)
+
+Mon
+  ~ [The State Monad](notes/functors_monads.md)
 
 Wed
   ~ [Functors, Applicatives, Monads](notes/functors_monads.md)
 
 Fri
-  ~ Custom type classes. (8.5)
-
-## Week 11 (11/13-11/17)
-
-Mon
-  ~ TBD
-
-Wed
-  ~ TBD
-
-Fri
-  ~ TBD
+  ~ [Specification Testing with HSpec](notes/testing_hspec.md)
 
 ## Week 12 (11/20-11/24)
 
