@@ -165,4 +165,4 @@ Wed
   ~ TBD
 
 Fri
-  ~ TBD
+  ~ [Final Study Guide](notes/final_study_guide.md)

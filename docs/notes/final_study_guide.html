@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="final-study-guide">Final Study Guide</h1>
+<p>You should read all the notes we have discussed so far (up to but NOT including list comprehensions), and the corresponding textbook sections. These questions are here to help guide your studies, but are not meant to be exhaustive of everything you should know (though they do try to touch all the areas).</p>
+<ol style="list-style-type: decimal">
+<li>Describe the syntax of list comprehensions, identifying what can go into each location, as well as what the different parts that go to the right side are. Provide at least two examples.</li>
+<li>Use list comprehensions to:
+<ol style="list-style-type: lower-alpha">
+<li>compute all possible results of applying any of the four basic arithmetic operations to numbers from a given list <code>xs</code> (possibly using the same number on both sides).</li>
+<li>implement the <code>map</code> function and the <code>filter</code> function.</li>
+<li>implement a function that given a list of lists <code>xss</code> returns the concatenation of all elements into a single list.</li>
+<li>compute all the divisors of a number <code>n</code>.</li>
+<li>find all strings in a list of strings <code>ss</code> whose length is at least 5.</li>
+</ol></li>
+<li>Explain why we cannot really implement the folding functions <code>foldr</code>, <code>foldl</code> using list comprehensions.</li>
+<li>Define the “function application” operator/function <code>($)</code>, specifying its type as well as its definition. Demonstrate with an example why one might want to use this operator instead of the normal function application (i.e. something like “<code>f $ x</code>” instead of “<code>f x</code>”).</li>
+<li>Define the “function composition” operator/function that Haskell has, <code>(.)</code>, specifying its type as well as its definition.</li>
+<li>Using point-free notation, function composition and operator sections where needed, write functions that:
+<ol style="list-style-type: lower-alpha">
+<li>implement the mathematical function <span class="math inline">\(5x + 2\)</span>.</li>
+<li>test if a number is odd by essentially performing the check <code>x `mod` 2 == 1</code>.</li>
+<li>given a list of numbers compute the sum of only the odd terms in the list (assume the existence of a function <code>isOdd</code> that given a number returns whether the number is odd, and a function <code>sum</code> that given a list of numbers returns their sum).</li>
+</ol></li>
+<li>Define what <em>difference lists</em> are, what their type is and how they are to be understood. How does a normal list turn into a difference list? How do we turn a “difference list” back to a list? How do we append a difference list to another difference list? What problem do difference lists solve?</li>
+<li>Why do we need a special type (the <code>IO</code> type) to do system input/output operations like printing? Why can’t a normal function of type say <code>f :: Int -&gt; Int</code> also do some IO operations?</li>
+<li>Write and explain the types of the IO primitives <code>getChar</code> and <code>putChar</code>.</li>
+<li>Describe what types the following IO actions or functions involving IO actions should have:
+<ol style="list-style-type: lower-alpha">
+<li>An action that asks the user for their first and last name, then produces a pair of strings with those names.</li>
+<li>A function that given an integer <code>n</code> produces an action that asks the user to type in that many numbers and produces a list of those numbers.</li>
+<li>A function that takes in a list of strings then prints each string on its own row.</li>
+</ol></li>
+<li>Using the primitives <code>getChar</code>, <code>putChar</code> and <code>return</code>, as needed, write the following functions (also specify their type):
+<ol style="list-style-type: lower-alpha">
+<li>a function <code>putStr</code> that given a string of characters prints that string.</li>
+<li>a function <code>getLine</code> that reads characters until a newline is encountered, then returns the resulting string (excluding the newline).</li>
+<li>a function <code>confirm</code> that expects the user to type <code>y</code> or <code>n</code>. If the user types one of those then the action produces the booleans <code>True/False</code> respectively, otherwise it keeps reading more characters from the user.</li>
+<li>a function <code>(&lt;$&gt;) :: (a -&gt; b) -&gt; IO a -&gt; IO b</code> that is given a function and an action that produces an <code>a</code> value, and returns a function that produces a <code>b</code> value by performing the given action then applying the function to the resulting value.</li>
+</ol></li>
+<li>Write the recursive type for a binary tree that holds <code>a</code> values at its nodes.
+<ol style="list-style-type: lower-alpha">
+<li>Write a function <code>treeSum</code> that given such a binary tree adds up the values at the nodes. Make sure to correctly write the type for <code>treeSum</code>, including the class constraint that the tree values can be added up.</li>
+<li>Write a function <code>insert</code> which assuming that the content value type <code>a</code> implements the <code>Ord</code> class, takes in a new value and a tree that is a <em>binary search tree</em> and updates the tree with this new value inserted at the appropriate place. Make sure to correctly write the type for such a tree.</li>
+<li>Write a function <code>maybeMin</code> that, assuming the tree is a <em>binary search tree</em>, locates the smallest value in the tree. It should return a <code>Maybe a</code> value, with <code>Nothing</code> if the starting tree was empty. Make sure to get the function type correctly, including the suitable type-class constraint.</li>
+<li>Write a function <code>contains</code> that, given a value and a <em>binary search tree</em> determines if the tree contains the value. Make sure to get the function type correctly, including the suitable type-class constraint.</li>
+</ol></li>
+<li>Write down the type for <code>foldr</code> and explain what each of the inputs does and what the function does overall. Also write down an implementation for <code>foldr</code>.</li>
+<li>Show how <code>sum</code> and <code>map</code> can be implemented via <code>foldr</code>.</li>
+<li>Specify the types of the functions <code>any</code> and <code>all</code>, and implement them via <code>foldr</code>.</li>
+<li>Explain the idea of <em>information hiding</em> in programming, and its importance.</li>
+<li>Explain what <em>modules</em> are, and why they are important in programming.</li>
+<li>Explain the difference between <em>opaque</em> and <em>transparent</em> data types, and what the advantages and disadvantages of using each of these is.</li>
+<li>Describe what functions (including their types) need to be implemented for the <code>Functor</code> type class and the <code>Applicative</code> type class, and demonstrate the specific instance implementations of these for the type <code>[a]</code> and the type <code>Maybe a</code>.</li>
+</ol>
+</body>
+</html>
