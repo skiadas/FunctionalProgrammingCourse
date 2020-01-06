@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>syllabus</title>
   <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
@@ -23,74 +23,93 @@
 <dd>Charilaos Skiadas (skiadas at hanover dot edu)
 </dd>
 <dt>Term</dt>
-<dd>Fall 2017-2018
+<dd>Winter 2019-2020
 </dd>
 <dt>Office</dt>
-<dd>SCH 121C / LYN 108
+<dd>SCH 111 / LYN 108
 </dd>
 <dt>Office Hours</dt>
-<dd>MWF 10am-10:30am, and by appointment.
+<dd>LYN108: MWF 12:00pm-1pm, T 10:00am-12:00pm and by appointment.
 </dd>
 <dt>Book</dt>
-<dd><em>Programming in Haskell</em> by Graham Hutton, 2nd edition. ISBN: 978-1-316-62622-1
+<dd><em>Haskell: The craft of functional programming</em> by Simon Thompson, 3rd edition. ISBN: 978-0-201-88295-7
 </dd>
 <dt>Websites</dt>
-<dd><a href="skiadas.github.io/FunctionalProgrammingCourse/site/">for notes</a>.
+<dd><ul>
+<li><a href="http://www.haskellcraft.com/">book website: http://www.haskellcraft.com/</a></li>
+<li><a href="skiadas.github.io/FunctionalProgrammingCourse/">notes</a>.</li>
+</ul>
 </dd>
 <dt>Class times</dt>
-<dd>MWF 2:40pm-3:50pm in LYN120A.
+<dd>MWF 10:40am-11:50am in LYN120A.
 </dd>
 </dl>
 <h2 id="course-description">Course Description</h2>
 <p><strong>Functional Programming</strong> (FP) is a particular approach to programming that has gained increased popularity in recent years, even though its origins date back to the early days of programming.</p>
-<p>In FP functions take center stage. We move programs along by feeding input into functions and process their output. While this is to a large extent true in other programming styles, it becomes a dominant feature in FP. As an example, in most languages a sorting <em>procedure</em> will be given an array as input and rearrange its entries in place to produce a sorted array. By contrast, a sorting <em>function</em> in an FP language would instead return a new array with the values sorted, and keep the initial array intact.</p>
+<p>In FP functions take center stage. We move programs along by feeding input into functions and processing their output, often by feeding it into yet other functions. While this is to a large extent true in other programming styles, it becomes a dominant feature in FP. As an example, in most languages a sorting <em>procedure</em> will be given an array as input and rearrange its entries in place to produce a sorted array. By contrast, a sorting <em>function</em> in an FP language would instead return a new array with the values sorted, and keep the initial array intact.</p>
 <p>In this course we will learn about the FP programming style, and its strengths and weaknesses. We will do so in the context of the Haskell programming language, which apart from being a quintessential FP language offers many other interesting features like <em>type classes</em> and <em>lazy evaluation</em> and a complete lack of <em>mutation</em>.</p>
+<h3 id="course-objectives">Course objectives</h3>
+<p>In this course you will learn the essential characteristics of functional/effect-free programming, namely:</p>
+<ul>
+<li>using functions without side-effects and employing compositional reasoning to build new functions by chaining together other functions.</li>
+<li>working with immutable variables and understanding the benefits that this provides as well as the challenges it presents.</li>
+<li>using pattern-matching to process structured data.</li>
+<li>using functions as first-class values, as useful inputs and outputs of other functions.</li>
+<li>understanding the effects of function closures and the programming idioms they enable.</li>
+<li>working with higher-order operations on aggregate structures.</li>
+</ul>
+<p>You will also delve more into a number of concepts relating to type systems:</p>
+<ul>
+<li>the use of basic and compound types in Haskell, including function types.</li>
+<li>goals and limitations of static typing.</li>
+<li>type inference.</li>
+<li>generic types and parametric polymorphism vs ad-hoc polymorphism.</li>
+</ul>
 <h2 id="course-components">Course Components</h2>
 <h3 id="reading-notes">Reading Notes</h3>
-<p>On the website you will find a <a href="http://skiadas.github.io/FunctionalProgrammingCourse/site/schedule.html">schedule</a> with links to documents for each class day. In those documents you will find notes for the day’s lesson, and reading assignments.</p>
+<p>On the website you will find a <a href="http://skiadas.github.io/FunctionalProgrammingCourse/schedule.html">schedule</a> with links to documents for each class day. In those documents you will find notes for the day’s lesson, and reading assignments.</p>
 <h3 id="class-attendance">Class Attendance</h3>
 <p>You are expected to attend every class meeting. You are only allowed to miss 3 classes without excuse. From that point on, every unexcused absence will result in a reduction of your final score by one percentage point, up to a total of 5 points. Excused absences should be arranged in advance, and backed by appropriate documentation. Emergencies will be dealt with on an individual basis. There are very few reasons that would qualify as an excuse for an absence.</p>
 <h3 id="programming-assignments">Programming Assignments</h3>
-<p>There will be regular programming assignments about once every two weeks. The assignments are there to help you practice your understanding of new concepts, as well as to prepare you for the major project. Programming assignments are 30% of your final grade.</p>
+<p>There will be regular programming assignments. The assignments are there to help you practice your understanding of new concepts, as well as to prepare you for the major project. Programming assignments are 35% of your final grade.</p>
 <h3 id="exams">Exams</h3>
-<p>There will be one midterm, tentatively scheduled for Friday, October 13th and a final during finals week. <strong>You have to be here for the exams</strong>. If you have conflicts with these days, let me know as soon as possible. Do not plan your vacation before you are aware of the finals schedule.</p>
+<p>There will be one midterm, tentatively scheduled for Friday, February 14th and a final during finals week. <strong>You have to be here for the exams</strong>. If you have conflicts with these days, let me know as soon as possible. Do not plan your vacation before you are aware of the finals schedule.</p>
 <h3 id="programming-project">Programming Project</h3>
-<p>There will also be a larger programming project, that we will discuss in more detail later in the term. It will require that you work together with one other person as one team working on one part of large project that the entire class will work on. It will count for 35% of your final grade.</p>
-<p>The project will give you the opportunity to learn some software development practices, including pair programming, specifications, and repository and issue management.</p>
+<p>There will also be a larger programming project, that we will discuss in more detail later in the term. It will require that you work together with your classmates, especially towards the end of the semester. It will count for 30% of your final grade.</p>
 <h3 id="getting-help">Getting Help</h3>
 <ul>
 <li>You should never hesitate to ask me questions. I will never think any less of anyone for asking a question. Stop by my office hours or just email me your question, which has the great benefit of forcing you to write it down in clear terms, which often helps you understand it better.</li>
-<li>You are allowed, and in fact encouraged, to work together and help each other regarding the notes and the the theory. You can also discuss general questions about the programming assignments. But I expect you to work on the programming assignments on your own.</li>
+<li>You are allowed, and in fact encouraged, to work together and help each other regarding the notes and the theory. You can also discuss <em>general</em> questions about the programming assignments. But I expect you to work on the programming assignments on your own.</li>
 </ul>
 <h2 id="grading">Grading</h2>
 <p>Your final grade depends on class attendance, homework, project, quizzes, midterms and the final, as follows:</p>
 <table>
 <thead>
 <tr class="header">
-<th align="right">Component</th>
-<th align="right">Percent</th>
+<th style="text-align: right;">Component</th>
+<th style="text-align: right;">Percent</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">Attendance</td>
-<td align="right">5%</td>
+<td style="text-align: right;">Attendance</td>
+<td style="text-align: right;">5%</td>
 </tr>
 <tr class="even">
-<td align="right">Assignments</td>
-<td align="right">30%</td>
+<td style="text-align: right;">Assignments</td>
+<td style="text-align: right;">35%</td>
 </tr>
 <tr class="odd">
-<td align="right">Project</td>
-<td align="right">35%</td>
+<td style="text-align: right;">Project</td>
+<td style="text-align: right;">30%</td>
 </tr>
 <tr class="even">
-<td align="right">Midterm</td>
-<td align="right">15%</td>
+<td style="text-align: right;">Midterm</td>
+<td style="text-align: right;">15%</td>
 </tr>
 <tr class="odd">
-<td align="right">Final</td>
-<td align="right">15%</td>
+<td style="text-align: right;">Final</td>
+<td style="text-align: right;">15%</td>
 </tr>
 </tbody>
 </table>
@@ -98,30 +117,30 @@
 <table>
 <thead>
 <tr class="header">
-<th align="center">Letter grade</th>
-<th align="right">Percentage Range</th>
+<th style="text-align: center;">Letter grade</th>
+<th style="text-align: right;">Percentage Range</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="center">A, A-</td>
-<td align="right">90%-100%</td>
+<td style="text-align: center;">A, A-</td>
+<td style="text-align: right;">90%-100%</td>
 </tr>
 <tr class="even">
-<td align="center">B+, B, B-</td>
-<td align="right">80%-90%</td>
+<td style="text-align: center;">B+, B, B-</td>
+<td style="text-align: right;">80%-90%</td>
 </tr>
 <tr class="odd">
-<td align="center">C+, C, C-</td>
-<td align="right">70%-80%</td>
+<td style="text-align: center;">C+, C, C-</td>
+<td style="text-align: right;">70%-80%</td>
 </tr>
 <tr class="even">
-<td align="center">D+, D, D-</td>
-<td align="right">60%-70%</td>
+<td style="text-align: center;">D+, D, D-</td>
+<td style="text-align: right;">60%-70%</td>
 </tr>
 <tr class="odd">
-<td align="center">F</td>
-<td align="right">0%-60%</td>
+<td style="text-align: center;">F</td>
+<td style="text-align: right;">0%-60%</td>
 </tr>
 </tbody>
 </table>

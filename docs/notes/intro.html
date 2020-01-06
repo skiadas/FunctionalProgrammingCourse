@@ -5,45 +5,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>intro</title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -51,23 +14,18 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </head>
 <body>
 <h1 id="introduction-to-haskell-and-fuctional-programming">Introduction to Haskell and Fuctional Programming</h1>
-<h2 id="reading">Reading</h2>
-<ul>
-<li>Sections 1.1-1.5</li>
-<li>Practice exercises (1.7): 1, 2, 3, 4, 5</li>
-</ul>
 <h2 id="functional-programming-and-haskell">Functional Programming and Haskell</h2>
 <p>Functional Programming is a philosophy and approach to programming that espouses functions as the primary elements of the program. It is considerably different from the “iterative programming” that most students are used to. Here are some of its key aspects:</p>
 <ul>
-<li>Functions are a driving force. We program by providing input to functions and further processing their output.</li>
-<li>We can use functions as the input/output values of functions. <em>A function can return a function as its result</em>. Functions that take other functions as input are important means of abstraction.</li>
-<li>Recursive functions become the primary means of performing loops and iterations.</li>
-<li>We rely on the results of functions and not on their side-effects (<em>pure functions</em>).</li>
+<li><strong>Functions are a driving force</strong>. We program by providing input to functions and further processing their output.</li>
+<li>We can use <strong>functions as the input/output values of functions</strong>. <em>A function can return a function as its result</em>. Functions that take other functions as input are important means of abstraction.</li>
+<li><strong>Recursive functions</strong> become the primary means of performing loops and iterations.</li>
+<li>We rely on the <strong>results of functions and not on their side-effects</strong> (<em>pure functions</em>).</li>
 </ul>
-<p>While there are many functional programming languages out there, and in fact many “mainstream” languages include functional-programming elements, we will focus on a specific language called Haskell, in honor of the logicial <a href="https://en.wikipedia.org/wiki/Haskell_Curry">Haskell Brooks Curry</a> who developed many of the early ideas behind functional programming.</p>
+<p>While there are many functional programming languages out there, and in fact many “mainstream” languages include functional-programming elements, we will focus on a specific language called <strong>Haskell</strong>, in honor of the logician <a href="https://en.wikipedia.org/wiki/Haskell_Curry">Haskell Brooks Curry</a> who developed many of the early ideas behind functional programming.</p>
 <p>Haskell differs from most other languages you may have seen in many ways:</p>
 <ul>
-<li>Its syntax and the high-level nature of functional programming lead to very <strong>concise programs</strong>. Most Haskell are less than 4 lines long, some of them being only one line.</li>
+<li>Its syntax and the high-level nature of functional programming lead to very <strong>concise programs</strong>. Most Haskell functions are less than 4 lines long, some of them being only one line.</li>
 <li>Haskell utilizes a very <strong>powerful and expressive type system</strong>. This system allows for a large number of errors to be detected at compile time. At the same time, because of an awesome process called <em>type inference</em>, we get all these benefits without almost ever having to specify the types of elements and functions.</li>
 <li><strong>Lists</strong> of elements are the core data structure for working with a collection of elements, and <strong>List Comprehensions</strong> are a powerful means of expressing the processing of such a list.</li>
 <li>Essentially all functions in Haskell are <strong>pure</strong>: For a given set of inputs they produce a corresponding output, with <strong>no side-effects</strong>. Calling the function a second time would produce the same output. This will take some getting used to, but it is also very useful. There is <em>no hidden state</em> that the functions consult during their operation.</li>
@@ -77,21 +35,21 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2 id="example-1-sumupto">Example 1: sumUpTo</h2>
 <p>As an example of the differences between Haskell-style functional programming and iterative style, let us consider a simple function, called <code>sumUpTo</code>. <code>sumUpTo</code> takes as input one integer, <code>n</code>, and is supposed to return the sum of all the numbers from <code>1</code> to <code>n</code>, with <code>0</code> if <code>n &lt; 1</code>.</p>
 <p>In an iterative language like Python, we might do something like this:</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># A function sumUpTo in Python</span>
-<span class="kw">def</span> sumUpTo(n):
-    total <span class="op">=</span> <span class="dv">0</span>
-    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span> (<span class="dv">1</span>, n <span class="op">+</span> <span class="dv">1</span>):
-        total <span class="op">=</span> total <span class="op">+</span> i
-    <span class="cf">return</span> total</code></pre></div>
+<pre class="python"><code># A function sumUpTo in Python
+def sumUpTo(n):
+    total = 0
+    for i in range (1, n + 1):
+        total = total + i
+    return total</code></pre>
 <p>Or a C version would look like this:</p>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">// A function sumUpTo in C</span>
-<span class="dt">int</span> function sumUpTo(<span class="dt">int</span> n) {
-    <span class="dt">int</span> total = <span class="dv">0</span>;
-    <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">1</span>; i &lt;= n; i += <span class="dv">1</span>) {
+<pre class="c"><code>// A function sumUpTo in C
+int function sumUpTo(int n) {
+    int total = 0;
+    for (int i = 1; i &lt;= n; i += 1) {
         total = total + i;
     }
-    <span class="cf">return</span> total;
-}</code></pre></div>
+    return total;
+}</code></pre>
 <p>In both cases the logic goes as follows:</p>
 <ul>
 <li>Initialize a <code>total</code> value to 0.</li>
@@ -105,25 +63,29 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>The “sumUpTo” for an <code>n &lt; 1</code> is <code>0</code>.</li>
 <li>The “sumUpTo” for another <code>n</code> is <em>the outcome of</em> adding <code>n</code> to the result of calling <code>sum</code> on <code>n-1</code>.</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- A sumUpTo function in Haskell</span>
-<span class="kw">let</span> sumUpTo n <span class="fu">|</span> n <span class="fu">&lt;</span> <span class="dv">1</span>     <span class="fu">=</span> <span class="dv">0</span>
-              <span class="fu">|</span> otherwise <span class="fu">=</span> n <span class="fu">+</span> sumUpTo (n <span class="fu">-</span> <span class="dv">1</span>)</code></pre></div>
-<p>This is the approach closest to iterative programming. We have effectively defined a recursive function.</p>
+<pre class="haskell"><code>-- A sumUpTo function in Haskell
+sumUpTo n | n &lt; 1     = 0
+          | otherwise = n + sumUpTo (n - 1)</code></pre>
+<p>This is the approach closest to iterative programming. We have effectively defined a recursive function: To sum the numbers up to <code>n</code>, you simply sum the numbers up to <code>n-1</code>, then add <code>n</code> to that.</p>
 <p>Before we move to other approaches though, notice one important feature of Haskell: Functions do not need parentheses around their arguments, unless the parentheses are needed to resolve ambiguities. So <code>sumUpTo n</code> did not need any parentheses, but <code>sumUpTo (n - 1)</code> needed them so that it is not mistaken for <code>(sumUpTo n) - 1</code>.</p>
 <p>In fact in Haskell multiple arguments to a function are simply written next to each other: Instead of <code>f(x, y)</code> we would write <code>f x y</code>.</p>
+<blockquote>
+<p>Function call/definition in Haskell:</p>
+<p><code>funcName arg1 arg2 arg3</code></p>
+</blockquote>
 <p>There are other approaches to writing the <code>sumUpTo</code> function. Another approach breaks the problem in two steps, and creates a helper function along the way:</p>
 <ul>
 <li>Given an integer <code>n</code>, build the list of numbers from <code>1</code> to <code>n</code>.</li>
 <li>Given a list of numbers, add them all up. For that we would define a function <code>sumList</code>.</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- A sumUpTo function in Haskell</span>
-<span class="kw">let</span> sumUpTo n <span class="fu">=</span> sum [<span class="dv">1</span><span class="fu">..</span>n]
-        <span class="kw">where</span> sum [] <span class="fu">=</span> <span class="dv">0</span>
-              sum (x<span class="fu">:</span>xs) <span class="fu">=</span> x <span class="fu">+</span> sum xs</code></pre></div>
+<pre class="haskell"><code>-- A sumUpTo function in Haskell
+sumUpTo n = sumList [1..n]
+    where sumList [] = 0
+          sumList (x:xs) = x + sumList xs</code></pre>
 <p>You may think this is inefficient, as it has to create the list first, but remember that Haskell uses “lazy evaluation”: It only computes entries as it needs them, it never has to build the whole list at once.</p>
 <p>Finally, a third approach uses a higher-order function called <code>foldl</code> which goes through the elements in a list and uses a function to combine them two at a time:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- A sumUpTo function in Haskell using foldl</span>
-<span class="kw">let</span> sumUpTo n <span class="fu">=</span> foldl (<span class="fu">+</span>) <span class="dv">0</span> [<span class="dv">1</span><span class="fu">:</span>n]</code></pre></div>
+<pre class="haskell"><code>-- A sumUpTo function in Haskell using foldl
+sumUpTo n = foldl (+) 0 [1..n]</code></pre>
 <p>This is probably the hardest one to read, but it is also more idiomatic of Haskell. By the end of this course you will feel comfortable writing such functions. What this does is the following:</p>
 <ul>
 <li>Create the list of numbers from 1 to n (<code>[1:n]</code>).</li>
@@ -141,66 +103,66 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Recursively sort each of these two groups separately.</li>
 </ul>
 <p>Let’s take a look at how this may look in C code. It typically uses a separate <code>partition</code> function. Don’t worry if this doesn’t make sense right away.</p>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">// Quicksort in C</span>
-<span class="dt">void</span> swap(<span class="dt">int</span>* a, <span class="dt">int</span>* b)
+<pre class="c"><code>// Quicksort in C
+void swap(int* a, int* b)
 {
-    <span class="dt">int</span> t = *a;
+    int t = *a;
     *a = *b;
     *b = t;
 }
 
-<span class="dt">int</span> partition (<span class="dt">int</span> arr[], <span class="dt">int</span> low, <span class="dt">int</span> high) {
-    <span class="dt">int</span> pivot = arr[high];    <span class="co">// pivot</span>
-    <span class="dt">int</span> i = (low - <span class="dv">1</span>);        <span class="co">// Index of smaller element</span>
+int partition (int arr[], int low, int high) {
+    int pivot = arr[high];    // pivot
+    int i = (low - 1);        // Index of smaller element
 
-    <span class="cf">for</span> (<span class="dt">int</span> j = low; j &lt;= high- <span class="dv">1</span>; j++) {
-        <span class="cf">if</span> (arr[j] &lt;= pivot) {  <span class="co">// Current element must go to left side</span>
-            i++;                <span class="co">// increment index of smaller element</span>
+    for (int j = low; j &lt;= high- 1; j++) {
+        if (arr[j] &lt;= pivot) {  // Current element must go to left side
+            i++;                // increment index of smaller element
             swap(&amp;arr[i], &amp;arr[j]);
         }
     }
-    swap(&amp;arr[i + <span class="dv">1</span>], &amp;arr[high]);   <span class="co">// Put pivot in its place</span>
-    <span class="cf">return</span> (i + <span class="dv">1</span>);
+    swap(&amp;arr[i + 1], &amp;arr[high]);   // Put pivot in its place
+    return (i + 1);
 }
 
-<span class="dt">void</span> quickSort(<span class="dt">int</span> arr[], <span class="dt">int</span> low, <span class="dt">int</span> high) {
-    <span class="cf">if</span> (low &lt; high) {
-        <span class="dt">int</span> pi = partition(arr, low, high);
-        quickSort(arr, low, pi - <span class="dv">1</span>);
-        quickSort(arr, pi + <span class="dv">1</span>, high);
+void quickSort(int arr[], int low, int high) {
+    if (low &lt; high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
     }
-}</code></pre></div>
+}</code></pre>
 <p>The Haskell approach is in essence the same, except it focuses on a more high-level description of the process: <em>The result of performing quicksort on a list is the result of taking all elements less than its first element, followed by that first element, followed by all elements greater than the first element</em>.</p>
 <p>This is not the most efficient implementation of this algorithm in Haskell, but it is illustrative of the language’s expressiveness.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Quicksort in Haskell</span>
-<span class="kw">let</span> qsort []     <span class="fu">=</span> []
-    qsort (x<span class="fu">:</span>xs) <span class="fu">=</span> qsort smaller <span class="fu">++</span> [x] <span class="fu">++</span> qsort larger
-                   <span class="kw">where</span>
-                        smaller <span class="fu">=</span> [a <span class="fu">|</span> a <span class="ot">&lt;-</span> xs, a <span class="fu">&lt;=</span> x]
-                        larger  <span class="fu">=</span> [b <span class="fu">|</span> b <span class="ot">&lt;-</span> xs, b <span class="fu">&gt;</span> x]</code></pre></div>
+<pre class="haskell"><code>-- Quicksort in Haskell
+qsort []     = []
+qsort (x:xs) = qsort smaller ++ [x] ++ qsort larger
+               where
+                    smaller = [a | a &lt;- xs, a &lt;= x]
+                    larger  = [b | b &lt;- xs, b &gt; x]</code></pre>
 <p>And here is an implementation that is a bit closer to the C version:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Quicksort in Haskell with helper function</span>
-<span class="co">--</span>
-<span class="co">-- partition returns a pair of the values that are up to</span>
-<span class="co">-- the pivot and those that are above.</span>
-<span class="kw">let</span> partition pivot [] <span class="fu">=</span> ([], [])
-    partition pivot (x<span class="fu">:</span>xs)
-                <span class="fu">|</span> x <span class="fu">&lt;=</span> pivot    <span class="fu">=</span> (x<span class="fu">:</span>less, more)
-                <span class="fu">|</span> otherwise     <span class="fu">=</span> (less, x<span class="fu">:</span>more)
-                <span class="kw">where</span> (less, more) <span class="fu">=</span> partition pivot xs
+<pre class="haskell"><code>-- Quicksort in Haskell with helper function
+--
+-- partition returns a pair of the values that are up to
+-- the pivot and those that are above.
+partition pivot [] = ([], [])
+partition pivot (x:xs)
+            | x &lt;= pivot    = (x:less, more)
+            | otherwise     = (less, x:more)
+            where (less, more) = partition pivot xs
 
-<span class="kw">let</span> qsort [] <span class="fu">=</span> []
-    qsort (pivot<span class="fu">:</span>rest) <span class="fu">=</span> qsort less <span class="fu">++</span> [pivot] <span class="fu">++</span> qsort more
-            <span class="kw">where</span> (less, more) <span class="fu">=</span> partition pivot rest</code></pre></div>
+qsort [] = []
+qsort (pivot:rest) = qsort less ++ [pivot] ++ qsort more
+        where (less, more) = partition pivot rest</code></pre>
 <h3 id="practice">Practice</h3>
 <p>To start an interactive session with Haskell, type <code>ghci</code> in the terminal. This will bring up the Haskell prompt <code>Prelude&gt;</code>. The <code>Prelude</code> part there means that a standard library of functions is loaded.</p>
 <p>In order to make writing these multiline functions possible, you must run the following each time you start a session:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">:</span>set <span class="fu">+</span>m</code></pre></div>
+<pre class="haskell"><code>:set +m</code></pre>
 <p>Start by going to the <code>sumUpTo</code> functions we saw earlier and pasting them in, followed by pressing <code>Return</code> for an extra blank line. Then you can tests these functions by typing something like:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">sumUpTo <span class="dv">10</span>            <span class="co">--- Should be 55</span>
-sumUpTo (<span class="fu">-</span><span class="dv">3</span>)          <span class="co">--- Should be 0</span></code></pre></div>
+<pre class="haskell"><code>sumUpTo 10            --- Should be 55
+sumUpTo (-3)          --- Should be 0</code></pre>
 <p>After you have done this, use these functions as models for creating three versions of <code>productUpTo</code>, which multiplies the numbers up to <code>n</code> (with 1 being the default if <code>n &lt; 1</code>). So the following should work with these functions:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">productUpTo <span class="dv">4</span>            <span class="co">--- Should be 24</span>
-productUpTo (<span class="fu">-</span><span class="dv">3</span>)         <span class="co">--- Should be 1</span></code></pre></div>
+<pre class="haskell"><code>productUpTo 4            --- Should be 24
+productUpTo (-3)         --- Should be 1</code></pre>
 </body>
 </html>

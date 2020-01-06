@@ -1,24 +1,19 @@
 # Introduction to Haskell and Fuctional Programming
 
-## Reading
-
-- Sections 1.1-1.5
-- Practice exercises (1.7): 1, 2, 3, 4, 5
-
 ## Functional Programming and Haskell
 
 Functional Programming is a philosophy and approach to programming that espouses functions as the primary elements of the program. It is considerably different from the "iterative programming" that most students are used to. Here are some of its key aspects:
 
-- Functions are a driving force. We program by providing input to functions and further processing their output.
-- We can use functions as the input/output values of functions. *A function can return a function as its result*. Functions that take other functions as input are important means of abstraction.
-- Recursive functions become the primary means of performing loops and iterations.
-- We rely on the results of functions and not on their side-effects (*pure functions*).
+- **Functions are a driving force**. We program by providing input to functions and further processing their output.
+- We can use **functions as the input/output values of functions**. *A function can return a function as its result*. Functions that take other functions as input are important means of abstraction.
+- **Recursive functions** become the primary means of performing loops and iterations.
+- We rely on the **results of functions and not on their side-effects** (*pure functions*).
 
-While there are many functional programming languages out there, and in fact many "mainstream" languages include functional-programming elements, we will focus on a specific language called Haskell, in honor of the logicial [Haskell Brooks Curry](https://en.wikipedia.org/wiki/Haskell_Curry) who developed many of the early ideas behind functional programming.
+While there are many functional programming languages out there, and in fact many "mainstream" languages include functional-programming elements, we will focus on a specific language called **Haskell**, in honor of the logician [Haskell Brooks Curry](https://en.wikipedia.org/wiki/Haskell_Curry) who developed many of the early ideas behind functional programming.
 
 Haskell differs from most other languages you may have seen in many ways:
 
-- Its syntax and the high-level nature of functional programming lead to very **concise programs**. Most Haskell are less than 4 lines long, some of them being only one line.
+- Its syntax and the high-level nature of functional programming lead to very **concise programs**. Most Haskell functions are less than 4 lines long, some of them being only one line.
 - Haskell utilizes a very **powerful and expressive type system**. This system allows for a large number of errors to be detected at compile time. At the same time, because of an awesome process called *type inference*, we get all these benefits without almost ever having to specify the types of elements and functions.
 - **Lists** of elements are the core data structure for working with a collection of elements, and **List Comprehensions** are a powerful means of expressing the processing of such a list.
 - Essentially all functions in Haskell are **pure**: For a given set of inputs they produce a corresponding output, with **no side-effects**. Calling the function a second time would produce the same output. This will take some getting used to, but it is also very useful. There is *no hidden state* that the functions consult during their operation.
@@ -65,14 +60,18 @@ Functional programming is very different. It is more **declarative**. There are 
 
 ```haskell
 -- A sumUpTo function in Haskell
-let sumUpTo n | n < 1     = 0
-              | otherwise = n + sumUpTo (n - 1)
+sumUpTo n | n < 1     = 0
+          | otherwise = n + sumUpTo (n - 1)
 ```
-This is the approach closest to iterative programming. We have effectively defined a recursive function.
+This is the approach closest to iterative programming. We have effectively defined a recursive function: To sum the numbers up to `n`, you simply sum the numbers up to `n-1`, then add `n` to that.
 
 Before we move to other approaches though, notice one important feature of Haskell: Functions do not need parentheses around their arguments, unless the parentheses are needed to resolve ambiguities. So `sumUpTo n` did not need any parentheses, but `sumUpTo (n - 1)` needed them so that it is not mistaken for `(sumUpTo n) - 1`.
 
 In fact in Haskell multiple arguments to a function are simply written next to each other: Instead of `f(x, y)` we would write `f x y`.
+
+> Function call/definition in Haskell:
+>
+> `funcName arg1 arg2 arg3`
 
 There are other approaches to writing the `sumUpTo` function. Another approach breaks the problem in two steps, and creates a helper function along the way:
 
@@ -81,16 +80,16 @@ There are other approaches to writing the `sumUpTo` function. Another approach b
 
 ```haskell
 -- A sumUpTo function in Haskell
-let sumUpTo n = sum [1..n]
-        where sum [] = 0
-              sum (x:xs) = x + sum xs
+sumUpTo n = sumList [1..n]
+    where sumList [] = 0
+          sumList (x:xs) = x + sumList xs
 ```
 You may think this is inefficient, as it has to create the list first, but remember that Haskell uses "lazy evaluation": It only computes entries as it needs them, it never has to build the whole list at once.
 
 Finally, a third approach uses a higher-order function called `foldl` which goes through the elements in a list and uses a function to combine them two at a time:
 ```haskell
 -- A sumUpTo function in Haskell using foldl
-let sumUpTo n = foldl (+) 0 [1:n]
+sumUpTo n = foldl (+) 0 [1..n]
 ```
 This is probably the hardest one to read, but it is also more idiomatic of Haskell. By the end of this course you will feel comfortable writing such functions. What this does is the following:
 
@@ -145,11 +144,11 @@ The Haskell approach is in essence the same, except it focuses on a more high-le
 This is not the most efficient implementation of this algorithm in Haskell, but it is illustrative of the language's expressiveness.
 ```haskell
 -- Quicksort in Haskell
-let qsort []     = []
-    qsort (x:xs) = qsort smaller ++ [x] ++ qsort larger
-                   where
-                        smaller = [a | a <- xs, a <= x]
-                        larger  = [b | b <- xs, b > x]
+qsort []     = []
+qsort (x:xs) = qsort smaller ++ [x] ++ qsort larger
+               where
+                    smaller = [a | a <- xs, a <= x]
+                    larger  = [b | b <- xs, b > x]
 ```
 And here is an implementation that is a bit closer to the C version:
 ```haskell
@@ -157,15 +156,15 @@ And here is an implementation that is a bit closer to the C version:
 --
 -- partition returns a pair of the values that are up to
 -- the pivot and those that are above.
-let partition pivot [] = ([], [])
-    partition pivot (x:xs)
-                | x <= pivot    = (x:less, more)
-                | otherwise     = (less, x:more)
-                where (less, more) = partition pivot xs
+partition pivot [] = ([], [])
+partition pivot (x:xs)
+            | x <= pivot    = (x:less, more)
+            | otherwise     = (less, x:more)
+            where (less, more) = partition pivot xs
 
-let qsort [] = []
-    qsort (pivot:rest) = qsort less ++ [pivot] ++ qsort more
-            where (less, more) = partition pivot rest
+qsort [] = []
+qsort (pivot:rest) = qsort less ++ [pivot] ++ qsort more
+        where (less, more) = partition pivot rest
 ```
 
 ### Practice

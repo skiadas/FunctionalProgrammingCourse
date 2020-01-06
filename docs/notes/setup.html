@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>setup</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="setting-up-haskell-and-book-resources">Setting up Haskell and book resources</h1>
+<ul>
+<li><p>Open your browser on the book website: <a href="http://www.haskellcraft.com">http://www.haskellcraft.com</a></p></li>
+<li><p>Follow the link to the to the Start page.</p></li>
+<li><p>If working on the campus computers, Haskell is already installed for you, so you can skip the first part about installing “Haskell Platform”.</p></li>
+<li><p>Open up a terminal window, and navigate to the location you will use for this class (perhaps create a new directory with <code>mkdir</code> to store your work for the class).</p></li>
+<li><p>From the terminal, follow the three commands indicated in the Start page.</p></li>
+<li><p>From the <code>Craft3e-0...</code> directory, locate the <code>refresh.html</code> file and open it up in a web browser.</p></li>
+<li><p>Back in your terminal, start a Haskell interactive session with a particular module loaded via:</p>
+<pre class="bash"><code>ghci PicturesSVG</code></pre>
+<p>You should see a prompt that looks like: <code>*PicturesSVG&gt;</code>.</p></li>
+<li><p>In this prompt type the following commands, and look at the page after each. For each, think about what the line says and how that makes sense in the picture you see.</p>
+<pre class="haskell"><code>render horse
+render (flipV horse)
+render (flipV (flipH horse))
+render (horse `beside` horse)
+render (flipH horse `beside` flipV horse)
+render (horse `above` flipH horse)
+render (negative horse `beside` horse)</code></pre></li>
+<li><p>End your interactive session by either typing <code>:exit</code> or by pressing <code>Ctrl-D</code>.</p></li>
+</ul>
+</body>
+</html>
