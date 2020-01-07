@@ -2,10 +2,11 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>midterm_study_guide</title>
   <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
@@ -15,7 +16,7 @@
 <body>
 <h1 id="midterm-study-guide">Midterm Study Guide</h1>
 <p>You should read all the notes we have discussed so far (up to but NOT including list comprehensions), and the corresponding textbook sections. These questions are here to help guide your studies, but are not meant to be exhaustive of everything you should know (though they do try to touch all the areas).</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>What are the primary features that differentiate functional programming from iterative/procedural programing? Demonstrate with examples of each feature that demonstrate the differences.</li>
 <li>Describe 5 ways in which Haskell differs from most other languages.</li>
 <li>Describe what <strong>lazy evaluation</strong> is and demonstrate with a specific example where a function behaves differently depending on whether the language uses lazy or strict (non-lazy) evaluation.</li>
@@ -31,7 +32,7 @@
 <li>Describe what guarded expressions are, what their general syntax is and how they work.</li>
 <li>Describe what <strong>pattern matching</strong> is and provide examples.</li>
 <li>Write, including type class constraints, the types of the following functions, and write recursive implementations for them:
-<ol style="list-style-type: lower-alpha">
+<ol type="a">
 <li>A function that finds the maximum element in a list.</li>
 <li>A function that determines if a list is sorted.</li>
 <li>A <code>lookup</code> function that searches for a key in a key-value list, and if it finds a match returns the corresponding value, as a <code>Maybe</code> type.</li>
@@ -42,5 +43,16 @@
 <li>What are <strong>type aliases</strong>? What are <strong>custom data types</strong>? How do they differ?</li>
 <li>Describe the <code>Maybe</code> type and why it is useful. What problem does it solve? What are its advantages over other solutions to the same problem?</li>
 </ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

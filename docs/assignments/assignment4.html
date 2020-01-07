@@ -2,10 +2,11 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>assignment4</title>
   <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
@@ -22,7 +23,7 @@
 <li>You will start writing unit tests for your code.</li>
 </ul>
 <p>At this point you should have the following setup:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>You created a fork of my <code>functional-programming-assignments</code> repository in GitLab. It probably has a web address that looks like <code>https://gitlab.com/skiadas/functional-programming-assignments</code> but with your name instead of mine.</li>
 <li>You have also cloned your fork locally on your computers, and it resides in some folder probably called <code>functional-programming-assignments</code>.</li>
 <li>You have added my repository as a new remote called <code>upstream</code>. You now need to update your local repository with my “upstream” changes.
@@ -34,5 +35,16 @@
 </ol>
 <h2 id="project-management-and-testing">Project Management and Testing</h2>
 <p>You should continue using Issues, Milestones, Labels, and Boards to manage the progress on your project. Everything you work on should be part of an issue you have created before you start work, and that issue should have a suitable label and it should be a part of a milestone.</p>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

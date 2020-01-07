@@ -2,10 +2,11 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>version_control</title>
   <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
@@ -18,9 +19,9 @@
 <h2 id="version-control-and-git">Version Control and Git</h2>
 <p>We will discuss key functionality of version control systems, mostly in the context of a particular such system called Git, which is used to maintain a huge number of popular projects. While most version control systems have similar capabilities, their terminology tends to vary.</p>
 <p>A version control system typically offers the following functionalities:</p>
-<ol style="list-style-type: decimal">
-<li>You can identify a set of changes to your code as a single item, called a <strong>commit</strong>. This allows you to put together related changes into one.</li>
-<li>Each commit incrementally builds upon some previous commit, creating a tree of commits. This is known as a <strong>repository</strong>. Many websites like GitHub, GitLab and others, allow you to store and manage these repositories online, allowing teams from all over the world to collaborate. They also on occasion offer automatic web-page hosting. In fact the page you ar reading right now is published via a GitHub repository.</li>
+<ol type="1">
+<li><p>You can identify a set of changes to your code as a single item, called a <strong>commit</strong>. This allows you to put together related changes into one.</p></li>
+<li><p>Each commit incrementally builds upon some previous commit, creating a tree of commits. This is known as a <strong>repository</strong>. Many websites like GitHub, GitLab and others, allow you to store and manage these repositories online, allowing teams from all over the world to collaborate. They also on occasion offer automatic web-page hosting. In fact the page you ar reading right now is published via a GitHub repository.</p></li>
 <li><p>The system comes built in with tools that allow us to do many things:</p>
 <ul>
 <li>We can see when each commit was made.</li>
@@ -48,7 +49,7 @@
 </ol>
 <h3 id="setting-up-git-locally">Setting up Git locally</h3>
 <p>If you have not set up Git on your account before, you may need to do these steps:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><p>First we should make sure the system knows your name and email, to use in commits. These would typically be set by running the following:</p>
 <pre><code>git config --global user.name &quot;yournamehere&quot;
 git config --global user.email &quot;youremailhere&quot;</code></pre>
@@ -56,9 +57,9 @@ git config --global user.email &quot;youremailhere&quot;</code></pre>
 </ol>
 <h2 id="using-gitlab-and-other-online-project-management-systems">Using GitLab and other online project management systems</h2>
 <p>GitLab is an online hosting service for git repositories. It also offers project-management functionalities, for example you can organize your project work by creating issues, milestones, assigning tasks to users, labeling issues and so on.</p>
-<ol style="list-style-type: decimal">
-<li>The first thing you will need is a GitLab account. Go to <a href="https://www.gitlab.com" class="uri">https://www.gitlab.com</a> and register a new account, if you do not already have one.</li>
-<li>Sign in, and find the “functional-programming-assignments” project, which is at this link: <a href="https://gitlab.com/skiadas/functional-programming-assignments" class="uri">https://gitlab.com/skiadas/functional-programming-assignments</a></li>
+<ol type="1">
+<li>The first thing you will need is a GitLab account. Go to <a href="https://www.gitlab.com">https://www.gitlab.com</a> and register a new account, if you do not already have one.</li>
+<li>Sign in, and find the “functional-programming-assignments” project, which is at this link: <a href="https://gitlab.com/skiadas/functional-programming-assignments">https://gitlab.com/skiadas/functional-programming-assignments</a></li>
 <li>In that page you should be seeing a link to “Fork” the project. Do so now, to create a fork of the project to your GitLab account. Make sure to set your project’s visibility to Private under Settings -&gt; Permissions (bottom of the left toolbar in GitLab).</li>
 <li>Find the GitKraken application in the Developer section, and start it. Create a GitKraken account if you don’t already have one. You can also create a GitHub account instead, and use that to log in.</li>
 <li>From within GitKraken, open the Preferences menu from the far right. Choose Authentication, then GitLab. Choose “Connect to GitLab”. Then log in to GitLab and select “Authorize”.</li>
@@ -71,7 +72,7 @@ git config --global user.email &quot;youremailhere&quot;</code></pre>
 <li><strong>Staging</strong> the changes that you want to commit.</li>
 <li>Forming a commit out of the staged changes.</li>
 </ul>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>Make sure all your files are saved, and that they are at a reasonably stable state (so one should be able to compile without errors, for example).</li>
 <li>Open up GitKraken, and make sure the WIP section is the one highlighted. This section contains the changes that have not been committed yet. You see a quick summary in the line itself, including how many files are brand new (green), how many have changes (yellow) and how many have been deleted (red).</li>
 <li>On the right side of the window, in the “Unstaged Files” section, you see the files in more detail. You can click on one file to see its contents and what changes there are in the file.</li>
@@ -87,5 +88,16 @@ git config --global user.email &quot;youremailhere&quot;</code></pre>
 <li>If you left something out of the commit, you can follow the above steps but check the “Amend” checkbox at the bottom right. Then the changes will be added to the previous commit rather than creating a new commit. You should only do this if you have NOT pushed your changes yet.</li>
 <li>When you are certain of your commits, use the “Push” button at the top to send your changes to the GitLab server.</li>
 </ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

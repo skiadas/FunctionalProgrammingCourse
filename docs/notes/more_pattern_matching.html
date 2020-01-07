@@ -2,48 +2,12 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>more_pattern_matching</title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -54,34 +18,34 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>In this section we look at gaining more practice with pattern-matching techniques, by writing standard library methods using pattern matches.</p>
 <h2 id="pattern-matching-examples">Pattern-matching examples</h2>
 <p>The most common use of pattern-matching is in writing functions that process a list. We already saw a number of examples in that direction. The main elements of the process are as follows:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>We handle in some special way the “base” cases of the empty list, and possibly the list of one element.</li>
 <li>We handle the general case of a list with a head and a tail. This typically involves calling the function recursively onto the tail, then doing some more work with the result.</li>
 </ol>
 <p>The <code>map</code> function is a good example of this process:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">map<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]
-map f []       <span class="fu">=</span> []
-map f (x<span class="fu">:</span>xs)   <span class="fu">=</span> f x <span class="fu">:</span> map f xs</code></pre></div>
+<pre class="haskell"><code>map :: (a -&gt; b) -&gt; [a] -&gt; [b]
+map f []       = []
+map f (x:xs)   = f x : map f xs</code></pre>
 <p>Note the second case. We call <code>map f xs</code> to obtain the result for the tail of our list. Then we also compute <code>f x</code> and put it at the front of the list.</p>
 <p>Let us also write the function <code>filter</code>: <code>filter</code> takes a predicate, which is a function of type <code>a -&gt; Bool</code>. Then it takes a list of values, applies the predicate to them, and only returns those for which the predicate is <code>True</code>. Here’s how that looks like:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">filter<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]
-filter p []                 <span class="fu">=</span> []
-filter p (x<span class="fu">:</span>xs) <span class="fu">|</span> p x       <span class="fu">=</span><span class="ot"> x ::</span> filter p xs
-                <span class="fu">|</span> otherwise <span class="fu">=</span> filter p xs</code></pre></div>
+<pre class="haskell"><code>filter :: (a -&gt; Bool) -&gt; [a] -&gt; [a]
+filter p []                 = []
+filter p (x:xs) | p x       = x :: filter p xs
+                | otherwise = filter p xs</code></pre>
 <p>Let us look at some more examples. For instance let us write the function <code>take</code> that returns the first however many elements from a list. The logic would go like this:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>If we are asked to take 0 or less elements, then we simply return the empty list.</li>
 <li>If we are asked to take a number of elements from the empty list, then we simply return the empty list.</li>
 <li>If we are asked to take <code>n</code> elements from a non-empty list, then we will take <code>n-1</code> elements from its tail, then append the head element.</li>
 </ol>
 <p>Let us translate that into code:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">take<span class="ot"> ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]
-take _ []                   <span class="fu">=</span> []
-take n (x<span class="fu">:</span>xs) <span class="fu">|</span> n <span class="fu">&lt;=</span> <span class="dv">0</span>      <span class="fu">=</span> []
-              <span class="fu">|</span> otherwise   <span class="fu">=</span> x <span class="fu">:</span> take (n<span class="fu">-</span><span class="dv">1</span>) xs</code></pre></div>
+<pre class="haskell"><code>take :: Int -&gt; [a] -&gt; [a]
+take _ []                   = []
+take n (x:xs) | n &lt;= 0      = []
+              | otherwise   = x : take (n-1) xs</code></pre>
 <h3 id="practice-problems">Practice Problems</h3>
 <p>You are expected to do these using pattern-matching and recursion as above, and not via other means.</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>Write a function <code>length :: [a] -&gt; Int</code> which given a list returns its length.</li>
 <li>Write a function <code>last :: [a] -&gt; a</code> which returns the last element of a non-empty list. You should not worry about its behavior on an empty list.</li>
 <li>Write the function <code>(++) :: [a] -&gt; [a] -&gt; a</code> which concatenates two lists. Write it using <code>++</code> as an infix operator in the definition (will not need the parentheses if it is infix).</li>
@@ -95,5 +59,16 @@ take n (x<span class="fu">:</span>xs) <span class="fu">|</span> n <span class="f
 <li>(difficult) Write a function <code>splitAt :: Int -&gt; [a] -&gt; ([a], [a])</code> which takes an integer and a list, and splits the list in two at that integer and stores the two parts in a tuple. If the integer is 0 or less, then the first part of the tuple would be <code>[]</code>. If the integer is longer than the list length, then the second part of the tuple would be <code>[]</code>. Simple example: <code>splitAt 3 [1..5] = ([1, 2, 3], [4, 5])</code></li>
 <li>(difficult) Write a function <code>splitWith :: (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])</code> which take as input a predicate and a list, and separates the list in two lists, with the first list containing those elements for which the predicate is <code>True</code> and the second list containing those elements for which the predicate is <code>False</code>. The order of elements must be maintained within each list.</li>
 </ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

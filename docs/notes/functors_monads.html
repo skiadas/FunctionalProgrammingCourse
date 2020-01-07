@@ -2,48 +2,12 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>functors_monads</title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -62,7 +26,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Sections 12.1-12.3</li>
 <li>Practice exercises (12.5): 1, 4, 7</li>
 <li>Optional practice: 2, 3, 8</li>
-<li><a href="https://wiki.haskell.org/State_Monad" class="uri">https://wiki.haskell.org/State_Monad</a></li>
+<li><a href="https://wiki.haskell.org/State_Monad">https://wiki.haskell.org/State_Monad</a></li>
 </ul>
 <h2 id="container-types-and-the-state-monad">Container Types and the State “Monad”</h2>
 <p>Before we start exploring functors, let us consider three important container types that share certain features. All three types express the idea of “producing a value of a given type”, but they do so in different ways:</p>
@@ -82,16 +46,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </dl>
 <h3 id="the-state-monad">The State Monad</h3>
 <p>The idea of the State type is similar to our view of <code>IO</code> as a function that changed the “world” in some way and also produced a value of type <code>a</code>. The State type makes that more precise. It can work with very generic “states”, represented here with the type <code>s</code>. We can then make the following definition:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">ST</span> s a <span class="fu">=</span> <span class="dt">S</span> (s <span class="ot">-&gt;</span> (a, s))</code></pre></div>
+<pre class="haskell"><code>newtype ST s a = S (s -&gt; (a, s))</code></pre>
 <p>So a value of type <code>ST a</code> is a <em>transition</em> function that takes the current state, and produces a value of type <code>a</code> along with a new (updated) state. For technical reasons we place that function inside an <code>S</code> tag. We can easily write a function that removes the tag:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">runState ::</span> <span class="dt">ST</span> s a <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> (a, s)
-runState (<span class="dt">S</span> trans) x <span class="fu">=</span> trans x
-<span class="co">-- Could also have done: runState (S trans) = trans</span></code></pre></div>
+<pre class="haskell"><code>runState :: ST s a -&gt; s -&gt; (a, s)
+runState (S trans) x = trans x
+-- Could also have done: runState (S trans) = trans</code></pre>
 <p>We can also write a function that evaluates a given stateful computation for a state, discards the resulting state and simply returns the final value:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">evalState ::</span> <span class="dt">ST</span> s a <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> a
-evalState (<span class="dt">S</span> trans) st <span class="fu">=</span> x&#39;
-    <span class="kw">where</span> (x&#39;, _) <span class="fu">=</span> runState (<span class="dt">S</span> trans) st
-<span class="co">-- Alternative definition: evalState state = fst . runState state</span></code></pre></div>
+<pre class="haskell"><code>evalState :: ST s a -&gt; s -&gt; a
+evalState (S trans) st = x&#39;
+    where (x&#39;, _) = runState (S trans) st
+-- Alternative definition: evalState state = fst . runState state</code></pre>
 <p>In order to meaningfully work with this new state structure though, we will need a couple of things:</p>
 <ul>
 <li>A way to set the state to a new value. This is akin to <code>putStr</code> printing something to the screen and hence changing the state of IO.</li>
@@ -101,125 +65,125 @@ evalState (<span class="dt">S</span> trans) st <span class="fu">=</span> x&#39;
 <li>A way to chain two computations together, so that the state transfers from the first to the second. In Haskell that operation has a name, <code>(&gt;&gt;=)</code>, typically called a “bind” operation.</li>
 </ul>
 <p>Let us take a look at each of these. Getting and setting the state is easy:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">getState ::</span> <span class="dt">ST</span> s s
-getState <span class="fu">=</span> <span class="dt">S</span> (\st <span class="ot">-&gt;</span> (st, st))
+<pre class="haskell"><code>getState :: ST s s
+getState = S (\st -&gt; (st, st))
 
-<span class="ot">putState ::</span> s <span class="ot">-&gt;</span> <span class="dt">ST</span> s ()
-putState st <span class="fu">=</span> <span class="dt">S</span> (\_ <span class="ot">-&gt;</span> ((), st))</code></pre></div>
+putState :: s -&gt; ST s ()
+putState st = S (\_ -&gt; ((), st))</code></pre>
 <p>Now we need functions for returning a normal value as the result of a stateful computation that does not change the state, and also mapping the result values through a normal function:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">return<span class="ot"> ::</span> a <span class="ot">-&gt;</span> <span class="dt">ST</span> s a
-return x <span class="fu">=</span> <span class="dt">S</span> (\st <span class="ot">-&gt;</span> (x, st))
+<pre class="haskell"><code>return :: a -&gt; ST s a
+return x = S (\st -&gt; (x, st))
 
-fmap<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">ST</span> s a <span class="ot">-&gt;</span> <span class="dt">ST</span> s b
-fmap f (<span class="dt">S</span> trans) <span class="fu">=</span> <span class="dt">S</span> trans&#39;
-    <span class="kw">where</span> trans&#39; st <span class="fu">=</span> (f x, st&#39;)
-                      <span class="kw">where</span> (x, st&#39;) <span class="fu">=</span> trans st</code></pre></div>
+fmap :: (a -&gt; b) -&gt; ST s a -&gt; ST s b
+fmap f (S trans) = S trans&#39;
+    where trans&#39; st = (f x, st&#39;)
+                      where (x, st&#39;) = trans st</code></pre>
 <p>Now comes the tricky bit: We want to combine two stateful computations into a new stateful computation. Actually what we will do is slightly different: We will combine one stateful computation with a function that takes as input a result of the first computation, and uses it to produce a second stateful computation that is then carried out. It is probably the hardest part of the whole story:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(&gt;&gt;=) ::</span> <span class="dt">ST</span> s a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">ST</span> s b) <span class="ot">-&gt;</span> <span class="dt">ST</span> s b
-act1 <span class="fu">&gt;&gt;=</span> f <span class="fu">=</span> <span class="dt">S</span> trans
-    <span class="kw">where</span> trans st <span class="fu">=</span> <span class="kw">let</span> (x, st&#39;) <span class="fu">=</span> runState act1 st
-                         act2     <span class="fu">=</span> f x
-                     <span class="kw">in</span> runState act2 st&#39;</code></pre></div>
+<pre class="haskell"><code>(&gt;&gt;=) :: ST s a -&gt; (a -&gt; ST s b) -&gt; ST s b
+act1 &gt;&gt;= f = S trans
+    where trans st = let (x, st&#39;) = runState act1 st
+                         act2     = f x
+                     in runState act2 st&#39;</code></pre>
 <p>This all looks a bit messy, but we only had to do it and understand it once! Now we can use this chaining instead of having to effectively manually do it every time. The even cooler thing is that this effectively allows us to use the IO-type notation with <code>do</code>, and Haskell will unravel that for us. For example, we can build a function that modifies the current state, as follows:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">modify ::</span> (s <span class="ot">-&gt;</span> s) <span class="ot">-&gt;</span> <span class="dt">ST</span> s ()
-modify f <span class="fu">=</span> <span class="kw">do</span>
-    st <span class="ot">&lt;-</span> getState
-    putState (f st)</code></pre></div>
+<pre class="haskell"><code>modify :: (s -&gt; s) -&gt; ST s ()
+modify f = do
+    st &lt;- getState
+    putState (f st)</code></pre>
 <p>And Haskell turns that into:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">modify f <span class="fu">=</span> getState <span class="fu">&gt;&gt;=</span> (\st <span class="ot">-&gt;</span> putState (f st))
-<span class="co">-- Can also write as:   getState &gt;&gt;= (putState . f)</span></code></pre></div>
+<pre class="haskell"><code>modify f = getState &gt;&gt;= (\st -&gt; putState (f st))
+-- Can also write as:   getState &gt;&gt;= (putState . f)</code></pre>
 <p>which is perhaps elegant but somewhat harder to read, especially if it involved more steps. In order for Haskell to be able to carry this out, it must know that our <code>ST</code> structure is a “monad”. We will discuss what that means later in the chapter, but effectively it just means having the “bind” operation we just defined.</p>
 <p><strong>Practice</strong>:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>Using “do” notation, write a function <code>incr :: ST Int ()</code> that increments the integer state by 1. Also do it by instead using <code>modify</code>.</li>
 <li>Using “do” notation, write a function <code>account :: a -&gt; ST Int a</code> which “accounts” for the computation that produces a value of type <code>a</code>, by incrementing the integer state. Your function should simply increment the state and return the provided value.</li>
 </ol>
 <h3 id="a-state-example-statement-interpretation">A State Example: Statement Interpretation</h3>
 <p>As an illustration of the state type described above, let us imagine a small programming language. It has expressions that perform basic arithmetic, but also allows us to store values in variables as well as to print values. This is done via statements. Here is a listing of the basic types.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Symbol</span> <span class="fu">=</span> <span class="dt">String</span>  <span class="co">-- alias for strings when used as language symbols/variables.</span>
-<span class="kw">data</span> <span class="dt">Expr</span> <span class="fu">=</span> <span class="dt">Numb</span> <span class="dt">Double</span>     <span class="co">-- number literal</span>
-          <span class="fu">|</span> <span class="dt">Var</span> <span class="dt">Symbol</span>      <span class="co">-- variable lookup</span>
-          <span class="fu">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span>   <span class="co">-- expression for addition</span>
-          <span class="fu">|</span> <span class="dt">Prod</span> <span class="dt">Expr</span> <span class="dt">Expr</span>  <span class="co">-- expression for multiplication</span>
-<span class="kw">data</span> <span class="dt">Stmt</span> <span class="fu">=</span> <span class="dt">Assign</span> <span class="dt">Symbol</span> <span class="dt">Expr</span>  <span class="co">-- variable assignment</span>
-          <span class="fu">|</span> <span class="dt">Seq</span> <span class="dt">Stmt</span> <span class="dt">Stmt</span>       <span class="co">-- statement followed by another statement</span>
-          <span class="fu">|</span> <span class="dt">Print</span> <span class="dt">Expr</span>          <span class="co">-- print the result of an expression evaluation</span>
-          <span class="fu">|</span> <span class="dt">PrintMem</span>            <span class="co">-- print all stored values</span></code></pre></div>
+<pre class="haskell"><code>type Symbol = String  -- alias for strings when used as language symbols/variables.
+data Expr = Numb Double     -- number literal
+          | Var Symbol      -- variable lookup
+          | Add Expr Expr   -- expression for addition
+          | Prod Expr Expr  -- expression for multiplication
+data Stmt = Assign Symbol Expr  -- variable assignment
+          | Seq Stmt Stmt       -- statement followed by another statement
+          | Print Expr          -- print the result of an expression evaluation
+          | PrintMem            -- print all stored values</code></pre>
 <p>A program is simply a <code>Stmt</code> value, which can in turn be a sequence of <code>Stmt</code>s using the <code>Seq</code> constructor. For example here is one such program:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Seq</span> (<span class="dt">Assign</span> <span class="st">&quot;x&quot;</span> (<span class="dt">Add</span> (<span class="dt">Numb</span> <span class="dv">2</span>) (<span class="dt">Numb</span> <span class="dv">4</span>))) <span class="fu">$</span>   <span class="co">-- x &lt;- 2 + 4</span>
-<span class="dt">Seq</span> (<span class="dt">Print</span> <span class="fu">$</span> <span class="dt">Var</span> <span class="st">&quot;x&quot;</span>) <span class="fu">$</span>                      <span class="co">-- print x</span>
-<span class="dt">PrintMem</span>                                     <span class="co">-- print all memory</span></code></pre></div>
+<pre class="haskell"><code>Seq (Assign &quot;x&quot; (Add (Numb 2) (Numb 4))) $   -- x &lt;- 2 + 4
+Seq (Print $ Var &quot;x&quot;) $                      -- print x
+PrintMem                                     -- print all memory</code></pre>
 <p>In order to execute such a program, we need to maintain a “memory” of stored values for the variables:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Value</span> <span class="fu">=</span> <span class="dt">Double</span>     <span class="co">-- Doubles are the only possible values in this language</span>
-<span class="kw">type</span> <span class="dt">Memory</span> <span class="fu">=</span> [(<span class="dt">Symbol</span>, <span class="dt">Value</span>)]
+<pre class="haskell"><code>type Value = Double     -- Doubles are the only possible values in this language
+type Memory = [(Symbol, Value)]
 
-<span class="ot">store  ::</span> <span class="dt">Symbol</span> <span class="ot">-&gt;</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> <span class="dt">Memory</span> <span class="ot">-&gt;</span> <span class="dt">Memory</span>
-store s v []             <span class="fu">=</span> [(s, v)]
-store s v ((s&#39;,v&#39;)<span class="fu">:</span>rest) <span class="fu">=</span> <span class="kw">case</span> compare s s&#39; <span class="kw">of</span>
-   <span class="dt">LT</span> <span class="ot">-&gt;</span> (s, v)<span class="fu">:</span>(s&#39;, v&#39;)<span class="fu">:</span>rest
-   <span class="dt">EQ</span> <span class="ot">-&gt;</span> (s, v)<span class="fu">:</span>rest
-   <span class="dt">GT</span> <span class="ot">-&gt;</span> (s&#39;, v&#39;)<span class="fu">:</span>store s v rest
+store  :: Symbol -&gt; Value -&gt; Memory -&gt; Memory
+store s v []             = [(s, v)]
+store s v ((s&#39;,v&#39;):rest) = case compare s s&#39; of
+   LT -&gt; (s, v):(s&#39;, v&#39;):rest
+   EQ -&gt; (s, v):rest
+   GT -&gt; (s&#39;, v&#39;):store s v rest
 
-lookup<span class="ot"> ::</span> <span class="dt">Symbol</span> <span class="ot">-&gt;</span> <span class="dt">Memory</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Value</span>
-lookup s []              <span class="fu">=</span> <span class="dt">Nothing</span>
-lookup s ((s&#39;, v&#39;)<span class="fu">:</span>rest) <span class="fu">=</span> <span class="kw">case</span> compare s s&#39; <span class="kw">of</span>
-   <span class="dt">LT</span> <span class="ot">-&gt;</span> <span class="dt">Nothing</span>
-   <span class="dt">EQ</span> <span class="ot">-&gt;</span> <span class="dt">Just</span> v&#39;
-   <span class="dt">GT</span> <span class="ot">-&gt;</span> lookup s rest</code></pre></div>
+lookup :: Symbol -&gt; Memory -&gt; Maybe Value
+lookup s []              = Nothing
+lookup s ((s&#39;, v&#39;):rest) = case compare s s&#39; of
+   LT -&gt; Nothing
+   EQ -&gt; Just v&#39;
+   GT -&gt; lookup s rest</code></pre>
 <p>We can then model the program state via the <code>ST</code> type, using the <code>Memory</code> type as the state:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">ProgState</span> a <span class="fu">=</span> <span class="dt">ST</span> <span class="dt">Memory</span> a</code></pre></div>
+<pre class="haskell"><code>type ProgState a = ST Memory a</code></pre>
 <p>We can now write functions that turn expressions and statements into <code>ProgState</code> values: They all will carry the <code>Memory</code> with them and update as needed, while the type <code>a</code> will differ: statements will contain <code>IO ()</code> to indicate that they interact with the user (printing values when asked). Expressions will need to contain a <code>Double</code> type.</p>
 <p>The advantage we get from this approach is that the task of updating and maintaining the state through every step is more or less hidden from our code, implemented in a single place in the <code>(&gt;&gt;=)</code> function.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">evalExpr ::</span> <span class="dt">Expr</span>  <span class="ot">-&gt;</span> <span class="dt">ProgState</span> <span class="dt">Double</span>
-evalExpr (<span class="dt">Numb</span> x) <span class="fu">=</span> return x
-evalExpr (<span class="dt">Var</span> s) <span class="fu">=</span> <span class="kw">do</span>
-    mem <span class="ot">&lt;-</span> getState
-    <span class="kw">case</span> lookup s mem <span class="kw">of</span>
-        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> error (<span class="st">&quot;Cannot find symbol: &quot;</span> <span class="fu">++</span> s)
-        <span class="dt">Just</span> v  <span class="ot">-&gt;</span> return v
-evalExpr (<span class="dt">Add</span> e1 e2) <span class="fu">=</span> <span class="kw">do</span>
-    v1 <span class="ot">&lt;-</span> evalExpr e1   <span class="co">-- Evaluate e1, possibly state update</span>
-    v2 <span class="ot">&lt;-</span> evalExpr e2   <span class="co">-- Evaluate e2, possibly state update</span>
-    return <span class="fu">$</span> v1 <span class="fu">+</span> v2
-evalExpr (<span class="dt">Prod</span> e1 e2) <span class="fu">=</span> <span class="kw">do</span>
-    v1 <span class="ot">&lt;-</span> evalExpr e1   <span class="co">-- Evaluate e1, possibly state update</span>
-    v2 <span class="ot">&lt;-</span> evalExpr e2   <span class="co">-- Evaluate e2, possibly state update</span>
-    return <span class="fu">$</span> v1 <span class="fu">*</span> v2
+<pre class="haskell"><code>evalExpr :: Expr  -&gt; ProgState Double
+evalExpr (Numb x) = return x
+evalExpr (Var s) = do
+    mem &lt;- getState
+    case lookup s mem of
+        Nothing -&gt; error (&quot;Cannot find symbol: &quot; ++ s)
+        Just v  -&gt; return v
+evalExpr (Add e1 e2) = do
+    v1 &lt;- evalExpr e1   -- Evaluate e1, possibly state update
+    v2 &lt;- evalExpr e2   -- Evaluate e2, possibly state update
+    return $ v1 + v2
+evalExpr (Prod e1 e2) = do
+    v1 &lt;- evalExpr e1   -- Evaluate e1, possibly state update
+    v2 &lt;- evalExpr e2   -- Evaluate e2, possibly state update
+    return $ v1 * v2
 
-<span class="ot">evalStmt ::</span> <span class="dt">Stmt</span>  <span class="ot">-&gt;</span> <span class="dt">ProgState</span> (<span class="dt">IO</span> ())
-evalStmt (<span class="dt">Assign</span> symbol expr) <span class="fu">=</span> <span class="kw">do</span>
-    v <span class="ot">&lt;-</span> evalExpr expr   <span class="co">-- Evaluate expr, possibly state update</span>
+evalStmt :: Stmt  -&gt; ProgState (IO ())
+evalStmt (Assign symbol expr) = do
+    v &lt;- evalExpr expr   -- Evaluate expr, possibly state update
     modify (store symbol v)
-    return <span class="fu">$</span> return ()   <span class="co">-- Second return is the IO</span>
-evalStmt (<span class="dt">Seq</span> stmt1 stmt2) <span class="fu">=</span> <span class="kw">do</span>
-    io1 <span class="ot">&lt;-</span> evalStmt stmt1
-    io2 <span class="ot">&lt;-</span> evalStmt stmt2
-    return <span class="fu">$</span> io1 <span class="fu">&gt;&gt;</span> io2
-evalStmt (<span class="dt">Print</span> expr) <span class="fu">=</span> <span class="kw">do</span>
-    v <span class="ot">&lt;-</span> evalExpr expr
-    return <span class="fu">$</span> putStrLn <span class="fu">$</span> show v
-evalStmt <span class="dt">PrintMem</span> <span class="fu">=</span> <span class="kw">do</span>
-    mem <span class="ot">&lt;-</span> getState
-    return <span class="fu">$</span> printMemory mem
+    return $ return ()   -- Second return is the IO
+evalStmt (Seq stmt1 stmt2) = do
+    io1 &lt;- evalStmt stmt1
+    io2 &lt;- evalStmt stmt2
+    return $ io1 &gt;&gt; io2
+evalStmt (Print expr) = do
+    v &lt;- evalExpr expr
+    return $ putStrLn $ show v
+evalStmt PrintMem = do
+    mem &lt;- getState
+    return $ printMemory mem
 
-<span class="ot">printMemory ::</span> <span class="dt">Memory</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
-printMemory []            <span class="fu">=</span> return ()
-printMemory ((s, v)<span class="fu">:</span>rest) <span class="fu">=</span> <span class="kw">do</span>
-    puStrLn <span class="fu">$</span> s <span class="fu">++</span> <span class="st">&quot; = &quot;</span> <span class="fu">++</span> show v
+printMemory :: Memory -&gt; IO ()
+printMemory []            = return ()
+printMemory ((s, v):rest) = do
+    puStrLn $ s ++ &quot; = &quot; ++ show v
     printMemory rest
 
-<span class="ot">evaluate ::</span> <span class="dt">Stmt</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
-evaluate stmt <span class="fu">=</span> io
-    <span class="kw">where</span> emptyMem <span class="fu">=</span> []
-          program <span class="fu">=</span> evalStmt stmt
-          (io, _) <span class="fu">=</span> runState program emptyMem</code></pre></div>
+evaluate :: Stmt -&gt; IO ()
+evaluate stmt = io
+    where emptyMem = []
+          program = evalStmt stmt
+          (io, _) = runState program emptyMem</code></pre>
 <h2 id="functors">Functors</h2>
 <p>We will now begin our investigation of key operations that all the aforementioned “container types” have in common. The first of these is the idea of a functor.</p>
 <p>The container/polymorphic type <code>f a</code> is a <strong>functor</strong> if it comes equipped with a function:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">fmap<span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre></div>
+<pre class="haskell"><code>fmap :: (a -&gt; b) -&gt; f a -&gt; f b</code></pre>
 <p>In other words, functors come equipped with a natural way to transform the contained values, is provided with an appropriate function. There are certain “naturality” conditions that such a function must obey, often described via a set of “properties”:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">fmap id      <span class="fu">=</span> id
-fmap (g <span class="fu">.</span> h) <span class="fu">=</span> fmap g <span class="fu">.</span> fmap h</code></pre></div>
+<pre class="haskell"><code>fmap id      = id
+fmap (g . h) = fmap g . fmap h</code></pre>
 <p>These look complicated, but basically they say that functors behave in a reasonable way:</p>
 <ul>
 <li>If the function we use on the functor is the identity function <code>id :: a -&gt; a</code> (defined by <code>id a = a</code>, then the resulting transformation <code>fmap id :: f a -&gt; f a</code> is just the identity function <code>id :: f a -&gt; f a</code>.</li>
@@ -232,89 +196,89 @@ And the result is the same whichever way we do it. It does not matter if you com
 </ul>
 <p>These two properties allow Haskell to simplify some functor operations. But we will not concern ourselves with them very much right now.</p>
 <p>The key insight is that very many container types are naturally functor types. This is captured via the <code>Functor</code> class:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Functor</span> f <span class="kw">where</span>
-<span class="ot">    fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre></div>
+<pre class="haskell"><code>class Functor f where
+    fmap :: (a -&gt; b) -&gt; f a -&gt; f b</code></pre>
 <p>We can now see how each of the types we have defined earlier become instances of <code>Functor</code>, by transforming their contained value:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Functor</span> [] <span class="kw">where</span>
-    fmap f xs <span class="fu">=</span> [f x <span class="fu">|</span> x <span class="ot">&lt;-</span> xs]   <span class="co">-- could also have written fmap = map</span>
+<pre class="haskell"><code>instance Functor [] where
+    fmap f xs = [f x | x &lt;- xs]   -- could also have written fmap = map
 
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Maybe</span> <span class="kw">where</span>
-    fmap _ <span class="dt">Nothing</span>  <span class="fu">=</span> <span class="dt">Nothing</span>
-    fmap f (<span class="dt">Just</span> x) <span class="fu">=</span> <span class="dt">Just</span> (f x)
+instance Functor Maybe where
+    fmap _ Nothing  = Nothing
+    fmap f (Just x) = Just (f x)
 
-<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">IO</span> <span class="kw">where</span>
-    fmap f action <span class="fu">=</span> <span class="kw">do</span>
-        x <span class="ot">&lt;-</span> action
-        return <span class="fu">$</span> f x
+instance Functor IO where
+    fmap f action = do
+        x &lt;- action
+        return $ f x
 
-<span class="kw">instance</span> <span class="dt">Functor</span> (<span class="dt">ST</span> s) <span class="kw">where</span>
-    fmap f (<span class="dt">S</span> trans) <span class="fu">=</span> <span class="dt">S</span> trans&#39;
-        <span class="kw">where</span> trans&#39; st <span class="fu">=</span> <span class="kw">let</span> (x, st&#39;) <span class="fu">=</span> trans st
-                          <span class="kw">in</span> (f x, st&#39;)</code></pre></div>
+instance Functor (ST s) where
+    fmap f (S trans) = S trans&#39;
+        where trans&#39; st = let (x, st&#39;) = trans st
+                          in (f x, st&#39;)</code></pre>
 <p>The <code>Functor</code> provides us for free with a <a href="http://hackage.haskell.org/package/base-4.10.0.0/docs/Data-Functor.html#t:Functor">number of standard functions</a>:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">void  ::</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f ()
-<span class="ot">(&lt;$)  ::</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f a
-<span class="ot">($&gt;)  ::</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> f b
-<span class="ot">(&lt;$&gt;) ::</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre></div>
+<pre class="haskell"><code>void  :: Functor f =&gt; f a -&gt; f ()
+(&lt;$)  :: Functor f =&gt; a -&gt; f b -&gt; f a
+($&gt;)  :: Functor f =&gt; f a -&gt; b -&gt; f b
+(&lt;$&gt;) :: Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b</code></pre>
 <p>The last function is simply a synomym for <code>fmap</code>. Note that it is very similar to <code>($) :: (a -&gt; b) -&gt; a -&gt; b</code>. So whereas to apply a function to a value we would do <code>f $ x</code>, if it is a container value we would use <code>&lt;$&gt;</code>:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="fu">+</span> <span class="dv">2</span>) <span class="fu">&lt;$&gt;</span> <span class="dt">Just</span> <span class="dv">3</span>     <span class="co">-- Results in Just 5</span>
-(<span class="fu">+</span> <span class="dv">1</span>) <span class="fu">&lt;$&gt;</span> [<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>]  <span class="co">-- Results in Just [3, 4, 5]</span></code></pre></div>
+<pre class="haskell"><code>(+ 2) &lt;$&gt; Just 3     -- Results in Just 5
+(+ 1) &lt;$&gt; [2, 3, 4]  -- Results in Just [3, 4, 5]</code></pre>
 <h2 id="applicatives">Applicatives</h2>
 <p>The <code>Applicative</code> class is an extension of the <code>Functor</code> class. It essentially allows us to map functions as <code>Functor</code> does, but works with functions of possibly more than one parameter. We can think of it as providing for us a “tower” of functions:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">fmap0 ::</span> a <span class="ot">-&gt;</span> f a
-<span class="ot">fmap1 ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b
-<span class="ot">fmap2 ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c
-<span class="ot">fmap3 ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> d) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c <span class="ot">-&gt;</span> f d</code></pre></div>
+<pre class="haskell"><code>fmap0 :: a -&gt; f a
+fmap1 :: (a -&gt; b) -&gt; f a -&gt; f b
+fmap2 :: (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+fmap3 :: (a -&gt; b -&gt; c -&gt; d) -&gt; f a -&gt; f b -&gt; f c -&gt; f d</code></pre>
 <p>It does so by requiring two functions:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Applicative</span> f <span class="kw">where</span>
-<span class="ot">    pure  ::</span> a <span class="ot">-&gt;</span> f a
-<span class="ot">    (&lt;*&gt;) ::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre></div>
+<pre class="haskell"><code>class Functor f =&gt; Applicative f where
+    pure  :: a -&gt; f a
+    (&lt;*&gt;) :: f (a -&gt; b) -&gt; f a -&gt; f b</code></pre>
 <p>If we compare <code>&lt;*&gt;</code> to the <code>Functor</code> class’ <code>fmap</code>, the main difference is that in the Applicative case we allow the function itself to be in the container type.</p>
 <p>Before we see some examples, let us see what these type signatures have to do with the functions described above.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">fmap0 g       <span class="fu">=</span> pure g
-fmap1 g x     <span class="fu">=</span> pure g <span class="fu">&lt;*&gt;</span> x
-fmap2 g x y   <span class="fu">=</span> pure g <span class="fu">&lt;*&gt;</span> x <span class="fu">&lt;*&gt;</span> y
-fmap3 g x y z <span class="fu">=</span> pure g <span class="fu">&lt;*&gt;</span> x <span class="fu">&lt;*&gt;</span> y <span class="fu">&lt;*&gt;</span> z</code></pre></div>
+<pre class="haskell"><code>fmap0 g       = pure g
+fmap1 g x     = pure g &lt;*&gt; x
+fmap2 g x y   = pure g &lt;*&gt; x &lt;*&gt; y
+fmap3 g x y z = pure g &lt;*&gt; x &lt;*&gt; y &lt;*&gt; z</code></pre>
 <p>Let us take a closer look at the types for <code>fmap2</code>:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">g ::</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c
-<span class="ot">x ::</span> f a
-<span class="ot">y ::</span> f b
-pure<span class="ot"> g ::</span> f (a <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c))
-<span class="ot">(&lt;*&gt;) ::</span> f (a <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c)) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f (b <span class="ot">-&gt;</span> c)
-pure g <span class="fu">&lt;*&gt;</span><span class="ot"> x ::</span> f (b <span class="ot">-&gt;</span> c)
-<span class="ot">(&lt;*&gt;) ::</span> f (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f c
-(pure g <span class="fu">&lt;*&gt;</span> x) <span class="fu">&lt;*&gt;</span><span class="ot"> y ::</span> f c</code></pre></div>
+<pre class="haskell"><code>g :: a -&gt; b -&gt; c
+x :: f a
+y :: f b
+pure g :: f (a -&gt; (b -&gt; c))
+(&lt;*&gt;) :: f (a -&gt; (b -&gt; c)) -&gt; f a -&gt; f (b -&gt; c)
+pure g &lt;*&gt; x :: f (b -&gt; c)
+(&lt;*&gt;) :: f (b -&gt; c) -&gt; f b -&gt; f c
+(pure g &lt;*&gt; x) &lt;*&gt; y :: f c</code></pre>
 <p>Now let us discuss how our earlier types are instances of <code>Applicative</code>. For the <code>Maybe</code> type, if we have a function and we have a value, then we apply the function to the value. Otherwise we return <code>Nothing</code>. For lists, we have a list of functions and a list of values, and we apply all functions to all values.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Maybe</span> <span class="kw">where</span>
-    pure x <span class="fu">=</span> <span class="dt">Just</span> x
-    <span class="dt">Just</span> f  <span class="fu">&lt;*&gt;</span> <span class="dt">Just</span> x  <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> f x
-    <span class="dt">Nothing</span> <span class="fu">&lt;*&gt;</span> _       <span class="fu">=</span> <span class="dt">Nothing</span>
-    _       <span class="fu">&lt;*&gt;</span> <span class="dt">Nothing</span> <span class="fu">=</span> <span class="dt">Nothing</span>
+<pre class="haskell"><code>instance Applicative Maybe where
+    pure x = Just x
+    Just f  &lt;*&gt; Just x  = Just $ f x
+    Nothing &lt;*&gt; _       = Nothing
+    _       &lt;*&gt; Nothing = Nothing
 
-<span class="kw">instance</span> <span class="dt">Applicative</span> [] <span class="kw">where</span>
-    pure x <span class="fu">=</span> [x]
-    gs <span class="fu">&lt;*&gt;</span> xs <span class="fu">=</span> [g x <span class="fu">|</span> g <span class="ot">&lt;-</span> gs, x <span class="ot">&lt;-</span> xs]
+instance Applicative [] where
+    pure x = [x]
+    gs &lt;*&gt; xs = [g x | g &lt;- gs, x &lt;- xs]
 
-<span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">IO</span> <span class="kw">where</span>
-    pure x <span class="fu">=</span> return x
-    actionf <span class="fu">&lt;*&gt;</span> actionx <span class="fu">=</span> <span class="kw">do</span>
-        f <span class="ot">&lt;-</span> actionf
-        x <span class="ot">&lt;-</span> actionx
-        return <span class="fu">$</span> f x
+instance Applicative IO where
+    pure x = return x
+    actionf &lt;*&gt; actionx = do
+        f &lt;- actionf
+        x &lt;- actionx
+        return $ f x
 
-<span class="kw">instance</span> <span class="dt">Applicative</span> (<span class="dt">ST</span> s) <span class="kw">where</span>
-   pure x <span class="fu">=</span> <span class="dt">S</span> (\st <span class="ot">-&gt;</span> (x, st))
-   actf <span class="fu">&lt;*&gt;</span> act1 <span class="fu">=</span> <span class="dt">S</span> trans
-      <span class="kw">where</span> trans st <span class="fu">=</span> <span class="kw">let</span> (f, st&#39;)  <span class="fu">=</span> runState actf st
-                           (x, st&#39;&#39;) <span class="fu">=</span> runState act1 st&#39;
-                       <span class="kw">in</span> (f x, st&#39;&#39;)</code></pre></div>
+instance Applicative (ST s) where
+   pure x = S (\st -&gt; (x, st))
+   actf &lt;*&gt; act1 = S trans
+      where trans st = let (f, st&#39;)  = runState actf st
+                           (x, st&#39;&#39;) = runState act1 st&#39;
+                       in (f x, st&#39;&#39;)</code></pre>
 <p>As a fun example, try this:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">[(<span class="fu">+</span>), (<span class="fu">*</span>), (<span class="fu">-</span>)] <span class="fu">&lt;*&gt;</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>] <span class="fu">&lt;*&gt;</span> [<span class="dv">4</span>, <span class="dv">5</span>]</code></pre></div>
+<pre class="haskell"><code>[(+), (*), (-)] &lt;*&gt; [1, 2, 3] &lt;*&gt; [4, 5]</code></pre>
 <p>There are rules for the <code>Applicative</code> class similar to the rules for <code>Functor</code>. we list them here for completeness, but will not discuss them further.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">pure id <span class="fu">&lt;*&gt;</span> x     <span class="fu">=</span> x
-pure g <span class="fu">&lt;*&gt;</span> pure x <span class="fu">=</span> pure (g x)
-h <span class="fu">&lt;*&gt;</span> pure y      <span class="fu">=</span> pure (\g <span class="ot">-&gt;</span> g y) <span class="fu">&lt;*&gt;</span> h
-x <span class="fu">&lt;*&gt;</span> (y <span class="fu">&lt;*&gt;</span> z)   <span class="fu">=</span> (pure (<span class="fu">.</span>) <span class="fu">&lt;*&gt;</span> x <span class="fu">&lt;*&gt;</span> y) <span class="fu">&lt;*&gt;</span> z</code></pre></div>
+<pre class="haskell"><code>pure id &lt;*&gt; x     = x
+pure g &lt;*&gt; pure x = pure (g x)
+h &lt;*&gt; pure y      = pure (\g -&gt; g y) &lt;*&gt; h
+x &lt;*&gt; (y &lt;*&gt; z)   = (pure (.) &lt;*&gt; x &lt;*&gt; y) &lt;*&gt; z</code></pre>
 <h2 id="monads">Monads</h2>
 <p>The <code>Monad</code> class is the last step in this hierarchy of classes.</p>
 <ul>
@@ -323,51 +287,62 @@ x <span class="fu">&lt;*&gt;</span> (y <span class="fu">&lt;*&gt;</span> z)   <s
 <li><code>Monad</code> will allow us to combine functions that result in effectful values <code>a -&gt; f b</code> with effectful values <code>f a</code> to produce a result <code>f b</code>.</li>
 </ul>
 <p>Here is the definition of the <code>Monad</code> class:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Applicative</span> m <span class="ot">=&gt;</span> <span class="dt">Monad</span> m <span class="kw">where</span>
-<span class="ot">    return ::</span> a <span class="ot">-&gt;</span> m a
-<span class="ot">    (&gt;&gt;=)  ::</span> m a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m b
+<pre class="haskell"><code>class Applicative m =&gt; Monad m where
+    return :: a -&gt; m a
+    (&gt;&gt;=)  :: m a -&gt; (a -&gt; m b) -&gt; m b
 
-    return <span class="fu">=</span> pure  <span class="co">-- default implementation via Applicative</span></code></pre></div>
+    return = pure  -- default implementation via Applicative</code></pre>
 <p>The most common way to use monads is via the “do” notation. For example, when we wrote earlier something like</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">evalStmt <span class="dt">PrintMem</span> <span class="fu">=</span> <span class="kw">do</span>
-    mem <span class="ot">&lt;-</span> getState
-    return <span class="fu">$</span> printMemory mem</code></pre></div>
+<pre class="haskell"><code>evalStmt PrintMem = do
+    mem &lt;- getState
+    return $ printMemory mem</code></pre>
 <p>Haskell would convert that program code into:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">evalStmt <span class="dt">PrintMem</span> <span class="fu">=</span> getState <span class="fu">&gt;&gt;=</span> (\mem <span class="ot">-&gt;</span> return <span class="fu">$</span> printMemory mem)</code></pre></div>
+<pre class="haskell"><code>evalStmt PrintMem = getState &gt;&gt;= (\mem -&gt; return $ printMemory mem)</code></pre>
 <p>In other words, each subsequent statement in a “do” block is behind the scenes a function of the variables stored during previous statements. You will agree surely that the “do” notation simplifies things quite a lot.</p>
 <p>Let us see how the various classes we have seen earlier can be thought of as instances of <code>Monad</code>:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Maybe</span> <span class="kw">where</span>
-    return x <span class="fu">=</span> <span class="dt">Just</span> x
-    <span class="dt">Nothing</span> <span class="fu">&gt;&gt;=</span> f <span class="fu">=</span> <span class="dt">Nothing</span>
-    <span class="dt">Just</span> x <span class="fu">&gt;&gt;=</span> f  <span class="fu">=</span> f x
+<pre class="haskell"><code>instance Monad Maybe where
+    return x = Just x
+    Nothing &gt;&gt;= f = Nothing
+    Just x &gt;&gt;= f  = f x
 
-<span class="kw">instance</span> <span class="dt">Monad</span> [] <span class="kw">where</span>
-    return x <span class="fu">=</span> [x]
-    xs <span class="fu">&gt;=</span> f  <span class="fu">=</span> [y <span class="fu">|</span> x <span class="ot">&lt;-</span> xs, y <span class="ot">&lt;-</span> f x]
+instance Monad [] where
+    return x = [x]
+    xs &gt;= f  = [y | x &lt;- xs, y &lt;- f x]
 
-<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">ST</span> <span class="kw">where</span>
-    return x <span class="fu">=</span> <span class="dt">S</span> (\st <span class="ot">-&gt;</span> (x, st))
-    act1 <span class="fu">&gt;&gt;=</span> f <span class="fu">=</span> <span class="dt">S</span> trans
-    <span class="kw">where</span> trans st <span class="fu">=</span> <span class="kw">let</span> (x, st&#39;) <span class="fu">=</span> runState act1 st
-                         act2     <span class="fu">=</span> f x
-                     <span class="kw">in</span> runState act2 st&#39;</code></pre></div>
+instance Monad ST where
+    return x = S (\st -&gt; (x, st))
+    act1 &gt;&gt;= f = S trans
+    where trans st = let (x, st&#39;) = runState act1 st
+                         act2     = f x
+                     in runState act2 st&#39;</code></pre>
 <p>The definition for lists is particularly interesting: If we have a list of elements, and for each element we can produce a list of result elements via the function <code>f</code>, we can then iterate over each resulting list and concatenate all the results together. This is close to what list comprehensions are doing.</p>
 <p>Similar to the other two classes, instances of <code>Monad</code> are expected to further satisfy certain rules, that we will not explore in detail:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">return x <span class="fu">&gt;&gt;=</span> f    <span class="fu">=</span> f x
-mx <span class="fu">&gt;&gt;=</span> return     <span class="fu">=</span> mx
-(mx <span class="fu">&gt;&gt;=</span> f) <span class="fu">&gt;&gt;=</span> g  <span class="fu">=</span> mx <span class="fu">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> (f x <span class="fu">&gt;&gt;</span> g))</code></pre></div>
+<pre class="haskell"><code>return x &gt;&gt;= f    = f x
+mx &gt;&gt;= return     = mx
+(mx &gt;&gt;= f) &gt;&gt;= g  = mx &gt;&gt;= (\x -&gt; (f x &gt;&gt; g))</code></pre>
 <h3 id="monadic-operations">Monadic operations</h3>
 <p>Having a monad structure provides a number of functions for us, for a host of common operations. Most of these functions can be found in the <a href="http://hackage.haskell.org/package/base-4.10.0.0/docs/Control-Monad.html#t:Monad"><code>Control.Monad</code></a> module. Most use the <code>Traversable</code> class, which in turn extends the <code>Foldable</code> class. The former provides a <code>traverse</code> function and the latter <code>foldr</code> and <code>foldMap</code> functions. For simplicity you can assume that <code>t a</code> in these is just <code>[a]</code>, and to illustrate this we write both type declarations:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">mapM<span class="ot"> ::</span> (<span class="dt">Traversable</span> t, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> m (t b)
-mapM<span class="ot"> ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> m [b]
-<span class="ot">filterM ::</span> <span class="dt">Applicative</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> m [a]
-<span class="ot">zipWithM ::</span> <span class="dt">Applicative</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> m c) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b] <span class="ot">-&gt;</span> m [c]
-<span class="ot">foldM ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> m b
-<span class="ot">foldM ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> (b <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> m b
-sequence<span class="ot"> ::</span> (<span class="dt">Traversable</span> t, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> t (m a) <span class="ot">-&gt;</span> m (t a)
-sequence<span class="ot"> ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> [m a] <span class="ot">-&gt;</span> m [a]
-sequence_<span class="ot"> ::</span> (<span class="dt">Foldable</span> t, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> t (m a) <span class="ot">-&gt;</span> m ()
-sequence_<span class="ot"> ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> [m a] <span class="ot">-&gt;</span> m ()
-<span class="ot">join ::</span> <span class="dt">Monad</span> m <span class="ot">=&gt;</span> m (m a) <span class="ot">-&gt;</span> m a</code></pre></div>
+<pre class="haskell"><code>mapM :: (Traversable t, Monad m) =&gt; (a -&gt; m b) -&gt; t a -&gt; m (t b)
+mapM :: Monad m =&gt; (a -&gt; m b) -&gt; [a] -&gt; m [b]
+filterM :: Applicative m =&gt; (a -&gt; m Bool) -&gt; [a] -&gt; m [a]
+zipWithM :: Applicative m =&gt; (a -&gt; b -&gt; m c) -&gt; [a] -&gt; [b] -&gt; m [c]
+foldM :: (Foldable t, Monad m) =&gt; (b -&gt; a -&gt; m b) -&gt; b -&gt; t a -&gt; m b
+foldM :: Monad m =&gt; (b -&gt; a -&gt; m b) -&gt; b -&gt; [a] -&gt; m b
+sequence :: (Traversable t, Monad m) =&gt; t (m a) -&gt; m (t a)
+sequence :: Monad m =&gt; [m a] -&gt; m [a]
+sequence_ :: (Foldable t, Monad m) =&gt; t (m a) -&gt; m ()
+sequence_ :: Monad m =&gt; [m a] -&gt; m ()
+join :: Monad m =&gt; m (m a) -&gt; m a</code></pre>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

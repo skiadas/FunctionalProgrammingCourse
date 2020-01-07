@@ -2,48 +2,12 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>modules</title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -62,20 +26,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Implementation details of a particular function or module should be hidden from the rest of the program. One should be able to change the implementation details of a particular function without compromising other parts of the program.</p>
 </blockquote>
 <p>As an example, imagine that we wrote a <code>sum</code> function with the stateful recursion paradigm, and it needed a helper method. we could do this as follows:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">sumHelper ::</span> <span class="dt">Num</span> t <span class="ot">=&gt;</span> t <span class="ot">-&gt;</span> [t] <span class="ot">-&gt;</span> t
-sumHelper acc []     <span class="fu">=</span> acc
-sumHelper acc (x<span class="fu">:</span>xs) <span class="fu">=</span> sumHelper (acc <span class="fu">+</span> x) xs
+<pre class="haskell"><code>sumHelper :: Num t =&gt; t -&gt; [t] -&gt; t
+sumHelper acc []     = acc
+sumHelper acc (x:xs) = sumHelper (acc + x) xs
 
-sum<span class="ot"> ::</span> <span class="dt">Num</span> t <span class="ot">=&gt;</span> [t] <span class="ot">-&gt;</span> t
-sum xs <span class="fu">=</span> sumHelper <span class="dv">0</span> xs      <span class="co">-- could also simply write: sum = sumHelper 0</span></code></pre></div>
+sum :: Num t =&gt; [t] -&gt; t
+sum xs = sumHelper 0 xs      -- could also simply write: sum = sumHelper 0</code></pre>
 <p>This works fine. But it also exposes the <code>sumHelper</code> function to the rest of the file. We may for instance be tempted to use taht function directly in other parts of our file. Or some other part of our program might see that function and decide to use it.</p>
 <p>This causes problems down the line for the maintainance of our application. We intended <code>sumHelper</code> to only be used by <code>sum</code> as an internal implementation detail: This is how we implemented <code>sum</code>. However, because we provided it as its own function, and now it is available to other parts of my application. And the moment those other parts use it, I can no longer change without compromising those other parts. The function <code>sumHelper</code> is no longer just an implementation detail, it is now part of the functions we have exposed to the rest of the application.</p>
 <p>A solution to this is to simply define the helper function within the function <code>sum</code>, using a <code>where</code> clause. This is similar to using local variables within a function to do our work, something we do very often in other languages as well as Haskell. Except that in functional programming languages like Haskell, a local variable can in fact be a whole function in its own right.</p>
 <p>So with this in mind, our example above might look like so:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">sum<span class="ot"> ::</span> <span class="dt">Num</span> t <span class="ot">=&gt;</span> [t] <span class="ot">-&gt;</span> t
-sum <span class="fu">=</span> sumHelper <span class="dv">0</span>
-    <span class="kw">where</span> sumHelper acc []     <span class="fu">=</span> acc
-          sumHelper acc (x<span class="fu">:</span>xs) <span class="fu">=</span> sumHelper (acc <span class="fu">+</span> x) xs</code></pre></div>
+<pre class="haskell"><code>sum :: Num t =&gt; [t] -&gt; t
+sum = sumHelper 0
+    where sumHelper acc []     = acc
+          sumHelper acc (x:xs) = sumHelper (acc + x) xs</code></pre>
 <p>This way the function <code>sum</code> is the only one that knows about <code>sumHelper</code>. And it can change it at will without worrying about any repercussions.</p>
 <p>Some times however we cannot afford to do that. We may have a helper function that is needed by more than one part of our module. For example perhaps there are 3-4 functions all sharing a common helper function. It would be foolish to type that helper function 3-4 times inside each of these functions.</p>
 <p>This is where modules will come in handy. Modules allow us to specify exactly which parts of our file would be available to other modules. And any other parts are isolated to the particular file, and can be shared by all functions within that file but with noone else.</p>
@@ -83,11 +47,11 @@ sum <span class="fu">=</span> sumHelper <span class="dv">0</span>
 <p>Modules are files that contain related data types and functions that operate on those types. Each module must have a well defined interface with the rest of the world: It must specify which functions and data types are to be shared with the world.</p>
 <p>In particular a module allows us to provide the concept of an <code>abstract data type</code>. We can define a data type but not actually reveal its internal implementation. Then users of our application cannot just directly create elements of our type, they will have to call our explicit constructor functions. We will provide such an example in a moment.</p>
 <p>The overall structure of a model definition looks as follows:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Foobar</span> (
-    <span class="co">-- specify what you export here</span>
+<pre class="haskell"><code>module Foobar (
+    -- specify what you export here
 
-) <span class="kw">where</span>
-<span class="fu">...</span> <span class="co">-- Definitions follow here</span></code></pre></div>
+) where
+... -- Definitions follow here</code></pre>
 <p>Let us become familiar with the module format, by creating a module to handle integer fractions. Here is what we should probably share with the world:</p>
 <ul>
 <li>There should be a new “fraction” type that people should be able to work with. We should probably hide how the type is internally represented (so people cannot just create a “divide by zero” fraction directly, without going through our constructor).</li>
@@ -96,31 +60,31 @@ sum <span class="fu">=</span> sumHelper <span class="dv">0</span>
 <li>We should also simplify the fractions where appropriate. But users will not need to do that, so that would be an internal function to our module, and would not be exported.</li>
 <li>There should be a way to convert a fraction into a <code>Double</code>.</li>
 <li>There should be a way to turn a fraction into a string, for printing purposes.</li>
-<li>At a later stage, we will see how to make our fractions part of the various type classes, e.g. <code>Num</code>, <code>Show</code> etc.</li>
+<li>At a later stage, we will see how to make our fractions part of the various type classes, e.g. <code>Num</code>, <code>Show</code> etc.</li>
 </ul>
 <p>So with that in mind, our module preamble might looks something like:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Fraction</span> (
-    <span class="dt">Fraction</span>,      <span class="co">-- Exporting the type</span>
-    fraction,      <span class="co">-- build a fraction from a numerator and a denominator</span>
-    fractionOfInt, <span class="co">-- build a fraction from an integer</span>
-    add,           <span class="co">-- add two fractions to get a new fraction</span>
-    sub,           <span class="co">-- subtract a fraction from another to get a new fraction</span>
-    mult,          <span class="co">-- multiply a fraction from another to get a new fraction</span>
-    divide,        <span class="co">-- divide a fraction from another to get a new fraction</span>
-) <span class="kw">where</span>
+<pre class="haskell"><code>module Fraction (
+    Fraction,      -- Exporting the type
+    fraction,      -- build a fraction from a numerator and a denominator
+    fractionOfInt, -- build a fraction from an integer
+    add,           -- add two fractions to get a new fraction
+    sub,           -- subtract a fraction from another to get a new fraction
+    mult,          -- multiply a fraction from another to get a new fraction
+    divide,        -- divide a fraction from another to get a new fraction
+) where
 
-<span class="co">-- Now we start our definitions</span>
-<span class="kw">data</span> <span class="dt">Fraction</span> <span class="fu">=</span> <span class="dt">Frac</span> <span class="dt">Integer</span> <span class="dt">Integer</span>
+-- Now we start our definitions
+data Fraction = Frac Integer Integer
 
-<span class="ot">fraction ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span>
-fraction a b <span class="fu">|</span> b <span class="fu">==</span> <span class="dv">0</span>    <span class="fu">=</span> error <span class="st">&quot;Cannot divide by 0&quot;</span>
-             <span class="fu">|</span> otherwise <span class="fu">=</span> simplify <span class="fu">$</span> <span class="dt">Frac</span> a b
+fraction :: Integer -&gt; Integer -&gt; Fraction
+fraction a b | b == 0    = error &quot;Cannot divide by 0&quot;
+             | otherwise = simplify $ Frac a b
 
-<span class="ot">fractionOfInt ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span>
-fractionOfInt <span class="fu">=</span> (<span class="ot">`fraction`</span> <span class="dv">1</span>)   <span class="co">-- Same as: fractionOfInt b = fraction b 1</span>
-<span class="co">-- Could also have made a &quot;Frac b 1&quot; directly. Why did we not?</span>
+fractionOfInt :: Integer -&gt; Fraction
+fractionOfInt = (`fraction` 1)   -- Same as: fractionOfInt b = fraction b 1
+-- Could also have made a &quot;Frac b 1&quot; directly. Why did we not?
 
-<span class="co">-- More functions follow</span></code></pre></div>
+-- More functions follow</code></pre>
 <p>Notice here that we exported <code>Fraction</code>, and not the specific constructor <code>Frac</code>. This means that others cannot use <code>Frac</code> to create fractions, they must call the function <code>fraction</code> instead. This is what is known as an <em>abstract data type</em>:</p>
 <blockquote>
 <p>An <strong>abstract data type</strong> is a type defined via its behavior (semantics) regarding how it can be constructed and what operations it supports, rather than its specific implementation via a specific data structure.</p>
@@ -132,117 +96,128 @@ fractionOfInt <span class="fu">=</span> (<span class="ot">`fraction`</span> <spa
 </blockquote>
 <p>In our instance, the only way to create a fraction is via the <code>fraction</code> constructor. That constructor ensures that we never have a zero denominator in a fraction. The other functions will assume this to be the case.</p>
 <p>Let us now look at the other functions in the module. They basically have to follow the standard rules for combining fractions. But we need to simplify things when possible. For instance <code>(1/2) * (2/3)</code> should equal <code>(1/3)</code>, not <code>(2/6)</code>. This is the goal of the simplify function: It takes a fraction, and simplifies it by finding the greatest common denominator of its numerator and denominator, then dividing them both by it:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">simplify ::</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span>
-simplify (<span class="dt">Frac</span> a b) <span class="fu">=</span> <span class="dt">Frac</span> a&#39; b&#39;
-    <span class="kw">where</span> d <span class="fu">=</span> gcd a b
-          a&#39; <span class="fu">=</span> a <span class="ot">`div`</span> d
-          b&#39; <span class="fu">=</span> b <span class="ot">`div`</span> d</code></pre></div>
+<pre class="haskell"><code>simplify :: Fraction -&gt; Fraction
+simplify (Frac a b) = Frac a&#39; b&#39;
+    where d = gcd a b
+          a&#39; = a `div` d
+          b&#39; = b `div` d</code></pre>
 <p>This is a function that is private to this module, and not exported to the rest of the application. This is important, as it allows us to modify the function without breaking everything else. In this occasion, we would want to ensure that our denominator is always a positive number:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">simplify ::</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span>
-simplify (<span class="dt">Frac</span> a b) <span class="fu">=</span> <span class="dt">Frac</span> (s<span class="fu">*</span>a&#39;) (s<span class="fu">*</span>b&#39;)
-    <span class="kw">where</span> d <span class="fu">=</span> gcd a b
-          a&#39; <span class="fu">=</span> a <span class="ot">`div`</span> d
-          b&#39; <span class="fu">=</span> b <span class="ot">`div`</span> d
-          s  <span class="fu">=</span> signum b&#39;</code></pre></div>
+<pre class="haskell"><code>simplify :: Fraction -&gt; Fraction
+simplify (Frac a b) = Frac (s*a&#39;) (s*b&#39;)
+    where d = gcd a b
+          a&#39; = a `div` d
+          b&#39; = b `div` d
+          s  = signum b&#39;</code></pre>
 <p>Finally, let us implement the remaining functions:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">mult ::</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span>
-<span class="dt">Frac</span> a b <span class="ot">`mult`</span> <span class="dt">Frac</span> c d <span class="fu">=</span> fraction (a <span class="fu">*</span> c) (b <span class="fu">*</span> d)
+<pre class="haskell"><code>mult :: Fraction -&gt; Fraction -&gt; Fraction
+Frac a b `mult` Frac c d = fraction (a * c) (b * d)
 
-<span class="ot">divide ::</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span>
-<span class="dt">Frac</span> a b <span class="ot">`divide`</span> <span class="dt">Frac</span> c d <span class="fu">=</span> fraction (a <span class="fu">*</span> d) (b <span class="fu">*</span> d)
+divide :: Fraction -&gt; Fraction -&gt; Fraction
+Frac a b `divide` Frac c d = fraction (a * d) (b * d)
 
-<span class="ot">add ::</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span>
-<span class="dt">Frac</span> a b <span class="ot">`add`</span> <span class="dt">Frac</span> c d <span class="fu">=</span> fraction (a <span class="fu">*</span> d <span class="fu">+</span> b <span class="fu">*</span> c) (b <span class="fu">*</span> d)
+add :: Fraction -&gt; Fraction -&gt; Fraction
+Frac a b `add` Frac c d = fraction (a * d + b * c) (b * d)
 
-<span class="ot">sub ::</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span> <span class="ot">-&gt;</span> <span class="dt">Fraction</span>
-<span class="dt">Frac</span> a b <span class="ot">`sub`</span> <span class="dt">Frac</span> c d <span class="fu">=</span> fraction (a <span class="fu">*</span> d <span class="fu">-</span> b <span class="fu">*</span> c) (b <span class="fu">*</span> d)</code></pre></div>
+sub :: Fraction -&gt; Fraction -&gt; Fraction
+Frac a b `sub` Frac c d = fraction (a * d - b * c) (b * d)</code></pre>
 <h3 id="importing-a-module">Importing a Module</h3>
 <p>When you want to use a module within another module or your main program, you must <em>import</em> it. There are a number of different ways to achieve that:</p>
 <dl>
 <dt>Simple import</dt>
 <dd><p>All the values and types that the module was exporting become available to you via their names. For example we can do things like:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Fraction</span>
-f1 <span class="fu">=</span> fraction <span class="dv">2</span> <span class="dv">3</span>  <span class="co">-- Create a new fraction</span>
-f1 <span class="ot">`add`</span> fraction <span class="dv">4</span> <span class="dv">5</span></code></pre></div>
+<pre class="haskell"><code>import Fraction
+f1 = fraction 2 3  -- Create a new fraction
+f1 `add` fraction 4 5</code></pre>
 </dd>
 <dt>Qualified import</dt>
 <dd><p>The values that the module was exporting become available, but only if you prepend them with the module name. This is useful when the functions that the module exports would have clashed with existing names. For example we can do:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import qualified</span> <span class="dt">Fraction</span>
-f1 <span class="fu">=</span> Fraction.fraction <span class="dv">2</span> <span class="dv">3</span>  <span class="co">-- Create a new fraction</span>
-f2 <span class="fu">=</span> f1 <span class="ot">`Fraction.add`</span> Fraction.fraction <span class="dv">4</span> <span class="dv">5</span></code></pre></div>
+<pre class="haskell"><code>import qualified Fraction
+f1 = Fraction.fraction 2 3  -- Create a new fraction
+f2 = f1 `Fraction.add` Fraction.fraction 4 5</code></pre>
 </dd>
 <dt>Import with alias</dt>
 <dd><p>We can do a qualified import with a specified name alias for the module. For example:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import qualified</span> <span class="dt">Fraction</span> <span class="kw">as</span> <span class="dt">F</span>
-f1 <span class="fu">=</span> F.fraction <span class="dv">2</span> <span class="dv">3</span>  <span class="co">-- Create a new fraction</span>
-f2 <span class="fu">=</span> f1 <span class="ot">`F.add`</span> F.fraction <span class="dv">4</span> <span class="dv">5</span></code></pre></div>
+<pre class="haskell"><code>import qualified Fraction as F
+f1 = F.fraction 2 3  -- Create a new fraction
+f2 = f1 `F.add` F.fraction 4 5</code></pre>
 </dd>
 <dt>Partial Import</dt>
 <dd><p>We can import only some functions but not others.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Fraction</span>(fraction, mult)   <span class="co">-- only imports these two functions</span>
-f1 <span class="fu">=</span> fraction <span class="dv">2</span> <span class="dv">3</span>  <span class="co">-- Create a new fraction</span>
-f2 <span class="fu">=</span> f1 <span class="ot">`add`</span> fraction <span class="dv">4</span> <span class="dv">5</span>  <span class="co">-- This will FAIL</span></code></pre></div>
+<pre class="haskell"><code>import Fraction(fraction, mult)   -- only imports these two functions
+f1 = fraction 2 3  -- Create a new fraction
+f2 = f1 `add` fraction 4 5  -- This will FAIL</code></pre>
 </dd>
 <dt>Import with hide</dt>
 <dd><p>We can import all but some of the functions.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Fraction</span> <span class="kw">hiding</span> (add)  <span class="co">-- imports all exported functions except add</span>
-f1 <span class="fu">=</span> fraction <span class="dv">2</span> <span class="dv">3</span>  <span class="co">-- Create a new fraction</span>
-f2 <span class="fu">=</span> f1 <span class="ot">`add`</span> fraction <span class="dv">4</span> <span class="dv">5</span>  <span class="co">-- This will FAIL</span></code></pre></div>
+<pre class="haskell"><code>import Fraction hiding (add)  -- imports all exported functions except add
+f1 = fraction 2 3  -- Create a new fraction
+f2 = f1 `add` fraction 4 5  -- This will FAIL</code></pre>
 </dd>
 </dl>
 <h2 id="implementing-type-class-instances">Implementing Type Class Instances</h2>
 <p>It is often desirable to make sure our data types implement a certain type class. For example it would be nice if our fractions behaved like normal numbers, in other words that they were a <strong>type class instance</strong> of the <code>Num</code> type class. Implementing a type class instance is easy. Let us start by seeing how <code>Num</code> is actually defined, in the <a href="https://hackage.haskell.org/package/base/docs/Prelude.html">standard Prelude</a>, excluding the comments:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span>  <span class="dt">Num</span> a  <span class="kw">where</span>
-    (<span class="fu">+</span>), (<span class="fu">-</span>),<span class="ot"> (*)       ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
-<span class="ot">    negate              ::</span> a <span class="ot">-&gt;</span> a
-<span class="ot">    abs                 ::</span> a <span class="ot">-&gt;</span> a
-<span class="ot">    signum              ::</span> a <span class="ot">-&gt;</span> a
-<span class="ot">    fromInteger         ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> a
-    <span class="co">-- Default definitions of (-) and negate.</span>
-    <span class="co">-- If one is provided, the other can be defined</span>
-    x <span class="fu">-</span> y               <span class="fu">=</span> x <span class="fu">+</span> negate y
-    negate x            <span class="fu">=</span> <span class="dv">0</span> <span class="fu">-</span> x</code></pre></div>
+<pre class="haskell"><code>class  Num a  where
+    (+), (-), (*)       :: a -&gt; a -&gt; a
+    negate              :: a -&gt; a
+    abs                 :: a -&gt; a
+    signum              :: a -&gt; a
+    fromInteger         :: Integer -&gt; a
+    -- Default definitions of (-) and negate.
+    -- If one is provided, the other can be defined
+    x - y               = x + negate y
+    negate x            = 0 - x</code></pre>
 <p>This is how a type class is defined, with the keyword <code>class</code> followed by the class name and type variable. What follows is a series of type declarations for the functions that belong to this class. If a type wants to be an instance of the class, it must implement all of these methods with a specific syntax that we are about to see.</p>
 <p>Some times however, a class will provide “default implementations” for some of the functions in terms of the others. In our example above, subtraction is defined in terms of addition and negation, and negation is in turn defined in terms of subtractions. What this means in practice is that a type has to only implement subtraction or negation, and then the other one will come for free.</p>
 <p>Let us now turn our <code>Fraction</code> type into an instance of <code>Num</code>. Recall that we ensured that the denominator is always positive:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Num</span> <span class="dt">Fraction</span> <span class="kw">where</span>
-    <span class="dt">Frac</span> a b <span class="fu">+</span> <span class="dt">Frac</span> c d <span class="fu">=</span> fraction (a <span class="fu">*</span> d <span class="fu">+</span> b <span class="fu">*</span> c) (b <span class="fu">*</span> d)
-    <span class="dt">Frac</span> a b <span class="fu">*</span> <span class="dt">Frac</span> c d <span class="fu">=</span> fraction (a <span class="fu">*</span> c) (b <span class="fu">*</span> d)
-    negate (<span class="dt">Frac</span> a b)   <span class="fu">=</span> <span class="dt">Frac</span> (negate a) b
-    abs    (<span class="dt">Frac</span> a b)   <span class="fu">=</span> <span class="dt">Frac</span> (abs a) b
-    signum (<span class="dt">Frac</span> a _)   <span class="fu">=</span> signum a
-    fromInteger a       <span class="fu">=</span> <span class="dt">Frac</span> a <span class="dv">1</span></code></pre></div>
+<pre class="haskell"><code>instance Num Fraction where
+    Frac a b + Frac c d = fraction (a * d + b * c) (b * d)
+    Frac a b * Frac c d = fraction (a * c) (b * d)
+    negate (Frac a b)   = Frac (negate a) b
+    abs    (Frac a b)   = Frac (abs a) b
+    signum (Frac a _)   = signum a
+    fromInteger a       = Frac a 1</code></pre>
 <p>Let us continue in the same vein, with definitions for <code>Eq</code> and <code>Ord</code>. First we look at the definitions of these type classes in the prelude (<a href="https://hackage.haskell.org/package/base-4.4.1.0/docs/src/GHC-Classes.html">have to dig a bit for them</a>):</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span>  <span class="dt">Eq</span> a  <span class="kw">where</span>
-    (<span class="fu">==</span>),<span class="ot"> (/=)           ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+<pre class="haskell"><code>class  Eq a  where
+    (==), (/=)           :: a -&gt; a -&gt; Bool
 
-    x <span class="fu">/=</span> y               <span class="fu">=</span> not (x <span class="fu">==</span> y)
-    x <span class="fu">==</span> y               <span class="fu">=</span> not (x <span class="fu">/=</span> y)
+    x /= y               = not (x == y)
+    x == y               = not (x /= y)
 
-<span class="kw">class</span>  (<span class="dt">Eq</span> a) <span class="ot">=&gt;</span> <span class="dt">Ord</span> a  <span class="kw">where</span>
-<span class="ot">    compare              ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span>
-    (<span class="fu">&lt;</span>), (<span class="fu">&lt;=</span>), (<span class="fu">&gt;</span>),<span class="ot"> (&gt;=) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>
-    max,<span class="ot"> min             ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+class  (Eq a) =&gt; Ord a  where
+    compare              :: a -&gt; a -&gt; Ordering
+    (&lt;), (&lt;=), (&gt;), (&gt;=) :: a -&gt; a -&gt; Bool
+    max, min             :: a -&gt; a -&gt; a
 
-    compare x y <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">==</span> y <span class="kw">then</span> <span class="dt">EQ</span>
-                  <span class="kw">else</span> <span class="kw">if</span> x <span class="fu">&lt;=</span> y <span class="kw">then</span> <span class="dt">LT</span>
-                  <span class="kw">else</span> <span class="dt">GT</span>
+    compare x y = if x == y then EQ
+                  else if x &lt;= y then LT
+                  else GT
 
-    x <span class="fu">&lt;</span>  y <span class="fu">=</span> <span class="kw">case</span> compare x y <span class="kw">of</span> { <span class="dt">LT</span> <span class="ot">-&gt;</span> <span class="dt">True</span>;  _ <span class="ot">-&gt;</span> <span class="dt">False</span> }
-    x <span class="fu">&lt;=</span> y <span class="fu">=</span> <span class="kw">case</span> compare x y <span class="kw">of</span> { <span class="dt">GT</span> <span class="ot">-&gt;</span> <span class="dt">False</span>; _ <span class="ot">-&gt;</span> <span class="dt">True</span> }
-    x <span class="fu">&gt;</span>  y <span class="fu">=</span> <span class="kw">case</span> compare x y <span class="kw">of</span> { <span class="dt">GT</span> <span class="ot">-&gt;</span> <span class="dt">True</span>;  _ <span class="ot">-&gt;</span> <span class="dt">False</span> }
-    x <span class="fu">&gt;=</span> y <span class="fu">=</span> <span class="kw">case</span> compare x y <span class="kw">of</span> { <span class="dt">LT</span> <span class="ot">-&gt;</span> <span class="dt">False</span>; _ <span class="ot">-&gt;</span> <span class="dt">True</span> }
+    x &lt;  y = case compare x y of { LT -&gt; True;  _ -&gt; False }
+    x &lt;= y = case compare x y of { GT -&gt; False; _ -&gt; True }
+    x &gt;  y = case compare x y of { GT -&gt; True;  _ -&gt; False }
+    x &gt;= y = case compare x y of { LT -&gt; False; _ -&gt; True }
 
-    max x y <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">&lt;=</span> y <span class="kw">then</span> y <span class="kw">else</span> x
-    min x y <span class="fu">=</span> <span class="kw">if</span> x <span class="fu">&lt;=</span> y <span class="kw">then</span> x <span class="kw">else</span> y</code></pre></div>
+    max x y = if x &lt;= y then y else x
+    min x y = if x &lt;= y then x else y</code></pre>
 <p>Notice how we only need to specify <code>==</code> or <code>/=</code>, as they each have default implementations in terms of each other. Similarly, <code>compare</code> is all that is needed for <code>Ord a</code> (though we can certainly define more functions if we had concerns about efficiency). We also throw in a “Show” instance.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">Fraction</span> <span class="kw">where</span>
-    <span class="dt">Frac</span> a b <span class="fu">==</span> <span class="dt">Frac</span> c d  <span class="fu">=</span> a <span class="fu">==</span> c <span class="fu">&amp;&amp;</span> b <span class="fu">==</span> d
+<pre class="haskell"><code>instance Eq Fraction where
+    Frac a b == Frac c d  = a == c &amp;&amp; b == d
 
-<span class="kw">instance</span> <span class="dt">Ord</span> <span class="dt">Fraction</span> <span class="kw">where</span>
-    <span class="dt">Frac</span> a b <span class="ot">`compare`</span> <span class="dt">Frac</span> c d  <span class="fu">=</span> compare (a <span class="fu">*</span> d)  (b <span class="fu">*</span> c)
+instance Ord Fraction where
+    Frac a b `compare` Frac c d  = compare (a * d)  (b * c)
 
-<span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Fraction</span> <span class="kw">where</span>
-    show (<span class="dt">Frac</span> a b) <span class="fu">=</span> show a <span class="fu">++</span> <span class="st">&quot; / &quot;</span> <span class="fu">++</span> show b</code></pre></div>
+instance Show Fraction where
+    show (Frac a b) = show a ++ &quot; / &quot; ++ show b</code></pre>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

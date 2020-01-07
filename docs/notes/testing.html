@@ -2,48 +2,12 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>testing</title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -114,62 +78,73 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3 id="testing-with-quickcheck">Testing with QuickCheck</h3>
 <p>We start by taking a look at QuickCheck. QuickCheck operates by testing “properties”. A <strong>property</strong> is simply a function that returns a boolean (we have been calling these “predicates”). In order for QuickCheck to do its work, it needs to be able to generate various inputs. QuickCheck already knows about many standard inputs, and you can provide it with “generators” for your custom input types.</p>
 <p>Let us take a look at an example in the interpreter. We start by loading the QuickCheck module into our module:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Test.QuickCheck</span></code></pre></div>
+<pre class="haskell"><code>import Test.QuickCheck</code></pre>
 <p>In order to use QuickCheck we must define “properties”. These are meant to be functions that should be true about <strong>any</strong> input you give them. QuickCheck can’t typically check all inputs, but it will check at random 100 inputs.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- This is of course a &quot;wrong&quot; property, as it is not always true.</span>
-<span class="ot">prop_allNumbersAreLessThan10 ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
-prop_allNumbersAreLessThan10 x <span class="fu">=</span>  x <span class="fu">&lt;</span> <span class="dv">10</span></code></pre></div>
+<pre class="haskell"><code>-- This is of course a &quot;wrong&quot; property, as it is not always true.
+prop_allNumbersAreLessThan10 :: Int -&gt; Bool
+prop_allNumbersAreLessThan10 x =  x &lt; 10</code></pre>
 <p>It is customary to start the name of these properties via <code>prop</code>.</p>
 <p>We can now load our module in <code>gchi</code> and test this property:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">quickCheck prop_allNumbersAreLessThan10</code></pre></div>
+<pre class="haskell"><code>quickCheck prop_allNumbersAreLessThan10</code></pre>
 <p>You get back an answer that looks like this:</p>
 <pre><code>*** Failed! Falsifiable (after 15 tests and 1 shrink):
 10</code></pre>
 <p>So QuickCheck will tell you that the test failed after trying 15 input values. You can try <code>verboseCheck</code> to see the actual values tried:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">verboseCheck prop_allNumbersAreLessThan10</code></pre></div>
+<pre class="haskell"><code>verboseCheck prop_allNumbersAreLessThan10</code></pre>
 <p>Note that these tests are not perfect: They only test a small number of inputs. For example if we were using 100 instead of 10, we would have gotten back the answer that everything is OK! The test never checked numbers bigger than 100.</p>
 <h4 id="generators">Generators</h4>
 <p>We can help QuickCheck along by providing “custom generators” for it. Generators have type <code>Gen a</code>. There are a number of built-in functions that allow us to create new generators:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Random element between the two given values (inclusive)</span>
-<span class="ot">choose ::</span> <span class="dt">Random</span> a <span class="ot">=&gt;</span> (a, a) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
-<span class="co">-- Randomly chooses one of the generators from the list</span>
-<span class="ot">oneOf ::</span> [<span class="dt">Gen</span> a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
-<span class="co">-- Randomly chooses a generator from the list, using the &quot;weights&quot; to determine frequency</span>
-<span class="ot">frequency ::</span> [(<span class="dt">Int</span>, <span class="dt">Gen</span> a)] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
-<span class="co">-- Randomly chooses an element from the list</span>
-<span class="ot">elements ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
-<span class="co">-- Generates a value that passes the predicate</span>
-<span class="ot">suchThat ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a
-<span class="co">-- Generates a value if the function returns a Just v</span>
-<span class="ot">suchThatMap ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b) <span class="ot">-&gt;</span> <span class="dt">Gen</span> b
-<span class="co">-- Generates a list of elements of random length</span>
-<span class="ot">listOf ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]
-<span class="ot">listOf1 ::</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]            <span class="co">-- Guaranteed non-empty</span>
-<span class="ot">vectorOf ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]    <span class="co">-- Specified length</span>
-<span class="ot">shuffle ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]              <span class="co">-- Random permutation of the list</span>
-<span class="co">-- Arbitrary t means that quickCheck knows how to generate values of type t</span>
-<span class="ot">arbitrary ::</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Gen</span> a
-<span class="ot">vector ::</span> <span class="dt">Arbitrary</span> a <span class="ot">=&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> [a]
-<span class="ot">orderedList ::</span> (<span class="dt">Ord</span> a, <span class="dt">Arbitrary</span> a) <span class="ot">=&gt;</span> <span class="dt">Gen</span> [a]</code></pre></div>
+<pre class="haskell"><code>-- Random element between the two given values (inclusive)
+choose :: Random a =&gt; (a, a) -&gt; Gen a
+-- Randomly chooses one of the generators from the list
+oneOf :: [Gen a] -&gt; Gen a
+-- Randomly chooses a generator from the list, using the &quot;weights&quot; to determine frequency
+frequency :: [(Int, Gen a)] -&gt; Gen a
+-- Randomly chooses an element from the list
+elements :: [a] -&gt; Gen a
+-- Generates a value that passes the predicate
+suchThat :: Gen a -&gt; (a -&gt; Bool) -&gt; Gen a
+-- Generates a value if the function returns a Just v
+suchThatMap :: Gen a -&gt; (a -&gt; Maybe b) -&gt; Gen b
+-- Generates a list of elements of random length
+listOf :: Gen a -&gt; Gen [a]
+listOf1 :: Gen a -&gt; Gen [a]            -- Guaranteed non-empty
+vectorOf :: Int -&gt; Gen a -&gt; Gen [a]    -- Specified length
+shuffle :: [a] -&gt; Gen [a]              -- Random permutation of the list
+-- Arbitrary t means that quickCheck knows how to generate values of type t
+arbitrary :: Arbitrary a =&gt; Gen a
+vector :: Arbitrary a =&gt; Int -&gt; Gen [a]
+orderedList :: (Ord a, Arbitrary a) =&gt; Gen [a]</code></pre>
 <p>You can use a specific generator as follows:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">genSmallNumbers ::</span> <span class="dt">Gen</span> <span class="dt">Int</span>
-genSmallNumbers <span class="fu">=</span> choose (<span class="dv">1</span>, <span class="dv">9</span>)
+<pre class="haskell"><code>genSmallNumbers :: Gen Int
+genSmallNumbers = choose (1, 9)
 
-<span class="co">-- Note the different type</span>
-<span class="ot">prop_allNumbersAreLessThan10 ::</span> <span class="dt">Property</span>
-prop_allNumbersAreLessThan10 <span class="fu">=</span> forAll genSmallNumbers <span class="fu">$</span> \x <span class="ot">-&gt;</span> x <span class="fu">&lt;</span> <span class="dv">10</span></code></pre></div>
+-- Note the different type
+prop_allNumbersAreLessThan10 :: Property
+prop_allNumbersAreLessThan10 = forAll genSmallNumbers $ \x -&gt; x &lt; 10</code></pre>
 <p>In this instance we tell it to use our <code>genSmallNumbers</code> generator to produce the <code>x</code>. That generator in turn only produces numbers between 1 and 9. Therefore QuickCheck will actually succeed in this instance.</p>
 <p>Lets try to write a generator that returns powers of a certain base (one easy way to get somewhat large numbers). We will use the <code>do</code> syntax for this, which you are probably not too familiar with, and we will discuss it more later.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">genPowers ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> <span class="dt">Int</span>
-genPowers base <span class="fu">=</span> <span class="kw">do</span>
-    expo <span class="ot">&lt;-</span> choose (<span class="dv">1</span>, <span class="dv">40</span>)
-    return (base <span class="fu">^</span> (<span class="ot">expo ::</span> <span class="dt">Int</span>))
+<pre class="haskell"><code>genPowers :: Int -&gt; Gen Int
+genPowers base = do
+    expo &lt;- choose (1, 40)
+    return (base ^ (expo :: Int))
 
-<span class="ot">prop_allNumbersAreLessThan100 ::</span> <span class="dt">Property</span>
-prop_allNumbersAreLessThan100 <span class="fu">=</span> forAll (genPowers <span class="dv">2</span>) <span class="fu">$</span> \x <span class="ot">-&gt;</span> x <span class="fu">&lt;</span> <span class="dv">100</span></code></pre></div>
+prop_allNumbersAreLessThan100 :: Property
+prop_allNumbersAreLessThan100 = forAll (genPowers 2) $ \x -&gt; x &lt; 100</code></pre>
 <p>Calling <code>quickCheck</code> on <code>prop_allNumbersAreLessThan100</code> will now actually fail (as it should) after just a few tries.</p>
 <p>There are many more features that QuickCheck provides. You’ll want to look at its manual for more.</p>
 <h3 id="specification-testing-with-hspec">Specification Testing with HSpec</h3>
 <p>HSpec is used in order to write more systematic tests, using QuickCheck or direct cases along the way, and produce suitable input. With HSpec you would be creating a separate test file with a suitable <code>main</code> method. We will discuss this kind of testing setup later, after we discuss IO in more detail.</p>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

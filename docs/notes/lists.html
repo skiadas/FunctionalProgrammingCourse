@@ -2,48 +2,12 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>lists</title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -101,15 +65,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </dl>
 <h3 id="list-practice">List Practice</h3>
 <p>Here are some example uses (recall that function application does not require parentheses):</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">head [<span class="dv">4</span><span class="fu">..</span><span class="dv">6</span>]       <span class="co">-- Returns 4</span>
-tail [<span class="dv">1</span><span class="fu">..</span><span class="dv">3</span>]       <span class="co">-- Returns [2, 3]</span>
-take <span class="dv">3</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]    <span class="co">-- Returns [1, 2, 3]</span>
-length <span class="st">&quot;abc&quot;</span>      <span class="co">-- Returns 3. Strings are lists of characters.</span>
-length [<span class="dv">1</span><span class="fu">..</span><span class="dv">10</span>]    <span class="co">-- Returns 10</span>
-product [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]    <span class="co">-- Returns 120</span>
-reverse [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</span>]    <span class="co">-- Returns [5, 4, 3, 2, 1]</span></code></pre></div>
+<pre class="haskell"><code>head [4..6]       -- Returns 4
+tail [1..3]       -- Returns [2, 3]
+take 3 [1..10]    -- Returns [1, 2, 3]
+length &quot;abc&quot;      -- Returns 3. Strings are lists of characters.
+length [1..10]    -- Returns 10
+product [1..5]    -- Returns 120
+reverse [1..5]    -- Returns [5, 4, 3, 2, 1]</code></pre>
 <p>Some practice questions:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>How many characters are there in the string “The big bad wolf”? Have Haskell count them!</li>
 <li>What is the product of all the numbers from 5 to 10?</li>
 <li>How can we test if a string is a palindrome? (You can use <code>==</code> to compare two strings).</li>
@@ -122,31 +86,31 @@ reverse [<span class="dv">1</span><span class="fu">..</span><span class="dv">5</
 <li>Open up Sublime Text or your favorite editor to that directory. You can typically do this by typing <code>subl .</code> on the terminal.</li>
 <li>Create a new file there with whatever file name you like and the extension <code>.hs</code>. This is not a required extension, but it is customary for Haskell script files.</li>
 <li>Start <code>ghci</code> in the terminal.</li>
-<li>Type <code>:load &quot;yourfilename.hs&quot;</code> to load the module.</li>
+<li>Type <code>:load "yourfilename.hs"</code> to load the module.</li>
 <li>As you make changes to the module in the future, type <code>:reload</code> to have the latest module reloaded based on the most recent version.</li>
 </ul>
 <p>Now let us add something to our script. Put in the following two function definitions in the script file and save it:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">factorial n <span class="fu">=</span> product [<span class="dv">1</span><span class="fu">..</span>n]
+<pre class="haskell"><code>factorial n = product [1..n]
 
-average ns <span class="fu">=</span> sum ns <span class="ot">`div`</span> length ns</code></pre></div>
+average ns = sum ns `div` length ns</code></pre>
 <p>Then reload. You should now be able to do <code>average [1..6]</code>. What do you get when you do that? Is that correct?</p>
 <p>Notice that these functions do not need a <code>return</code> statement. They are simply an expression, and the result of the function is the result of evaluating the expression.</p>
 <p>The definition of the <code>average</code> function above gives us an opportunity to discuss some syntax issues. First note the <code>`div`</code> operator in the middle. There is a function called <code>div</code>, which does integer division of its arguments, like so:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">div <span class="dv">5</span> <span class="dv">2</span>      <span class="co">--  integer divide 5 by 2</span></code></pre></div>
+<pre class="haskell"><code>div 5 2      --  integer divide 5 by 2</code></pre>
 <p>Any function of two arguments can instead be written as an operator, inbetween its arguments, by using backticks around the name, like so:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dv">5</span> <span class="ot">`div`</span> <span class="dv">2</span>    <span class="co">--  integer divide 5 by 2</span></code></pre></div>
+<pre class="haskell"><code>5 `div` 2    --  integer divide 5 by 2</code></pre>
 <p>This is often more natural to read.</p>
 <p>The other important feature is that function application does not need any parentheses around the values, and it is also the strongest-binding operation. So in the formula:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">sum ns <span class="ot">`div`</span> length ns</code></pre></div>
+<pre class="haskell"><code>sum ns `div` length ns</code></pre>
 <p>The sum of the ns will happen first, then the length of the ns will be computed, and then those two will be used with the <code>`div`</code>. So with parentheses it would have looked like this:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(sum ns) <span class="ot">`div`</span> (length ns)</code></pre></div>
+<pre class="haskell"><code>(sum ns) `div` (length ns)</code></pre>
 <p>We also see the syntax for writing functions in a script: You simply write the function followed by the parameters. Then an equal sign, followed by the definition (function body). We can use a <code>where</code> clause to identify parts of the above expression. Do this now, to change the <code>average</code> function to the following, then save and reload:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">average ns <span class="fu">=</span> total <span class="ot">`div`</span> count
-    <span class="kw">where</span> total <span class="fu">=</span> sum ns
-          count <span class="fu">=</span> length ns</code></pre></div>
+<pre class="haskell"><code>average ns = total `div` count
+    where total = sum ns
+          count = length ns</code></pre>
 <h2 id="function-writing-practice">Function-writing practice</h2>
 <p>Write functions that accomplish the following:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><code>prefix</code> takes a list and returns the first three elements of the list.</li>
 <li><code>isPalindrome</code> takes a string and returns whether the string is a palindrome.</li>
 <li><code>addInterest</code> takes two arguments: A “principle” amount, and an interest “rate”. It returns the new amount if we added the appropriate interest.</li>
@@ -154,5 +118,16 @@ average ns <span class="fu">=</span> sum ns <span class="ot">`div`</span> length
 <li><code>isDoubled</code> takes a list and returns whether the list is the result of appending a list to itself (in other words, if the first half of the lst is exactly equal to the second half).</li>
 <li><code>suffix</code> takes a list and returns the last three elements of the list.</li>
 </ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

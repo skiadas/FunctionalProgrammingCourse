@@ -2,48 +2,12 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>standard</title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -63,11 +27,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Types in Haskell always start with a capital letter.</p>
 <h3 id="type-ascription">Type ascription</h3>
 <p>We can specify the type of an expression by appending a double colon <code>::</code> followed by the type. For example we can write:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">True</span><span class="ot"> ::</span> <span class="dt">Bool</span>        <span class="co">-- The value &quot;True&quot; is of type Bool</span>
-not<span class="ot"> ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="co">-- The value &quot;not&quot; has the function type Bool-&gt;Bool</span>
-not <span class="dt">True</span><span class="ot"> ::</span> <span class="dt">Bool</span>    <span class="co">-- The expression &quot;not True&quot; is of type Bool</span></code></pre></div>
+<pre class="haskell"><code>True :: Bool        -- The value &quot;True&quot; is of type Bool
+not :: Bool -&gt; Bool -- The value &quot;not&quot; has the function type Bool-&gt;Bool
+not True :: Bool    -- The expression &quot;not True&quot; is of type Bool</code></pre>
 <p>You can ask the Haskell interpreter for the type of an expression by prepending it with <code>:type</code>:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">:</span><span class="kw">type</span> not <span class="dt">True</span>   <span class="co">-- will print &quot;not True :: Bool&quot;</span></code></pre></div>
+<pre class="haskell"><code>:type not True   -- will print &quot;not True :: Bool&quot;</code></pre>
 <p>An important point to make is that the above does not actually attempt to evaluate the expression <code>not True</code>, it just determines its type.</p>
 <h3 id="type-inference">Type inference</h3>
 <p>Haskell has a very powerful <em>type inference</em> process. <strong>Type inference</strong> is the process of determining the type of an expression without any required input from the programmer.</p>
@@ -87,7 +51,7 @@ not <span class="dt">True</span><span class="ot"> ::</span> <span class="dt">Boo
 <dd>for single Unicode characters, surrounded in quotes like so: <code>'a'</code>.
 </dd>
 <dt><code>String</code></dt>
-<dd>for strings of characters. Surrounded in double-quotes like so: <code>&quot;hello there!&quot;</code>. Note that technically strings are the same thing as lists of chars. So <code>String</code> is actually a <em>type alias</em> for what we will call <code>[Char]</code> in a bit.
+<dd>for strings of characters. Surrounded in double-quotes like so: <code>"hello there!"</code>. Note that technically strings are the same thing as lists of chars. So <code>String</code> is actually a <em>type alias</em> for what we will call <code>[Char]</code> in a bit.
 </dd>
 <dt><code>Int</code></dt>
 <dd>for fixed-precision integers, extending up to <span class="math inline">\(\pm2^{63}\)</span>.
@@ -110,10 +74,10 @@ not <span class="dt">True</span><span class="ot"> ::</span> <span class="dt">Boo
 <li>The fact that it is a list. This is denoted by using a single pair of square brackets: <code>[...]</code></li>
 <li>The fact that the entries have a certain type. That type goes between the brackets.</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">[<span class="dt">False</span>, <span class="dt">True</span>, <span class="dt">True</span>, <span class="dt">True</span>]<span class="ot"> ::</span> [<span class="dt">Bool</span>]
-[<span class="ch">&#39;a&#39;</span>, <span class="ch">&#39;b&#39;</span>, <span class="ch">&#39;c&#39;</span>]<span class="ot"> ::</span> [<span class="dt">Char</span>]            <span class="co">-- Can also be called String</span>
-<span class="st">&quot;abc&quot;</span><span class="ot"> ::</span> [<span class="dt">Char</span>]                      <span class="co">-- Same as above</span>
-[<span class="st">&quot;abc&quot;</span>, <span class="st">&quot;def&quot;</span>]<span class="ot"> ::</span> [[<span class="dt">Char</span>]]           <span class="co">-- Or also [String]</span></code></pre></div>
+<pre class="haskell"><code>[False, True, True, True] :: [Bool]
+[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;] :: [Char]            -- Can also be called String
+&quot;abc&quot; :: [Char]                      -- Same as above
+[&quot;abc&quot;, &quot;def&quot;] :: [[Char]]           -- Or also [String]</code></pre>
 <p><strong>Practice</strong>: Write a value of type <code>[[Int]]</code>.</p>
 <h4 id="tuple-types">Tuple Types</h4>
 <p>A <strong>tuple</strong> is a collection of values separated by commas and surrounded by parentheses. Unlike lists:</p>
@@ -123,32 +87,43 @@ not <span class="dt">True</span><span class="ot"> ::</span> <span class="dt">Boo
 <li>The types of each of the elements collectively form the type of the tuple.</li>
 </ul>
 <p>Examples:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="dt">False</span>, <span class="dv">3</span>)<span class="ot"> ::</span> (<span class="dt">Bool</span>, <span class="dt">Int</span>)
-(<span class="dv">3</span>, <span class="dt">False</span>)<span class="ot"> ::</span> (<span class="dt">Int</span>, <span class="dt">Bool</span>)    <span class="co">-- This is different from the one above</span>
-(<span class="dt">True</span>, <span class="dt">True</span>, <span class="st">&quot;dat&quot;</span>)<span class="ot">  ::</span> (<span class="dt">Bool</span>, <span class="dt">Bool</span>, [<span class="dt">Char</span>])
-<span class="ot">() ::</span> ()                     <span class="co">-- The empty tuple, with the empty tuple type</span></code></pre></div>
+<pre class="haskell"><code>(False, 3) :: (Bool, Int)
+(3, False) :: (Int, Bool)    -- This is different from the one above
+(True, True, &quot;dat&quot;)  :: (Bool, Bool, [Char])
+() :: ()                     -- The empty tuple, with the empty tuple type</code></pre>
 <p>We can also mix list types and tuple types. For instance:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">[(<span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">0</span>, <span class="dv">2</span>), (<span class="dv">3</span>, <span class="dv">4</span>)]<span class="ot"> ::</span> [(<span class="dt">Int</span>, <span class="dt">Int</span>)]       <span class="co">--   A list of pairs of integers</span>
- <span class="co">-- A list of pairs of strings and booleans</span>
-[(<span class="st">&quot;Peter&quot;</span>, <span class="dt">True</span>), (<span class="st">&quot;Jane&quot;</span>, <span class="dt">False</span>)]<span class="ot"> ::</span> [([<span class="dt">Char</span>], <span class="dt">Bool</span>)]</code></pre></div>
+<pre class="haskell"><code>[(1, 2), (0, 2), (3, 4)] :: [(Int, Int)]       --   A list of pairs of integers
+ -- A list of pairs of strings and booleans
+[(&quot;Peter&quot;, True), (&quot;Jane&quot;, False)] :: [([Char], Bool)]</code></pre>
 <p><strong>Activity</strong>: Think of uses for tuple types. What information might we choose to represent with tuples?</p>
 <h4 id="function-types">Function types</h4>
 <p>A function type is written as <code>A -&gt; B</code> where <code>A</code> is the type of the input and <code>B</code> is the type of the output. For example:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">add3 x <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">3</span><span class="ot">           ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
-add (x, y) <span class="fu">=</span> x <span class="fu">+</span><span class="ot"> y       ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Int</span>
-oneUpTo n <span class="fu">=</span> [<span class="dv">1</span><span class="fu">..</span>n]<span class="ot">       ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
-range (a, b) <span class="fu">=</span> [a<span class="fu">..</span>b]<span class="ot">    ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</code></pre></div>
+<pre class="haskell"><code>add3 x = x + 3           :: Int -&gt; Int
+add (x, y) = x + y       :: (Int, Int) -&gt; Int
+oneUpTo n = [1..n]       :: Int -&gt; [Int]
+range (a, b) = [a..b]    :: (Int, Int) -&gt; [Int]</code></pre>
 <p>When writing functions, we tend to declare their type right before their definition, like so:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">range<span class="ot"> ::</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="ot">-&gt;</span> [<span class="dt">Int</span>]
-range (a, b) <span class="fu">=</span> [a<span class="fu">..</span>b]</code></pre></div>
+<pre class="haskell"><code>range :: (Int, Int) -&gt; [Int]
+range (a, b) = [a..b]</code></pre>
 <p>You may be tempted to think of this function as a function of two variables. It technically is not, and we will discuss this topic on the next section.</p>
 <h3 id="type-practice">Type Practice</h3>
 <p>Work out the types of the following expressions:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li><code>(5 &gt; 3, 3 + head [1, 2, 3])</code></li>
-<li><code>[length &quot;abc&quot;]</code></li>
+<li><code>[length "abc"]</code></li>
 <li>The function <code>f</code> defined by <code>f lst = length lst + head lst</code></li>
 <li>The function <code>g</code> defined by <code>g lst = if head lst then 5 else 3</code></li>
 </ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

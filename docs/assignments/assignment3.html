@@ -2,10 +2,11 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>assignment3</title>
   <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
@@ -21,23 +22,21 @@
 <li>You will start managing your project by creating issues and milestones in the GitLab interface.</li>
 </ul>
 <p>At this point you should have the following setup:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>You created a fork of my <code>functional-programming-assignments</code> repository in GitLab. It probably has a web address that looks like <code>https://gitlab.com/skiadas/functional-programming-assignments</code> but with your name instead of mine.</li>
 <li>You have also cloned your fork locally on your computers, and it resides in some folder probably called <code>functional-programming-assignments</code>.
 <ul>
 <li><p>You can check which remote you are connected to if you do the following from the command line from the <code>functional-programming-assignments</code> folder in your computer:</p>
 <pre><code>git remote -v</code></pre>
-This should print two links, both associated with the remote called <code>origin</code>, one for push and one for fetch.</li>
+<p>This should print two links, both associated with the remote called <code>origin</code>, one for push and one for fetch.</p></li>
 </ul></li>
 <li>You have created a number of commits to your repository, first locally and then you pushed them to your fork.</li>
 <li>In the meantime, I have added the next homework assignment to my repository. Since you made your fork before I did that, your fork does not have these changes. The first thing we will need to do is move those changes over to your fork, without overwriting the code you have committed. We will do this via the following steps:
 <ul>
-<li><p>You will first add my repository as a second “remote” to your local clone. We will call it <code>upstream</code> to distinguish it from the <code>origin</code> remote that is your fork. You only have to do this once for the course, while the following steps will need to be done each time you want to update your fork and clone with my “upstream” changes (e.g. when a new assignment comes out). You would do this with the following command (do NOT change the account name, use mine):</p>
-<pre><code>git remote add upstream https://gitlab.com/skiadas/functional-programming-assignments.git</code></pre>
-If you were to do <code>git remote -v</code> now you should be seeing two more remote entries for <code>upstream</code>.</li>
+<li>You will first add my repository as a second “remote” to your local clone. We will call it <code>upstream</code> to distinguish it from the <code>origin</code> remote that is your fork. You only have to do this once for the course, while the following steps will need to be done each time you want to update your fork and clone with my “upstream” changes (e.g. when a new assignment comes out). You would do this with the following command (do NOT change the account name, use mine): <code>git remote add upstream https://gitlab.com/skiadas/functional-programming-assignments.git</code> If you were to do <code>git remote -v</code> now you should be seeing two more remote entries for <code>upstream</code>.</li>
 <li>We will do the remaining steps in GitKraken. Open your project in GitKraken and you should be seeing two remotes on the side, origin and upstream. In this step you will update the remote repositories to fetch the upstream update, and update your local upstream with the changes that happened on my repository. You do this with the little arrow to the right of the “Pull” menu, and you select the “Fetch All” option. You should also be seeing in the main window multiple paths. There is your local master, with a little laptop image to it, and if you have pushed recently then you would also see your fork “origin/master”, with your gitlab avatar, at the same position. And you will probably see another branch, the “upstream/master”, with my picture on it.</li>
 <li>Make sure the current branch is your local master, it should have a checkbox next to it. Also make sure you have no uncommitted changes (they are usually in a WIP item at the top). Then right-click my branch’s latests commit, and you should see a context menu. One of the options would say: “Merge upstream/master into master”. Click it.</li>
-<li><p>You are ready to go! There should now be a folder containing the assignment3 descriptions. The README in that folder should tell you what you need to do to finish the assignment. BUT keep reading here, as you are expected to also create issues, and the following paragraphs describe that process.</p></li>
+<li>You are ready to go! There should now be a folder containing the assignment3 descriptions. The README in that folder should tell you what you need to do to finish the assignment. BUT keep reading here, as you are expected to also create issues, and the following paragraphs describe that process.</li>
 </ul></li>
 </ol>
 <h2 id="project-management">Project Management</h2>
@@ -63,5 +62,16 @@ If you were to do <code>git remote -v</code> now you should be seeing two more r
 </dd>
 </dl>
 <p>Spend some time at the beginning of the assignment, as you read through the instructions, to create issues. For instance each function you need to write could be an issue. Though you have a certain degree of freedom regarding what issues to create and how many, you should at the very least create some issues.</p>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>

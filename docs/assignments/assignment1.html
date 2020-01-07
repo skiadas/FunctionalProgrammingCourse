@@ -2,48 +2,12 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>assignment1</title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-  </style>
 <link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -64,7 +28,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <h2 id="description-of-functions-to-write">Description of functions to write</h2>
 <p>We describe here the functions that you have to write.</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>The first function is provided for you. It is a function called <code>name</code> that returns the person’s name. As you can see it is extremely short</li>
 <li>Write a function <code>age</code> that given a person returns their age, and similarly a function <code>gender</code> that given a person returns their gender.</li>
 <li>Write functions <code>isMale</code> and <code>isFemale</code> which return a boolean depending on whether the person is male or female. You can do this with or without using the <code>gender</code> function. We have written two different start forms depending on which approach you want to take.</li>
@@ -77,99 +41,110 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Write a function <code>allCanDrink</code> that given a list of <code>Person</code>s returns whether they are all eligible to drink. You will find the function <code>all</code> useful. It has signature <code>all :: (a-&gt;Bool) -&gt; [a] -&gt; Bool</code>. So it takes a function that to each <code>a</code> returns a boolean (such functions are called predicates), then it takes a list of <code>a</code>s, and applies the function to all of them and determines if they were all <code>True</code>.</li>
 <li>Write a function <code>ageOne</code> that “ages” a person by one year. It should keep all other information about a person the same, but increase their age by 1. It returns the “new” person.</li>
 <li>Write a function <code>ageAll</code> that takes a list of <code>Person</code>s and ages them all by 1, and returns the new list of aged <code>Person</code>s.</li>
-<li>Use guarded expressions to write a function <code>isYoung</code> that takes a person and returns a string as follows: If the person is at most 5 years old the string should be <code>&quot;a toddler&quot;</code>. If they are at most 18 years old it should be <code>&quot;a teenager&quot;</code>. If they are over 18 years old it should be <code>&quot;young at heart&quot;</code>.</li>
-<li>Write a function <code>describe</code> which given a person “describes” them by producing a string as follows: <code>&quot;This is &lt;name&gt;. He/She is &quot;</code> and then the result of the <code>isYoung</code> function. Finally a closing dot at the end. You should use the appropriate pronoun for the given gender. Think of breaking this function up in smaller pieces using <code>where</code>. Remember that you can use <code>++</code> to concatenate lists, in particular to concatenate strings.</li>
+<li>Use guarded expressions to write a function <code>isYoung</code> that takes a person and returns a string as follows: If the person is at most 5 years old the string should be <code>"a toddler"</code>. If they are at most 18 years old it should be <code>"a teenager"</code>. If they are over 18 years old it should be <code>"young at heart"</code>.</li>
+<li>Write a function <code>describe</code> which given a person “describes” them by producing a string as follows: <code>"This is &lt;name&gt;. He/She is "</code> and then the result of the <code>isYoung</code> function. Finally a closing dot at the end. You should use the appropriate pronoun for the given gender. Think of breaking this function up in smaller pieces using <code>where</code>. Remember that you can use <code>++</code> to concatenate lists, in particular to concatenate strings.</li>
 <li>Write a function <code>makePerson</code> that is given a pair of a name and a gender and creates a new person with age <code>0</code>.</li>
 <li>Write a function <code>makeMany</code> that is given a list of names and a list of genders, and produces a list of new people at age 0 from the corresponding pairs. You will want to use <code>zip</code>, <code>map</code> and <code>makePerson</code>.</li>
 </ol>
 <h1 id="starting-code">Starting code</h1>
 <p>Copy this code and save it into a new Haskell script file. It should have the extension <code>.hs</code> and it should have a filename of the form: <code>LastnameFirstname1.hs</code>. Email me this file to submit your assignment.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">--- Assignment 1</span>
-<span class="co">--- Name:</span>
+<pre class="haskell"><code>--- Assignment 1
+--- Name:
 
-<span class="co">-- The next couple of lines define some new types. Do not change them.</span>
-<span class="kw">data</span> <span class="dt">Gender</span> <span class="fu">=</span> <span class="dt">Male</span> <span class="fu">|</span> <span class="dt">Female</span> <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)
-<span class="kw">type</span> <span class="dt">Person</span> <span class="fu">=</span> (<span class="dt">String</span>, <span class="dt">Int</span>, <span class="dt">Gender</span>)
+-- The next couple of lines define some new types. Do not change them.
+data Gender = Male | Female deriving (Show, Eq)
+type Person = (String, Int, Gender)
 
-<span class="co">-- An example person. Feel free to create more.</span>
-susie <span class="fu">=</span> (<span class="st">&quot;Susie&quot;</span>, <span class="dv">22</span>, <span class="dt">Female</span>)<span class="ot"> ::</span> <span class="dt">Person</span>
+-- An example person. Feel free to create more.
+susie = (&quot;Susie&quot;, 22, Female) :: Person
 
-<span class="co">-- Function 1</span>
-<span class="ot">name ::</span> <span class="dt">Person</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
-name (pName, pAge, pGender) <span class="fu">=</span> pName
+-- Function 1
+name :: Person -&gt; String
+name (pName, pAge, pGender) = pName
 
-<span class="co">-- Functions 2</span>
-<span class="co">-- Uncomment the next few lines</span>
-<span class="co">-- age :: Person -&gt; Int</span>
-<span class="co">-- age (pName, pAge, pGender) = ...</span>
+-- Functions 2
+-- Uncomment the next few lines
+-- age :: Person -&gt; Int
+-- age (pName, pAge, pGender) = ...
 
-<span class="co">-- gender :: Person -&gt; Gender</span>
-<span class="co">-- gender (pName, pAge, pGender) = ...</span>
+-- gender :: Person -&gt; Gender
+-- gender (pName, pAge, pGender) = ...
 
-<span class="co">-- Functions 3</span>
-<span class="co">-- Uncomment the next few lines</span>
-<span class="co">-- isMale :: Person -&gt; Bool</span>
-<span class="co">-- Keep this start if you will NOT use the gender function</span>
-<span class="co">-- isMale (pName, pAge, pGender) = ...</span>
-<span class="co">-- Keep this start if you WILL use the gender function</span>
-<span class="co">-- isMale person = ...</span>
+-- Functions 3
+-- Uncomment the next few lines
+-- isMale :: Person -&gt; Bool
+-- Keep this start if you will NOT use the gender function
+-- isMale (pName, pAge, pGender) = ...
+-- Keep this start if you WILL use the gender function
+-- isMale person = ...
 
-<span class="co">-- isFemale :: Person -&gt; Bool</span>
-<span class="co">-- Keep this start if you will NOT use the gender function</span>
-<span class="co">-- isFemale (pName, pAge, pGender) = ...</span>
-<span class="co">-- Keep this start if you WILL use the gender function</span>
-<span class="co">-- isFemale person = ...</span>
+-- isFemale :: Person -&gt; Bool
+-- Keep this start if you will NOT use the gender function
+-- isFemale (pName, pAge, pGender) = ...
+-- Keep this start if you WILL use the gender function
+-- isFemale person = ...
 
-<span class="co">-- Function 4</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- canDrink :: Person -&gt; Bool</span>
+-- Function 4
+-- Uncomment the next line
+-- canDrink :: Person -&gt; Bool
 
-<span class="co">-- Function 5</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- closeAge :: Person -&gt; Person -&gt; Bool</span>
+-- Function 5
+-- Uncomment the next line
+-- closeAge :: Person -&gt; Person -&gt; Bool
 
-<span class="co">-- Function 6</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- oppositeGender :: Person -&gt; Person -&gt; Bool</span>
+-- Function 6
+-- Uncomment the next line
+-- oppositeGender :: Person -&gt; Person -&gt; Bool
 
-<span class="co">-- Function 7</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- bioCompatible :: Person -&gt; Person -&gt; Bool</span>
+-- Function 7
+-- Uncomment the next line
+-- bioCompatible :: Person -&gt; Person -&gt; Bool
 
-<span class="co">-- Function 8</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- allAges :: [Person] -&gt; [Int]</span>
+-- Function 8
+-- Uncomment the next line
+-- allAges :: [Person] -&gt; [Int]
 
-<span class="co">-- Function 9</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- sumOfAges :: [Person] -&gt; Int</span>
+-- Function 9
+-- Uncomment the next line
+-- sumOfAges :: [Person] -&gt; Int
 
-<span class="co">-- Function 10</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- allCanDrink :: [Person] -&gt; Bool</span>
+-- Function 10
+-- Uncomment the next line
+-- allCanDrink :: [Person] -&gt; Bool
 
-<span class="co">-- Function 11</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- ageOne :: Person -&gt; Person</span>
+-- Function 11
+-- Uncomment the next line
+-- ageOne :: Person -&gt; Person
 
-<span class="co">-- Function 12</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- ageAll :: [Person] -&gt; [Person]</span>
+-- Function 12
+-- Uncomment the next line
+-- ageAll :: [Person] -&gt; [Person]
 
-<span class="co">-- Function 13</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- isYoung :: Person -&gt; String</span>
+-- Function 13
+-- Uncomment the next line
+-- isYoung :: Person -&gt; String
 
-<span class="co">-- Function 14</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- describe :: Person -&gt; String</span>
+-- Function 14
+-- Uncomment the next line
+-- describe :: Person -&gt; String
 
-<span class="co">-- Function 15</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- makePerson :: (String, Gender) -&gt; Person</span>
+-- Function 15
+-- Uncomment the next line
+-- makePerson :: (String, Gender) -&gt; Person
 
-<span class="co">-- Function 16</span>
-<span class="co">-- Uncomment the next line</span>
-<span class="co">-- makeAll :: [String] -&gt; [Gender] -&gt; [Person]</span></code></pre></div>
+-- Function 16
+-- Uncomment the next line
+-- makeAll :: [String] -&gt; [Gender] -&gt; [Person]</code></pre>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
 </body>
 </html>
