@@ -16,65 +16,32 @@
 <body>
 <h1 id="conditional-expressions-in-functions">Conditional Expressions in Functions</h1>
 <p>We begin our exploration of function-writing techniques with a technique probably familiar to you by now, namely <em>conditional expressions</em>. We also look at a variant of conditional expressions that is popular in Haskell functions, namely <em>guarded equations</em>.</p>
-<h2 id="reading">Reading</h2>
-<ul>
-<li>Sections 4.1-4.3</li>
-</ul>
 <h2 id="conditional-expressions">Conditional Expressions</h2>
 <p>Conditional expressions are one of the most standard control operations. We check the value of a boolean expression, and choose one of two branches depending on the result. This is done with the standard syntax <code>if &lt;test&gt; then &lt;TrueBranch&gt; else &lt;FalseBranch&gt;</code>.</p>
 <p>Note that in Haskell you cannot avoid having the <code>else</code> branch: The expression must evaluate to something one way or another.</p>
-<p>As a running example for this section, let us imagine an application that handles people’s accounts. In order to avoid using negative numbers when storing account information, each person’s account is stored as a pair <code>Account = (Bool, Double)</code>, where the boolean determines whether the account has zero or more funds, corresponding to the value <code>True</code> or whether it ows funds, corresponding to the value <code>False</code>. So the number on the second coordinate is always non-negative, and it corresponds to funds in the account in the <code>True</code> case and to funds owed in the <code>False</code> case.</p>
-<p>We can now imagine a number of functions we could write in such a setting:</p>
-<pre class="haskell"><code>-- Giving a new name to this tuple type
-type Account = (Bool, Double)
--- Initialize an account given an initial amount (possibly negative).
-initAccount :: Double -&gt; Account
--- Deposits a *positive* amount to an account. Returns the &quot;new&quot; account.
-deposit :: Double -&gt; Account -&gt; Account
--- Withdraws a *positive* amount from an account. Returns the &quot;new&quot; account.
-withdraw :: Double -&gt; Account -&gt; Account
--- Returns whether the account has enough credit for a specific amount of withdrawal.
-hasEnoughFunds :: Double -&gt; Account -&gt; Bool
--- Returns whether the account owes funds
-doesNotOwe :: Account -&gt; Bool</code></pre>
-<p><strong>Practice</strong>: Before we move on to implement these functions, write in pseudocode how they might go.</p>
-<p>Let’s think about how we might implement some of these functions:</p>
-<pre class="haskell"><code>initAccount :: Double -&gt; Account
-initAccount amount =
-    if amount &lt; 0 then (False, -amount) else (True, amount)
+<p>Example of a function that finds the minimum of two numbers, along with some properties it should satisfy:</p>
+<pre class="haskell"><code>myMin :: Integer -&gt; Integer -&gt; Integer
+myMin x y = if x &lt; y then x else y
 
-deposit :: Double -&gt; Account -&gt; Account
-deposit amountAdded (hasFunds, amount) =
-    if hasFunds
-    then (True, amount + amountAdded)
-    else initAccount (amountAdded - amount)</code></pre>
-<p>The above code also exhibits the two different styles when writing “if-then-else” expressions: You can put everything in one line if it is short enough to be readable, or you can vertically align the three keywords.</p>
-<p><strong>Practice</strong>: Write the <code>withdraw</code> and <code>hasEnoughFunds</code> functions. Write the <code>doesNotOwe</code> function by using the <code>hasEnoughFunds</code> function.</p>
-<h2 id="guarded-expressions">Guarded Expressions</h2>
-<p>A very common practice in Haskell is to use so-called guarded expressions. These are handy when you have more than one condition to test. Conditions are tested one at a time until a <code>True</code> case is found, then that particular path is followed. For example, here are the <code>initAccount</code> and <code>deposit</code> functions written with guarded expressions:</p>
-<pre class="haskell"><code>initAccount :: Double -&gt; Account
-initAccount amount | amount &lt; 0 = (False, -amount)
-                   | otherwise  = (True, amount)
+prop_minAlwaysSmallerThanBoth :: Integer -&gt; Integer -&gt; Bool
+prop_minAlwaysSmallerThanBoth x y =   (myMin x y &lt;= x) &amp;&amp; (myMin x y &lt;= y)
 
-deposit :: Double -&gt; Account -&gt; Account
-deposit amountAdded (hasFunds, amount)
-        | hasFunds  = (True, amount + amountAdded)
-        | otherwise = initAccount (amountAdded - amount)
--- Alternative deposit without using initAccount. Not as nice
-deposit :: Double -&gt; Account -&gt; Account
-deposit amountAdded (hasFunds, amount)
-        | hasFunds       = (True, amount + amountAdded)
-        | newBalance &lt; 0 = (False, -newBalance)
-        | otherwise      = (True, newBalance)
-        where newBalance = amountAdded - amount</code></pre>
-<p>In all these examples, not the use of the word <code>otherwise</code>. This is simply a synomym for <code>True</code>. Therefore branches with <code>otherwise</code> will always be taken.</p>
-<p><strong>Practice</strong>: Write the <code>withdraw</code> and <code>hasEnoughFunds</code> functions using guarded expressions instead.</p>
+prop_minAlwaysEqualToOne :: Integer -&gt; Integer -&gt; Bool
+prop_minAlwaysEqualToOne x y =   (myMin x y == x) || (myMin x y == y)</code></pre>
+<p>Save in a file and load, then use quickCheck:</p>
+<pre class="haskell"><code>quickCheck prop_minAlwaysSmallerThanBoth
+quickCheck prop_minAlwaysEqualToOne</code></pre>
+<h2 id="guards">Guards</h2>
+<p>A very common practice in Haskell is to use so-called guarded expressions, or <strong>guards</strong>. These are handy when you have more than one condition to test. Conditions are tested one at a time until a <code>True</code> case is found, then that particular path is followed. It is customary to use the special value <code>otherwise</code> which is equal to <code>True</code> as the last case. Here is our <code>myMin</code> function written using guards:</p>
+<pre class="haskell"><code>myMin :: Integer -&gt; Integer -&gt; Integer
+myMin x y | x &lt; y     = x
+          | otherwise = y</code></pre>
 <h3 id="example-the-collatz-function">Example: The Collatz Function</h3>
 <p>The <code>collatz</code> function is defined for natural numbers as follows: If the number is even, divide it by 2. If it is, multiply it by 3 and add 1. For example:</p>
 <pre class="haskell"><code>collatz 4 = 2
 collatz 5 = 16</code></pre>
-<p>Write a <code>collatz</code> function using guarded expressions.</p>
-<p>The <em>Collatz conjecture</em> is a famous conjecture that says that no matter what number start with, if we were to apply the <code>collatz</code> function over and over again we eventually end up at 1. This is still an unsolved problem. But we will explore it by writing a function that applies the same function over and over again and records the results, stopping if it ever reaches a prescribed value. We will learn how to write such functions later, but you should be able to follow its logic and understand its type:</p>
+<p>Write a <code>collatz</code> function using guards.</p>
+<p>The <em>Collatz conjecture</em> is a famous conjecture that says that no matter what number we start with, if we were to apply the <code>collatz</code> function over and over again we eventually end up at 1. This is still an unsolved problem. But we will explore it by writing a function that applies the same function over and over again and records the results, stopping if it ever reaches a prescribed value. We will learn how to write such functions later, but you should be able to follow its logic and understand its type:</p>
 <pre class="haskell"><code>iter :: Eq t =&gt; Int -&gt; (t -&gt; t) -&gt; t -&gt; t -&gt; [t]
 iter times f stopAt start
       | times == 0      = []
@@ -83,7 +50,7 @@ iter times f stopAt start
       where nextValue = f start
 
 testCollatz = iter 1000 collatz 1</code></pre>
-<p>You can now test start numbers like so: <code>testCollatz 51</code>. Try many start numbers. Does the sequence seem to always reach 1?</p>
+<p>You can now test different initial numbers like so: <code>testCollatz 51</code>. Try many initial numbers. Does the sequence seem to always reach 1?</p>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");
 for (const el of els) {

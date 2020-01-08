@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>assignment0</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="assignment-0">Assignment 0</h1>
+<p>This first assignment asks you to write simple functions based on the types we have seen so far.</p>
+<p>Stub methods have been created for you, you will need to fix them.</p>
+<p>You can run the tests loading the file then doing <code>runTests</code>.</p>
+<ol type="1">
+<li>Using guards, write a function <code>compareAges</code> that takes as input two integer ages and returns one of three string messages: “same age”, “first is older”, or “second is older”.</li>
+<li>Write a function <code>arePythagorean</code> which is given three integers lengths and returns <code>true</code> if they are all positive and if the sum of the squares of the first two equals the square of the third (these are “Pythagorean triples” because they satisfy the Pythagorean theorem equation and can form the three sides of a right-angle triangle). You may want to use guards to handle the negative cases.</li>
+<li>Write functions <code>nor1</code> and <code>nor2</code> that both perform the NOR boolean operator. One of them should do it by listing all the individual cases. The other should do it by using the fact that “NOR” stands for “not or”.</li>
+<li>Write a function <code>getMiddle</code> that given three numbers returns the one that is numerically in the middle. For example <code>getMiddle 3 8 4 = 4</code>.</li>
+</ol>
+<pre class="haskell"><code>--- Assignment 0
+--- Name:
+
+import Test.QuickCheck
+
+compareAges :: Integer -&gt; Integer -&gt; String
+compareAges age1 age2 = &quot;not right&quot;
+
+
+arePythagorean :: Integer -&gt; Integer -&gt; Integer -&gt; Bool
+arePythagorean a b c = False
+
+nor1 :: Bool -&gt; Bool -&gt; Bool
+nor1 True True = True     -- fix and add more cases
+
+
+nor2 :: Bool -&gt; Bool -&gt; Bool
+nor2 x y = False          -- fix
+
+getMiddle :: Integer -&gt; Integer -&gt; Integer
+getMiddle a b c = b       -- fix
+
+prop_agesWork a1 a2 =
+    (a1 == a2 &amp;&amp; result == &quot;same age&quot;) ||
+    (a1 &gt; a2 &amp;&amp; result == &quot;first is older&quot;) ||
+    (a1 &lt; a2 &amp;&amp; result == &quot;second is older&quot;)
+    where result = compareAges a1 a2
+
+prop_norsMatch x y = nor1 x y == nor2 x y
+
+prop_norsXX x = nor1 x x == not x
+prop_norsXTrue x = not (nor1 x True) &amp;&amp; not (nor1 True x)
+prop_norsXFalse x = nor1 x False == not x
+
+prop_getMiddle1 x =  getMiddle x (x + 3) (x - 2) == x
+prop_getMiddle2 x =  getMiddle x (x - 2) (x + 3) == x
+prop_getMiddle3 x =  getMiddle (x-2) x (x + 3) == x
+prop_getMiddle4 x =  getMiddle (x + 3) x (x-2) == x
+prop_getMiddle5 x =  getMiddle (x-2) (x + 3) x == x
+prop_getMiddle6 x =  getMiddle (x + 3) (x-2) x == x
+
+
+testCompareAges = do
+    putStrLn &quot;\nTesting prop_agesWork&quot;
+    putStr &quot;prop_agesWork: &quot;; quickCheck prop_agesWork
+
+testPythagorean = do
+    putStrLn &quot;\nTesting arePythagorean&quot;
+    testFail &quot;negative a&quot; $ arePythagorean (-3) 4 5
+    testFail &quot;negative b&quot; $ arePythagorean 3 (-4) 5
+    testFail &quot;negative c&quot; $ arePythagorean 3 4 (-5)
+    test &quot;valid&quot; $ arePythagorean 3 4 5
+    testFail &quot;invalid&quot; $ arePythagorean 3 4 6
+
+testNors = do
+    putStrLn &quot;\nTesting nor1 and nor2&quot;
+    putStr &quot;prop_norsXX: &quot;; quickCheck prop_norsXX
+    putStr &quot;prop_norsXTrue: &quot;; quickCheck prop_norsXTrue
+    putStr &quot;prop_norsXFalse: &quot;; quickCheck prop_norsXFalse
+
+testGetMiddle = do
+    putStrLn &quot;\nTesting getMiddle&quot;
+    putStr &quot;prop_getMiddle1: &quot;; quickCheck prop_getMiddle1
+    putStr &quot;prop_getMiddle2: &quot;; quickCheck prop_getMiddle2
+    putStr &quot;prop_getMiddle3: &quot;; quickCheck prop_getMiddle3
+    putStr &quot;prop_getMiddle4: &quot;; quickCheck prop_getMiddle4
+    putStr &quot;prop_getMiddle5: &quot;; quickCheck prop_getMiddle5
+    putStr &quot;prop_getMiddle6: &quot;; quickCheck prop_getMiddle6
+
+test s b = do
+    putStr s
+    putStr &quot;: &quot;
+    putStrLn $ if b then &quot;OK&quot; else &quot;FAILED&quot;
+
+testFail s b = test s (not b)
+
+runTests :: IO ()
+runTests = do
+    testCompareAges
+    testPythagorean
+    testNors
+    testGetMiddle
+</code></pre>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+</body>
+</html>

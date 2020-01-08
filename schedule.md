@@ -35,7 +35,10 @@ Wed
     - [Practice with GHCi](notes/ghci_practice.md)
 
 Fri
-  ~ TBD
+  ~ - Reading: 3.1-3.7
+    - [Standard Haskell values and types.](notes/standard.md)
+    - [Conditionals. Guarded Expressions.](notes/functions_conditionals.md)
+    - [Assignment 0. Due Wed 01/15](assignments/assignment0.md)
 
 ## Week 2
 
@@ -173,11 +176,10 @@ Fri
 
 ## Old links
 
+- [Compound Types](notes/compoundTypes.md)
 - [Working with the GHC compiler and interpreter. Lists.](notes/lists.md) (2.1-2.5)
-- [Standard Haskell values and types.](notes/standard.md) (3.1-3.5)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes. (cont)](notes/types_advanced.md) (3.6-3.9)
-- [Conditionals. Guarded Expressions.](notes/functions_conditionals.md) (4.1-4.3)
 - [Assignment 1. Due 09/22](assignments/assignment1.md)
 - [Pattern Matching.](notes/pattern_matching.md) (4.4)
 - [More practice with Pattern Matching.](notes/more_pattern_matching.md)

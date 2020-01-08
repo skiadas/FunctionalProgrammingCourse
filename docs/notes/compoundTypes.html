@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>compoundTypes</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="compound-haskell-types">Compound Haskell Types</h1>
+<h3 id="compound-types">Compound Types</h3>
+<p>There are a number of ways of producing more complex types out of simpler types. These are some times called <em>compound types</em>.</p>
+<h4 id="list-types">List Types</h4>
+<p>The first example of that is the list type. As elements of the list all must have the same type, we can specify the type of a list with two pieces of information:</p>
+<ul>
+<li>The fact that it is a list. This is denoted by using a single pair of square brackets: <code>[...]</code></li>
+<li>The fact that the entries have a certain type. That type goes between the brackets.</li>
+</ul>
+<pre class="haskell"><code>[False, True, True, True] :: [Bool]
+[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;] :: [Char]            -- Can also be called String
+&quot;abc&quot; :: [Char]                      -- Same as above
+[&quot;abc&quot;, &quot;def&quot;] :: [[Char]]           -- Or also [String]</code></pre>
+<p><strong>Practice</strong>: Write a value of type <code>[[Int]]</code>.</p>
+<h4 id="tuple-types">Tuple Types</h4>
+<p>A <strong>tuple</strong> is a collection of values separated by commas and surrounded by parentheses. Unlike lists:</p>
+<ul>
+<li>A tuple has a fixed number of elements (fixed <em>arity</em>), either zero or at least two.</li>
+<li>The elements can have different types, from each other.</li>
+<li>The types of each of the elements collectively form the type of the tuple.</li>
+</ul>
+<p>Examples:</p>
+<pre class="haskell"><code>(False, 3) :: (Bool, Int)
+(3, False) :: (Int, Bool)    -- This is different from the one above
+(True, True, &quot;dat&quot;)  :: (Bool, Bool, [Char])
+() :: ()                     -- The empty tuple, with the empty tuple type</code></pre>
+<p>We can also mix list types and tuple types. For instance:</p>
+<pre class="haskell"><code>[(1, 2), (0, 2), (3, 4)] :: [(Int, Int)]       --   A list of pairs of integers
+ -- A list of pairs of strings and booleans
+[(&quot;Peter&quot;, True), (&quot;Jane&quot;, False)] :: [([Char], Bool)]</code></pre>
+<p><strong>Activity</strong>: Think of uses for tuple types. What information might we choose to represent with tuples?</p>
+<h4 id="function-types">Function types</h4>
+<p>A function type is written as <code>A -&gt; B</code> where <code>A</code> is the type of the input and <code>B</code> is the type of the output. For example:</p>
+<pre class="haskell"><code>add3 x = x + 3           :: Int -&gt; Int
+add (x, y) = x + y       :: (Int, Int) -&gt; Int
+oneUpTo n = [1..n]       :: Int -&gt; [Int]
+range (a, b) = [a..b]    :: (Int, Int) -&gt; [Int]</code></pre>
+<p>When writing functions, we tend to declare their type right before their definition, like so:</p>
+<pre class="haskell"><code>range :: (Int, Int) -&gt; [Int]
+range (a, b) = [a..b]</code></pre>
+<p>You may be tempted to think of this function as a function of two variables. It technically is not, and we will discuss this topic on the next section.</p>
+<h3 id="type-practice">Type Practice</h3>
+<p>Work out the types of the following expressions:</p>
+<ol type="1">
+<li><code>(5 &gt; 3, 3 + head [1, 2, 3])</code></li>
+<li><code>[length "abc"]</code></li>
+<li>The function <code>f</code> defined by <code>f lst = length lst + head lst</code></li>
+<li>The function <code>g</code> defined by <code>g lst = if head lst then 5 else 3</code></li>
+</ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+</body>
+</html>
