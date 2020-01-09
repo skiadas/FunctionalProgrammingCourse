@@ -19,6 +19,9 @@
 <h2 id="conditional-expressions">Conditional Expressions</h2>
 <p>Conditional expressions are one of the most standard control operations. We check the value of a boolean expression, and choose one of two branches depending on the result. This is done with the standard syntax <code>if &lt;test&gt; then &lt;TrueBranch&gt; else &lt;FalseBranch&gt;</code>.</p>
 <p>Note that in Haskell you cannot avoid having the <code>else</code> branch: The expression must evaluate to something one way or another.</p>
+<blockquote>
+<p>The <code>if-then-else</code> syntax in Haskell is an <strong>expression</strong>: it results in a value. It is in that sense similar to the ternary operator in C or Java: <code>x &gt; 4 ? 3 : 1</code>.</p>
+</blockquote>
 <p>Example of a function that finds the minimum of two numbers, along with some properties it should satisfy:</p>
 <pre class="haskell"><code>myMin :: Integer -&gt; Integer -&gt; Integer
 myMin x y = if x &lt; y then x else y

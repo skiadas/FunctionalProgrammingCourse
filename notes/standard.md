@@ -68,6 +68,7 @@ Here is a listing of the basic types in Haskell
 
 - Start your session with `ghci Chapter3` then add your code to the `Chapter3.hs` file.
 - The book provides a definition for an "exclusive or" function on page 42. Implement it in a file and load it, then determine the full truth table for it:
+
     ```haskell
     exOr True True
     exOr True False
@@ -84,6 +85,7 @@ Here is a listing of the basic types in Haskell
     -- Do the same for exOr2
     ```
     To execute these properties, run:
+
     ```haskell
     quickCheck prop_exOr1_equals_exOr
     quickCheck prop_exOr2_equals_exOr

@@ -8,6 +8,8 @@ Conditional expressions are one of the most standard control operations. We chec
 
 Note that in Haskell you cannot avoid having the `else` branch: The expression must evaluate to something one way or another.
 
+> The `if-then-else` syntax in Haskell is an **expression**: it results in a value. It is in that sense similar to the ternary operator in C or Java: `x > 4 ? 3 : 1`.
+
 Example of a function that finds the minimum of two numbers, along with some properties it should satisfy:
 ```haskell
 myMin :: Integer -> Integer -> Integer

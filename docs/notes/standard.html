@@ -64,14 +64,20 @@ not True :: Bool    -- The expression &quot;not True&quot; is of type Bool</code
 <h2 id="practice">Practice</h2>
 <ul>
 <li><p>Start your session with <code>ghci Chapter3</code> then add your code to the <code>Chapter3.hs</code> file.</p></li>
-<li><p>The book provides a definition for an “exclusive or” function on page 42. Implement it in a file and load it, then determine the full truth table for it: <code>haskell   exOr True True   exOr True False   exOr False True   exOr False False</code></p></li>
+<li><p>The book provides a definition for an “exclusive or” function on page 42. Implement it in a file and load it, then determine the full truth table for it:</p>
+<pre class="haskell"><code>exOr True True
+exOr True False
+exOr False True
+exOr False False</code></pre></li>
 <li><p>Exercises 3.1, 3.3 (name your functions exOr1 and exOr2)</p></li>
 <li><p>To test that the implementations of <code>exOr</code> and <code>exOr1</code> are in fact behaving the same way, we can write a “quickCheck” property, and add it to the same file:</p>
 <pre class="haskell"><code>prop_exOr1_equals_exOr :: Bool -&gt; Bool -&gt; Bool
 prop_exOr1_equals_exOr x y =
     exOr1 x y == exOr x y
 -- Do the same for exOr2</code></pre>
-<p>To execute these properties, run: <code>haskell   quickCheck prop_exOr1_equals_exOr   quickCheck prop_exOr2_equals_exOr</code></p></li>
+<p>To execute these properties, run:</p>
+<pre class="haskell"><code>quickCheck prop_exOr1_equals_exOr
+quickCheck prop_exOr2_equals_exOr</code></pre></li>
 <li><p>Add a property that should fail: <code>prop_exOr_equals_or x y =   exOr x y == (x || y)</code> and run a quickCheck on it, and it should give you an example of values that make it fail.</p></li>
 <li><p>Exercises 3.5-3.7</p></li>
 </ul>
