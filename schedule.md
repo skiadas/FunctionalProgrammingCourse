@@ -43,10 +43,14 @@ Fri
 ## Week 2
 
 Mon
-  ~ TBD
+  ~ - Reading: 4.1-4.3, 4.8, 5.1-5.3
+    - [Compound Types](notes/compoundTypes.md)
+    - [Type Aliases and Custom Types.](notes/types_custom.md)
 
 Wed
-  ~ TBD
+  ~ - Reading: 5.4-5.7
+    - Lists, list comprehensions
+    - [Assignment 1. Due Mon 01/20](assignments/assignment1.md)
 
 Fri
   ~ TBD
@@ -176,11 +180,9 @@ Fri
 
 ## Old links
 
-- [Compound Types](notes/compoundTypes.md)
 - [Working with the GHC compiler and interpreter. Lists.](notes/lists.md) (2.1-2.5)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes. (cont)](notes/types_advanced.md) (3.6-3.9)
-- [Assignment 1. Due 09/22](assignments/assignment1.md)
 - [Pattern Matching.](notes/pattern_matching.md) (4.4)
 - [More practice with Pattern Matching.](notes/more_pattern_matching.md)
 - [Version Control](notes/version_control.md)
@@ -188,8 +190,7 @@ Fri
 - [Recursion](notes/recursion.md) (6.1-6.6)
 - [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
 - [Assignment 3. Due 10/13](assignments/assignment3.md)
-- [Type Aliases and Custom Types.](notes/types_custom.md) (8.1-8.3)
-- [The Maybe (Option) Type.](notes/types_custom.md)
+- [The Maybe (Option) Type.](notes/maybe.md)
 - [List Comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
 - [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 - [Functions as Values: Difference Lists, Composition (cont)](notes/difference_lists.md) (7.5)

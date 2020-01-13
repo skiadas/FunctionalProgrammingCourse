@@ -2,7 +2,7 @@
 
 ### Compound Types
 
-There are a number of ways of producing more complex types out of simpler types. These are some times called *compound types*.
+There are a number of ways of producing more complex types out of simpler types. These are some times called **compound types**.
 
 #### List Types
 
@@ -36,6 +36,16 @@ Examples:
 () :: ()                     -- The empty tuple, with the empty tuple type
 ```
 
+We write functions for tuples by using what is known as **pattern-matching**:
+
+```haskell
+isBetween :: (Int, Int) -> Int -> Bool
+isBetween (a, b) c = a <= c && c <= b
+
+-- Example use:    isBetween (2, 5) 3  returns true
+```
+What is happening in the example is that the pair `(2, 5)` is *matched* against the *pattern* `(a, b)` and as a result `a` is set to `2` and `b` is set to `5`. The pair is still considered a single input to the function (thus making two inputs together with the other integer), but it ends up having its parts bound to different variables via the pattern-matching process. We will return to this soon.
+
 We can also mix list types and tuple types. For instance:
 
 ```haskell
@@ -44,7 +54,14 @@ We can also mix list types and tuple types. For instance:
 [("Peter", True), ("Jane", False)] :: [([Char], Bool)]
 ```
 
-**Activity**: Think of uses for tuple types. What information might we choose to represent with tuples?
+### Practice
+
+Write the types we might use to represent the following information:
+
+1. A person with first and last name, age, and information about whether they can drive or not.
+2. Many persons as in the previous part.
+3. The record of a college student, containing their name, username, and a list of the courses they have taken and the grades.
+4. The ingredients for a recipe.
 
 #### Function types
 
@@ -72,3 +89,10 @@ Work out the types of the following expressions:
 2. `[length "abc"]`
 3. The function `f` defined by `f lst = length lst + head lst`
 4. The function `g` defined by `g lst = if head lst then 5 else 3`
+
+Write the types for the following functions:
+
+0. A function that takes as input a list of integers and returns the list but sorted.
+1. A function that is given a list of numbers and returns the smallest and largest number.
+2. A function that takes as input a pair of "ranges", where a "range" is itself a pair of integers, and returns whether the first range is contained in the other.
+3. A function that takes as input a list of people names and ages as well as a cutoff age, and returns a list of the names for those people whose age passes the cutoff.

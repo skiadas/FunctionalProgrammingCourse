@@ -16,7 +16,7 @@
 <body>
 <h1 id="compound-haskell-types">Compound Haskell Types</h1>
 <h3 id="compound-types">Compound Types</h3>
-<p>There are a number of ways of producing more complex types out of simpler types. These are some times called <em>compound types</em>.</p>
+<p>There are a number of ways of producing more complex types out of simpler types. These are some times called <strong>compound types</strong>.</p>
 <h4 id="list-types">List Types</h4>
 <p>The first example of that is the list type. As elements of the list all must have the same type, we can specify the type of a list with two pieces of information:</p>
 <ul>
@@ -40,11 +40,24 @@
 (3, False) :: (Int, Bool)    -- This is different from the one above
 (True, True, &quot;dat&quot;)  :: (Bool, Bool, [Char])
 () :: ()                     -- The empty tuple, with the empty tuple type</code></pre>
+<p>We write functions for tuples by using what is known as <strong>pattern-matching</strong>:</p>
+<pre class="haskell"><code>isBetween :: (Int, Int) -&gt; Int -&gt; Bool
+isBetween (a, b) c = a &lt;= c &amp;&amp; c &lt;= b
+
+-- Example use:    isBetween (2, 5) 3  returns true</code></pre>
+<p>What is happening in the example is that the pair <code>(2, 5)</code> is <em>matched</em> against the <em>pattern</em> <code>(a, b)</code> and as a result <code>a</code> is set to <code>2</code> and <code>b</code> is set to <code>5</code>. The pair is still considered a single input to the function (thus making two inputs together with the other integer), but it ends up having its parts bound to different variables via the pattern-matching process. We will return to this soon.</p>
 <p>We can also mix list types and tuple types. For instance:</p>
 <pre class="haskell"><code>[(1, 2), (0, 2), (3, 4)] :: [(Int, Int)]       --   A list of pairs of integers
  -- A list of pairs of strings and booleans
 [(&quot;Peter&quot;, True), (&quot;Jane&quot;, False)] :: [([Char], Bool)]</code></pre>
-<p><strong>Activity</strong>: Think of uses for tuple types. What information might we choose to represent with tuples?</p>
+<h3 id="practice">Practice</h3>
+<p>Write the types we might use to represent the following information:</p>
+<ol type="1">
+<li>A person with first and last name, age, and information about whether they can drive or not.</li>
+<li>Many persons as in the previous part.</li>
+<li>The record of a college student, containing their name, username, and a list of the courses they have taken and the grades.</li>
+<li>The ingredients for a recipe.</li>
+</ol>
 <h4 id="function-types">Function types</h4>
 <p>A function type is written as <code>A -&gt; B</code> where <code>A</code> is the type of the input and <code>B</code> is the type of the output. For example:</p>
 <pre class="haskell"><code>add3 x = x + 3           :: Int -&gt; Int
@@ -62,6 +75,13 @@ range (a, b) = [a..b]</code></pre>
 <li><code>[length "abc"]</code></li>
 <li>The function <code>f</code> defined by <code>f lst = length lst + head lst</code></li>
 <li>The function <code>g</code> defined by <code>g lst = if head lst then 5 else 3</code></li>
+</ol>
+<p>Write the types for the following functions:</p>
+<ol start="0" type="1">
+<li>A function that takes as input a list of integers and returns the list but sorted.</li>
+<li>A function that is given a list of numbers and returns the smallest and largest number.</li>
+<li>A function that takes as input a pair of “ranges”, where a “range” is itself a pair of integers, and returns whether the first range is contained in the other.</li>
+<li>A function that takes as input a list of people names and ages as well as a cutoff age, and returns a list of the names for those people whose age passes the cutoff.</li>
 </ol>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");

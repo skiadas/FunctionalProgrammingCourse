@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>maybe</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h3 id="the-maybe-option-type">The Maybe option type</h3>
+<p>One particular built-in datatype deserves special mention. It is known as the <code>Maybe</code> type in Haskell, and also as the Option type in other languages. Its premise is simple: It allows you to carry one value around, but also allows the possibility of no value at all. For example, imagine we write a <code>lookup</code> method that looks for an key in an associative list:</p>
+<pre class="haskell"><code>lookup :: Eq a =&gt; a -&gt; [(a, b)] -&gt; b</code></pre>
+<p>This function is meant to search for the <code>a</code> part of the pair in the list, and if it finds it then it returns the corresponding <code>b</code> part. But what should happen if a suitable <code>a</code> part is not found? What value would the function return?</p>
+<p>In other languages we have something like a <code>null</code> value. This is highly problematic, for a reason similar to the one described in temperatures.</p>
+<blockquote>
+<p>Using the <code>null</code> value to indicate failure, we have no way of expressing in our type system whether a function may return <code>null</code> for its result, and whether a function should be handling <code>null</code> as a possible input to one of its arguments. These functions all look alike as far as their signature is concerned.</p>
+</blockquote>
+<p>So for example <code>lookup</code> has no way of telling its users “hey my answer may be null so you better handle that possibility”. Similarly the typechecker has no way of knowing if a function that uses the result of lookup bothers to check for the null case.</p>
+<p>Option types solve these problems for us. The <code>Maybe</code> type is defined as follows:</p>
+<pre class="haskell"><code>data Maybe a = Nothing | Just a</code></pre>
+<p>So a value of type <code>Maybe Int</code> is either <code>Nothing</code> or something like <code>Just 5</code>. Then the (proper) type for the <code>lookup</code> function above is (for completeness we include its implementation):</p>
+<pre class="haskell"><code>lookup :: Eq a =&gt; a -&gt; [(a, b)] -&gt; Maybe b
+lookup key []                = Nothing
+lookup key ((target, value) : rest)
+    | key == target          = Just value
+    | otherwise              = lookup key rest</code></pre>
+<p>Now anyone who wants to use the result of the lookup must do a pattern match on the two different forms, and as a result somehow handle the <code>Nothing</code> case.</p>
+<pre class="haskell"><code>reportLookupResult :: (Eq a, Show b) =&gt; a -&gt; [(a, b)] -&gt; String
+reportLookupResult key lst = handleResult (lookup key lst)
+    where handleResult Nothing = &quot;No matches found!&quot;
+          handleResult (Just someb) = &quot;Found one: &quot; ++ show someb</code></pre>
+<p>A standard example of this is a “safe division” function, which does not allow you to divide by 0. It would look like this:</p>
+<pre class="haskell"><code>safeDivide :: Num t =&gt; t -&gt; t -&gt; Maybe t
+safeDivide _ 0  = Nothing
+safeDivide n m  = Just (n / m)</code></pre>
+<h4 id="standard-functions-for-maybe">Standard functions for Maybe</h4>
+<p>There are a number of standard functions for the Maybe type. We declare them here, and ask you to implement them for practice:</p>
+<pre class="haskell"><code>-- Empty or one-element list
+toList :: Maybe a -&gt; [a]
+-- Apply the function to the a if there is one, otherwise just pass the default b
+maybe :: b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+-- Preserve the Nothing or apply the function
+fmap :: (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+-- Preserve the Nothing or apply the function
+(&gt;&gt;=) :: Maybe a -&gt; (a -&gt; Maybe b) -&gt; Maybe b
+-- Preserve the Nothing or keep the b value
+(&gt;&gt;) :: Maybe a -&gt; Maybe b -&gt; Maybe b
+-- Wrap a value in Maybe
+return :: a -&gt; Maybe a
+-- Preserve the Nothing or apply the function
+(&lt;*&gt;) :: Maybe (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+-- Apply the function if possible
+foldr :: (a -&gt; b -&gt; b) -&gt; b -&gt; Maybe a -&gt; b</code></pre>
+<p><strong>Practice</strong>: Implement the above functions.</p>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+</body>
+</html>
