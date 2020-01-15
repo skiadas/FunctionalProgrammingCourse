@@ -49,11 +49,12 @@ Mon
 
 Wed
   ~ - Reading: 5.4-5.7
-    - Lists, list comprehensions
+    - [Working with the GHC compiler and interpreter. Lists.](notes/lists.md)
+    - [List Comprehensions.](notes/list_comprehensions.md)
     - [Assignment 1. Due Mon 01/20](assignments/assignment1.md)
 
 Fri
-  ~ TBD
+  ~ - List comprehension practice: Book Library
 
 ## Week 3
 
@@ -180,7 +181,6 @@ Fri
 
 ## Old links
 
-- [Working with the GHC compiler and interpreter. Lists.](notes/lists.md) (2.1-2.5)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes. (cont)](notes/types_advanced.md) (3.6-3.9)
 - [Pattern Matching.](notes/pattern_matching.md) (4.4)
@@ -191,7 +191,6 @@ Fri
 - [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
 - [Assignment 3. Due 10/13](assignments/assignment3.md)
 - [The Maybe (Option) Type.](notes/maybe.md)
-- [List Comprehensions.](notes/list_comprehensions.md) (5.1-5.4)
 - [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 - [Functions as Values: Difference Lists, Composition (cont)](notes/difference_lists.md) (7.5)
 - MIDTERM ([study guide](notes/midterm_study_guide.md))

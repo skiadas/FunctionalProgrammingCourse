@@ -2,12 +2,6 @@
 
 In this section we discuss a very effective approach to working with lists, namely list comprehensions. List comprehensions in essence allow us to loop over the elements of the list and describe what should happen for each element.
 
-## Reading
-
-- Sections 5.1-5.4
-- Optional reading: 5.5
-- Practice exercises (5.6): 1, 2, 3, 4, 5, 9
-
 ## List Comprehensions
 
 A **list comprehension** is a special syntax that is used to construct new lists out of existing lists. A list comprehension has the form:
