@@ -31,7 +31,7 @@ nor1 True True = True     -- fix and add more cases
 nor2 :: Bool -> Bool -> Bool
 nor2 x y = False          -- fix
 
-getMiddle :: Integer -> Integer -> Integer
+getMiddle :: Integer -> Integer -> Integer -> Integer
 getMiddle a b c = b       -- fix
 
 prop_agesWork a1 a2 =

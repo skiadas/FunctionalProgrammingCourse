@@ -54,7 +54,8 @@ Wed
     - [Assignment 1. Due Mon 01/20](assignments/assignment1.md)
 
 Fri
-  ~ - List comprehension practice: Book Library
+  ~ - [List comprehension practice: Book Library](notes/list_comp_practice.md)
+
 
 ## Week 3
 

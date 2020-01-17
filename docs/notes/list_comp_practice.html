@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>list_comp_practice</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="list-comprehension-practice">List Comprehension Practice</h1>
+<p>The library database example:</p>
+<ul>
+<li>We represent persons and books simply as strings.</li>
+<li>A loan can be recorded as a pair <code>(Person, Book)</code>.</li>
+<li>Deviating from the book, we can consider a library database as a triple consisting of:
+<ul>
+<li>A list of all members.</li>
+<li>A list of all available books. We assume that the library has multiple copies of the same book, even if it only appears once on the list.</li>
+<li>A list of book loans.</li>
+</ul>
+The overall type would be: <code>([Person], [Book], [(Person, Book)])</code></li>
+</ul>
+<pre class="haskell"><code>type Person = String
+type Book = String
+type Library = ([Person], [Book], [(Person, Book)])</code></pre>
+<p>Always think of using functions you already created when solving a question.</p>
+<ol type="1">
+<li>Write an example database, that includes some checked out books, some books that are not checked out, as well as some members that have no books checked out. Store it in a variable <code>exampleBase</code>.</li>
+<li>Write a function that given a library returns all the books that are checked out.</li>
+<li>Write a function that given a library returns all the persons that have books checked out.</li>
+<li>Write a function that given a library and a person returns the list of all books that person has checked out.</li>
+<li>Write a function that given a library and a book returns the list of all persons that have the book checked out.</li>
+<li>Write a function that given a library and a book returns whether the book is checked out.</li>
+<li>Write a function that given a library and a person returns the number of books that person has checked out.</li>
+<li>Write a function that given a library returns a list of pairs, each pair consisting with a person and the number of books they have checked out (perhaps 0).</li>
+<li>Write a function that “checks out” a book as follows: Given a library, a person and a book, it returns a new library which contains all the previous information but also contains a new loan entry for that person-book pair.</li>
+<li>Write a function that “returns” a book as follows: Given a library, a person and a book, it returns a new library where there is loan entry for that person/book combination.</li>
+<li>Write a function that given a library returns a list of all the books that have not been checked out.</li>
+<li>Write a function that given a library returns a list of all members that have no books checked out.</li>
+</ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+</body>
+</html>
