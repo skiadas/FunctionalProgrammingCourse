@@ -54,16 +54,18 @@ Wed
     - [Assignment 1. Due Mon 01/20](assignments/assignment1.md)
 
 Fri
-  ~ - [List comprehension practice: Book Library](notes/list_comp_practice.md)
+  ~ - Catchup/Practice
 
 
 ## Week 3
 
 Mon
-  ~ TBD
+  ~ - [List comprehension practice: Book Library](notes/list_comp_practice.md)
 
 Wed
-  ~ TBD
+  ~ - Reading: 6.1-6.3, 6.7
+    - [Parametric polymorphism](notes/parametric_polymorphism.md)
+    - The supermarket billing example
 
 Fri
   ~ TBD
@@ -182,6 +184,7 @@ Fri
 
 ## Old links
 
+- [Currying](notes/currying.md)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes. (cont)](notes/types_advanced.md) (3.6-3.9)
 - [Pattern Matching.](notes/pattern_matching.md) (4.4)
