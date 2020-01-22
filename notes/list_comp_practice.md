@@ -28,6 +28,6 @@ Always think of using functions you already created when solving a question.
 7. Write a function that given a library and a person returns the number of books that person has checked out.
 8. Write a function that given a library returns a list of pairs, each pair consisting with a person and the number of books they have checked out (perhaps 0).
 9. Write a function that "checks out" a book as follows: Given a library, a person and a book, it returns a new library which contains all the previous information but also contains a new loan entry for that person-book pair.
-10. Write a function that "returns" a book as follows: Given a library, a person and a book, it returns a new library where there is loan entry for that person/book combination.
+10. Write a function that "returns" a book as follows: Given a library, a person and a book, it returns a new library where there is no loan entry for that person/book combination.
 11. Write a function that given a library returns a list of all the books that have not been checked out.
 12. Write a function that given a library returns a list of all members that have no books checked out.

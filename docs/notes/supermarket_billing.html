@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>supermarket_billing</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="the-supermarket-billing-example">The supermarket billing example</h1>
+<p>The example of the supermarket bill:</p>
+<ul>
+<li>A supermarket billing process starts with a database of items.</li>
+<li>An item consists of an integer bar code, a string name and an integer price, in pennies.</li>
+<li>We also receive a list of bar codes that forms the “till”.</li>
+<li>We must look up those bar codes to find the corresponding items, and get the name and price of the items in the till. This will form a “bill”, which will consists of this list of name/price pairs.</li>
+<li>Lastly, we must format that bill, including computation of a total, to produce a string.</li>
+</ul>
+<p>Here is a start for our file. We will be using HUnit tests to test the program. We explicitly import the prelude while hiding the particular <code>lookup</code> function, as we will implement our own.</p>
+<pre class="haskell"><code>module Billing where
+
+import Test.HUnit
+import Prelude hiding (lookup)
+
+tests = TestList [
+    -- will add tests here
+    ]</code></pre>
+<p>We can run the tests in the file via:</p>
+<pre class="haskell"><code>:load Billing
+runTestTT tests</code></pre>
+<p>Now let’s set up some types, a sample database and a special “unknown item”:</p>
+<pre class="haskell"><code>type Name     = String
+type Price    = Int
+type BarCode  = Int
+type Database = [(BarCode,Name,Price)]
+type Till     = [BarCode]
+type BillItem = (Name, Price)
+type Bill     = [BillItem]
+
+codeIndex :: Database
+codeIndex = [ (4719, &quot;Fish Fingers&quot; , 121),
+              (5643, &quot;Nappies&quot; , 1010),
+              (3814, &quot;Orange Jelly&quot;, 56),
+              (1111, &quot;Hula Hoops&quot;, 21),
+              (1112, &quot;Hula Hoops (Giant)&quot;, 133),
+              (1234, &quot;Dry Sherry, 1lt&quot;, 540) ]
+
+unknownItem :: BillItem
+unknownItem = (&quot;Unknown Item&quot;, 0)</code></pre>
+<p>We also fix a value for the length of the bill report lines:</p>
+<pre class="haskell"><code>lineLength :: Int
+lineLength = 30</code></pre>
+<p>Now we can think of breaking our problem up in functions that perform the various steps. In functional programming languages one important step is to consider functions that produce intermediate results, then compose those functions. In our case we can start with a <code>Till</code> value and use it to produce a <code>Bill</code> value. Then we can separately worry about turning that <code>Bill</code> value into a printable string. So at a high level our program can be decomposed thus:</p>
+<pre class="haskell"><code>produceBill :: Till -&gt; String
+produceBill till = formatBill (makeBill till)
+-- Shortcut for this:  produceBill = formatBill . makeBill
+
+makeBill :: Till -&gt; Bill
+makeBill till = [] -- Need to fix this
+
+formatBill :: Bill -&gt; String
+formatBill bill = &quot;&quot; -- Need to fix this</code></pre>
+<p>We put some dummy implementations for now.</p>
+<p>This <strong>function composition</strong> is one of the tools at our disposal for breaking down a complex problem into steps.</p>
+<p>Another common pattern is that of a <strong>list transformation</strong>. Our list comprehension work is great for that. In our case, we can implement <code>makeBill</code> by looking up each code in the till into the database. We can offload the work of that lookup to another functions, which we will call <code>lookup</code>:</p>
+<pre><code>makeBill till = [lookup code | code &lt;- till]
+
+lookup :: BarCode -&gt; BillItem
+lookup code = look codeIndex code
+
+look :: Database -&gt; BarCode -&gt; BillItem
+look db code = unknownItem   -- Need to fix this</code></pre>
+<p>Now the <code>look</code> function has to do some real work. We will use two tests for it, and add them to the <code>tests</code> list from earlier:</p>
+<pre class="haskell"><code>tests = TestList [
+    TestCase $ assertEqual &quot;lookExists&quot;
+         (&quot;Orange Jelly&quot;, 56)
+         (look codeIndex 3814),
+    TestCase $ assertEqual &quot;lookMissing&quot;
+         (&quot;Unknown Item&quot;, 0)
+         (look codeIndex 3815)
+    ]</code></pre>
+<p>Don’t worry about the dollar signs just yet.</p>
+<p>Equipped with those tests, we can now work through the <code>look</code> function’s implementation. We can think of that again as a 2-step process:</p>
+<ul>
+<li>Use a list comprehension to find matches for the bar code in the list of items.</li>
+<li>Interpret the results.</li>
+</ul>
+<p>We can use a <code>where</code> clause to hold the resulting comprehension, like so:</p>
+<pre class="haskell"><code>look db code = if null results then unknownItem else results !! 0
+   where results = [(name, price) | (code2, name, price) &lt;- db, code2 == code]</code></pre>
+<p>Here <code>list !! index</code> returns the entry in the list at the given index (it’s loosely equivalent to the array indexing operator in other languages). The list comprehension looks through the list of code triples in search of one that matches the given code.</p>
+<p>Now that we have all the tools for generating a bill from a till, we can focus on converting the bill to a string. We can break that up in steps as well:</p>
+<ul>
+<li>Format the items lines</li>
+<li>Compute and format the total</li>
+<li>Combine the two</li>
+</ul>
+<p>The <code>formatBill</code> method puts all those together:</p>
+<pre class="haskell"><code>formatBill :: Bill -&gt; String
+formatBill bill = formatLines bill ++ formatTotal total
+   where total = makeTotal bill
+
+formatLines :: Bill -&gt; String
+formatLines bill = &quot;&quot;       -- Need to fix this
+
+formatTotal :: Price -&gt; String
+formatTotal total = &quot;&quot;      -- Need to fix this
+
+makeTotal :: Bill -&gt; Price
+makeTotal bill = 0</code></pre>
+<p>We can add some tests:</p>
+<pre class="haskell"><code>   TestCase $ assertEqual &quot;makeTotal&quot;
+         (23 + 45)
+         (makeTotal [(&quot;something&quot;, 23), (&quot;else&quot;, 45)]),
+   TestCase $ assertEqual &quot;formatTotal&quot;
+         &quot;\nTotal.....................6.61&quot;
+         (formatTotal 661),
+   TestCase $ assertEqual &quot;formatBill&quot;
+         (&quot;Dry Sherry, 1lt...........5.40\n&quot; ++
+          &quot;Fish Fingers..............1.21\n&quot; ++
+          &quot;\nTotal.....................6.61&quot;)
+         (formatBill [(&quot;Dry Sherry, 1lt&quot;, 540), (&quot;Fish Fingers&quot;, 121)]),</code></pre>
+<p>Let’s start with <code>makeTotal</code>. We can consider it as a composition of two steps:</p>
+<ul>
+<li>Getting all the prices out of the bill items.</li>
+<li>Adding up those prices.</li>
+</ul>
+<p>We can combine the two steps as follows:</p>
+<pre class="haskell"><code>makeTotal :: Bill -&gt; Price
+makeTotal bill = sum prices
+    where prices = [p | (_, p) &lt;- bill]</code></pre>
+<p>Next let’s format the total. The format we are after for all items is as follows:</p>
+<ul>
+<li>The name of the item on the left side</li>
+<li>The price of the item on the right side</li>
+<li>An appropriate number of dots inbetween to reach a total length of 30</li>
+</ul>
+<p>We will write a function that accomplishes this, then return to writing the rest of the total format:</p>
+<pre class="haskell"><code>formatLine :: BillItem -&gt; String
+formatLine (name, price) = name ++ filler ++ formattedPrice
+   where formattedPrice = formatPrice price
+         space = lineLength - length name - length formattedPrice
+         filler = replicate space &#39;.&#39;
+
+formatPrice :: Price -&gt; String
+formatPrice price = &quot;&quot;  -- Need to fix this</code></pre>
+<p>And let’s add a test for it, as well as tests for the <code>formatPrice</code> method:</p>
+<pre class="haskell"><code>   TestCase $ assertEqual &quot;normal amount&quot; &quot;12.53&quot; (formatPrice 1253),
+   TestCase $ assertEqual &quot;single digit pennies&quot; &quot;12.03&quot; (formatPrice 1203),
+   TestCase $ assertEqual &quot;no dollars&quot; &quot;0.53&quot; (formatPrice 53),
+   TestCase $ assertEqual &quot;whole line&quot;
+         &quot;Dry Sherry, 1lt...........5.40&quot;
+         (formatLine (&quot;Dry Sherry, 1lt&quot;, 540)),</code></pre>
+<p>Formatting the price consists of printing the dollar part (using <code>show</code>), using a dot, then the pennies using two digits (so <code>09</code> instead of just <code>9</code>).</p>
+<pre class="haskell"><code>formatPrice :: Price -&gt; String
+formatPrice price = show dollars ++ &quot;.&quot; ++ space ++ show pennies
+   where dollars = price `div` 100
+         pennies = price `mod` 100
+         space = if pennies &lt; 10 then &quot;0&quot; else &quot;&quot;</code></pre>
+<p>TODO:</p>
+<pre class="haskell"><code>formatLines :: Bill -&gt; String
+formatLines lines = join &quot;\n&quot; [formatLine l | l &lt;- lines]
+    where join sep lines = intercalate sep lines
+
+formatTotal :: Price -&gt; String
+formatTotal total = &quot;\n&quot; ++ formatPrice (&quot;Total&quot;, total)</code></pre>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+</body>
+</html>

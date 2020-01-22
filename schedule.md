@@ -65,7 +65,7 @@ Mon
 Wed
   ~ - Reading: 6.1-6.3, 6.7
     - [Parametric polymorphism](notes/parametric_polymorphism.md)
-    - The supermarket billing example
+    - [The supermarket billing example](notes/supermarket_billing.md)
 
 Fri
   ~ TBD

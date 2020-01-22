@@ -3,16 +3,16 @@
 **Polymorphism** is a general term describing how the same piece of code might behave differently depending on the arguments provided. The term usually refers to a function or operator call. There are fundamentally two different kinds of polymorphism:
 
 **Parametric Polymorphism**
-  ~ refers to the situation where the same function code may act on values of different types but without changing the code. In that case the type of the corresponding value is a "parameter". A good example of this is functions operating on lists: The function `head` does not particularly care what type of values your list contains, only that it contains a list. So it can operate on *any list type*, and the content type of the list type is in effect a parameter.
+  ~ refers to the situation where the same function code may act on values of different types but without any change in the function's code. In that case the type of the corresponding value is a "parameter". A good example of this is functions operating on lists: The function `head` does not particularly care what type of values your list contains, only that it contains a list. So it can operate on *any list type*, and the content type of the list type is in effect a parameter.
 
       In C++ parametric polymorphism is achieved via *templates*, and in Java via *generics* (`<T>`).
 
 **Ad-hoc Polymorphism**
   ~ refers to the situation where the same function symbol refers to multiple code chunks, and the decision on which code chunk to execute depends on the types of the arguments. A good example of this is the addition operation `+` or the equality operator `==`. Testing if two integers are equal requires a different code than testing if two strings are equal, yet they are both written the same way.
 
-    In C++ and Java you have probably encountered this as function/operator overloading, where the meaning of an expression like `a.add(b)` depends on the types of `a` and `b`, and different functions will be executed depending on those types. One can further say that object-oriented programming requires this kind of polymorphism in an essential way, to direct method calls to the correct place.
+    In C++ and Java you have probably encountered this as function/operator overloading, where the meaning of an expression like `a.add(b)` depends on the types of `a` and `b`, and different functions will be executed depending on those types. One can further say that object-oriented programming requires this kind of polymorphism in an essential way, to direct method calls to the correct subclass.
 
-Almost every functional programming language implement parametric polymorphism in a similar way, via *type variables*. Support for ad-hoc polymorphism varies. Some languages don't have it at all, and those that do implement it in different ways. Haskell uses a clever concept called *type classes* that we will discuss in a moment.
+Almost every functional programming language implements parametric polymorphism in a similar way, via *type variables*. Support for ad-hoc polymorphism varies. Some languages don't have it at all, and those that do implement it in different ways. Haskell uses a clever concept called *type classes* that we will discuss later.
 
 ### Parametric Polymorphism: Type Variables
 
