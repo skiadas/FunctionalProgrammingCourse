@@ -1,7 +1,7 @@
-Programming Languages
-=====================
+Functional Programming
+======================
 
-Course website for CS 320 Topics in Software Development: Programming Languages at [Hanover College](http://www.hanover.edu)
+Course website for CS 326 Functional Programming at [Hanover College](http://www.hanover.edu)
 
 - [Syllabus](syllabus.md)
 - [Schedule](schedule.md)

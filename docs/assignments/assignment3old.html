@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>assignment3old</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="assignment-3">Assignment 3</h1>
+<p>This third assignment has multiple purposes.</p>
+<ul>
+<li>You will continue learning how to write functions using pattern matches, as well as recursive functions.</li>
+<li>You will continue practicing with version control.</li>
+<li>You will start managing your project by creating issues and milestones in the GitLab interface.</li>
+</ul>
+<p>At this point you should have the following setup:</p>
+<ol type="1">
+<li>You created a fork of my <code>functional-programming-assignments</code> repository in GitLab. It probably has a web address that looks like <code>https://gitlab.com/skiadas/functional-programming-assignments</code> but with your name instead of mine.</li>
+<li>You have also cloned your fork locally on your computers, and it resides in some folder probably called <code>functional-programming-assignments</code>.
+<ul>
+<li><p>You can check which remote you are connected to if you do the following from the command line from the <code>functional-programming-assignments</code> folder in your computer:</p>
+<pre><code>git remote -v</code></pre>
+<p>This should print two links, both associated with the remote called <code>origin</code>, one for push and one for fetch.</p></li>
+</ul></li>
+<li>You have created a number of commits to your repository, first locally and then you pushed them to your fork.</li>
+<li>In the meantime, I have added the next homework assignment to my repository. Since you made your fork before I did that, your fork does not have these changes. The first thing we will need to do is move those changes over to your fork, without overwriting the code you have committed. We will do this via the following steps:
+<ul>
+<li>You will first add my repository as a second “remote” to your local clone. We will call it <code>upstream</code> to distinguish it from the <code>origin</code> remote that is your fork. You only have to do this once for the course, while the following steps will need to be done each time you want to update your fork and clone with my “upstream” changes (e.g. when a new assignment comes out). You would do this with the following command (do NOT change the account name, use mine): <code>git remote add upstream https://gitlab.com/skiadas/functional-programming-assignments.git</code> If you were to do <code>git remote -v</code> now you should be seeing two more remote entries for <code>upstream</code>.</li>
+<li>We will do the remaining steps in GitKraken. Open your project in GitKraken and you should be seeing two remotes on the side, origin and upstream. In this step you will update the remote repositories to fetch the upstream update, and update your local upstream with the changes that happened on my repository. You do this with the little arrow to the right of the “Pull” menu, and you select the “Fetch All” option. You should also be seeing in the main window multiple paths. There is your local master, with a little laptop image to it, and if you have pushed recently then you would also see your fork “origin/master”, with your gitlab avatar, at the same position. And you will probably see another branch, the “upstream/master”, with my picture on it.</li>
+<li>Make sure the current branch is your local master, it should have a checkbox next to it. Also make sure you have no uncommitted changes (they are usually in a WIP item at the top). Then right-click my branch’s latests commit, and you should see a context menu. One of the options would say: “Merge upstream/master into master”. Click it.</li>
+<li>You are ready to go! There should now be a folder containing the assignment3 descriptions. The README in that folder should tell you what you need to do to finish the assignment. BUT keep reading here, as you are expected to also create issues, and the following paragraphs describe that process.</li>
+</ul></li>
+</ol>
+<h2 id="project-management">Project Management</h2>
+<p>While this is is a relatively small project, we will ask you to use the various project management tools that GitLab and similar website provide, to organize your work. This may feel tedious at times, but it pays off on a larger-scale project. So getting used to the workflow is important.</p>
+<p>We will discuss four components of project management in this section. You can find these components in the Issues tab on the left bar of your Gitlab project.</p>
+<dl>
+<dt>Issues</dt>
+<dd><p>Issues help identify individual tasks that need to be completed, and contain all relevant information regarding those tasks. Issues contain a number and a <em>title</em>, and an optional description. They can also contain <em>comments</em> added by you or other contributors to your project, so they can be a place for a conversation about the project, that is recorded for the future. You can also add <em>checklists</em> within the issue’s comment, of individual subparts of the task that you can check off as you complete. Issues can be <em>open</em> or <em>closed</em> depending on whether they have been resolved or not. Looking at the closed issues shows you what work you have done already in your project, and looking at your open issues shows you what you still need to do.</p>
+<p>You can link a commit to specific issue if you add a specific phrase to your commit summary. <code>Ref #123</code> for example will link the commit to issue number 123, and a link to the commit will appear as a comment in the issue’s page. The phrase <code>Close #123</code> will go further and close the issue when you push.</p>
+<p>Issues can also be assigned to individual team members. As you work on your assignment, you should create issues for tasks that need to be done or problems that need to be addressed, then assign the issues to yourself and add a suitable phrase to any commit that relates to this issue. You should NOT work on anything in your code unless there is a corresponding issue that you are trying to address.</p>
+</dd>
+<dt>Labels</dt>
+<dd><p>You can decorate an issue with any number of <em>labels</em>, that identify the kind of problem described by the issue. So you could have labels like “bug”, “enhancement”, “duplicate”, “obsolete”, “ui” and so on. You can create your own labels or let the system generate some default labels for you.</p>
+<p>When looking at your issues, you can add labels to them, or you can also filter the issue list to only show you those issues with a particular label.</p>
+<p>As you work on your assignment and create issues, you should assign <em>at least one</em> label to each issue. How you arrange those is entirely up to you.</p>
+</dd>
+<dt>Milestones</dt>
+<dd><p>Milestones allow you to set more long-term goals. A milestone has a title, a description, and start and due dates. Each issue can be added to exactly one milestone. Milestones can be closed when all their issues are completed.</p>
+<p>As you work on each assignment, you should at the very least create one milestone for the assignment (e.g. the “Assignment 3” milestone). All issues pertaining to that assignment should be added to that milestone.</p>
+</dd>
+<dt>Boards</dt>
+<dd>Boards are a bit similar to milestones, but instead contain “lists” of issues. You can use them to set up an order of issues, and to manage which issue you are working on at any given time. Use of the board is optional, but I encourage you to familiarize yourself with it. At the very least having a list of “ToDo” and “Doing” issues would help.
+</dd>
+</dl>
+<p>Spend some time at the beginning of the assignment, as you read through the instructions, to create issues. For instance each function you need to write could be an issue. Though you have a certain degree of freedom regarding what issues to create and how many, you should at the very least create some issues.</p>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-haskell.js"></script>
+</body>
+</html>

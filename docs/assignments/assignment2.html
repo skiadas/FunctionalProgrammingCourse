@@ -15,22 +15,109 @@
 </head>
 <body>
 <h1 id="assignment-2">Assignment 2</h1>
-<p>The second assignment has a dual purpose. The first is to get you started with using version control in order to manage a project. The other is for you to practice writing functions using pattern matches, and working with custom data types.</p>
-<ol type="1">
-<li>If you have not done so, you should follow the steps in <a href="../notes/version_control.html">the version control notes page</a> regarding setting up GitKraken and creating a GitLab account.</li>
-<li>We will now clone the second assignment project via GitKraken, so that you have a local clone of your fork. Open up GitKraken if it is not open yet, and use the Folder icon in the top left, then choose “Clone”, then the GitLab.com tab, and then the <code>functional-programming-assignments</code> link.
+<p>In this assignment we get a bit more practice breaking down a problem into smaller parts and using the various Haskell facilities to do the appropriate transformations.</p>
+<p>The problem we will solve is a voting system called Borda count. The situation is as follows:</p>
 <ul>
-<li>Use the “Browse” button to choose where to clone this repository. This is the parent folder for the project. The cloning process will create a new folder for you within this parent folder.</li>
-<li>Click “Clone the repo!” to create the repository.</li>
-<li>Choose “Open Now” from the flash message at the top.</li>
-<li>You should now be looking at the commits log for the project. As you work on your project, you will be adding your own commits.</li>
-</ul></li>
-<li>We now have a local clone of the project on your college account. Navigate to that folder from the terminal, then type <code>subl .</code> to open that folder up in Sublime Text.</li>
-<li>The GitLab webpage for the project, either your fork or the original, contains a <code>README.md</code> file within the <code>assignment2</code> folder. This file contains the instructions on what functions you need to implemement.</li>
-<li>Follow the commit workflow described in the <a href="../notes/version_control.html">the version control notes page</a> to create commits as you work on your project. Don’t forget that you want to make commits that are “atomic”, i.e. all the parts committed together form a cohesive whole that addresses one issue.</li>
-<li>For this assignment, you do not need to worry about issue management if you do not want to.</li>
-<li>“Submit” the assignment by adding your instructor as a Reporter (Settings -&gt; Members on the left toolbar) to your repositories.</li>
-</ol>
+<li>We have a number of candidates.</li>
+<li>Each voter has to order all the candidates in some preference order, with highest preference first.</li>
+<li>We assign decreasing scores to the candidates for that vote, counting down to 1. For example if the voter voted for candidates A, B, C in that order, then A gets score 3, B gets score 2 and A gets score 1.</li>
+<li>We then add up the scores for each candidate, across all the different votes.</li>
+<li>The candidates are then ranked based on those points.</li>
+</ul>
+<p>We will write the code that does this. For example our code will be given an input such as:</p>
+<pre class="haskell"><code>allVotes = [
+   [&quot;Peter&quot;, &quot;Debra&quot;, &quot;Oliver&quot;, &quot;John&quot;],
+   [&quot;Peter&quot;, &quot;Oliver&quot;, &quot;John&quot;, &quot;Debra&quot;],
+   [&quot;Oliver&quot;, &quot;Debra&quot;, &quot;John&quot;, &quot;Peter&quot;],
+   [&quot;John&quot;, &quot;Oliver&quot;, &quot;Debra&quot;, &quot;Peter&quot;],
+   [&quot;Debra&quot;, &quot;John&quot;, &quot;Oliver&quot;, &quot;Peter&quot;]]
+
+getResults allVotes
+-- Will produce the string:
+-- Oliver             14
+-- Debra              13
+-- John               12
+-- Peter              11</code></pre>
+<p>Quick note: To print a string on the interactive console, use <code>putStr</code> or <code>putStrLn</code>, for example:</p>
+<pre class="haskell"><code>putStrLn &quot;Hello there!&quot;</code></pre>
+<p>Use this only for diagnostic purposes. Your functions should simply be returning strings and not printing directly.</p>
+<p>Here is some start code. You may want to add your own tests.</p>
+<pre class="haskell"><code>module Voting where
+
+import Test.HUnit
+import Data.List (sortBy, nub)
+
+type Candidate = String
+type Vote = [Candidate]
+
+allVotes :: [Vote]
+allVotes = [
+   [&quot;Peter&quot;, &quot;Debra&quot;, &quot;Oliver&quot;, &quot;John&quot;],
+   [&quot;Peter&quot;, &quot;Oliver&quot;, &quot;John&quot;, &quot;Debra&quot;],
+   [&quot;Oliver&quot;, &quot;Debra&quot;, &quot;John&quot;, &quot;Peter&quot;],
+   [&quot;John&quot;, &quot;Oliver&quot;, &quot;Debra&quot;, &quot;Peter&quot;],
+   [&quot;Debra&quot;, &quot;John&quot;, &quot;Oliver&quot;, &quot;Peter&quot;]]
+
+
+-- Function provided for you
+getResults :: [Vote] -&gt; IO ()
+getResults votes = sequence_ [putStrLn s | s &lt;- formatVotes votes]
+   where formatVotes = formatAll . sortedCounts . totalCounts
+
+tests = TestList [
+   TestCase $ assertEqual &quot;downToN&quot; [5, 4, 3, 2, 1] (downFromN 5),
+   TestCase $ assertEqual &quot;withRanks&quot;
+         [(&quot;A&quot;, 3), (&quot;B&quot;, 2), (&quot;C&quot;, 1)]
+         (withRanks [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;]),
+   TestCase $ assertEqual &quot;allRanks&quot;
+         (sort [(&quot;A&quot;, 3), (&quot;B&quot;, 2), (&quot;C&quot;, 1), (&quot;B&quot;, 3), (&quot;A&quot;, 2), (&quot;C&quot;, 1)])
+         (sort (allRanks [[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;], [&quot;B&quot;, &quot;A&quot;, &quot;C&quot;]])),
+   TestCase $ assertEqual &quot;totalRank&quot;
+         5
+         (totalRank &quot;B&quot; [(&quot;B&quot;, 2), (&quot;C&quot;, 1), (&quot;B&quot;, 3)]),
+   TestCase $ assertEqual &quot;allCandidates&quot;
+         [&quot;A&quot;, &quot;B&quot;]
+         (sort (allCandidates [(&quot;B&quot;, 2), (&quot;B&quot;, 3), (&quot;A&quot;, 1), (&quot;A&quot;, 1)])),
+   TestCase $ assertEqual &quot;totalCounts&quot;
+         [(&quot;A&quot;, 5), (&quot;B&quot;, 3), (&quot;C&quot;, 4)]
+         (sort (totalCounts [[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;], [&quot;C&quot;, &quot;A&quot;, &quot;B&quot;]])),
+   TestCase $ assertEqual &quot;cmp1&quot;  EQ (cmp (&quot;A&quot;, 2) (&quot;B&quot;, 2)),
+   TestCase $ assertEqual &quot;cmp2&quot;  LT (cmp (&quot;A&quot;, 2) (&quot;B&quot;, 1)),
+   TestCase $ assertEqual &quot;cmp3&quot;  GT (cmp (&quot;A&quot;, 2) (&quot;B&quot;, 3)),
+   TestCase $ assertEqual &quot;sortedCounts&quot;
+         [(&quot;A&quot;, 5), (&quot;C&quot;, 4), (&quot;B&quot;, 3)]
+         (sortedCounts [(&quot;A&quot;, 5), (&quot;B&quot;, 3), (&quot;C&quot;, 4)]),
+   TestCase $ assertEqual &quot;neededLength&quot; 5 (neededLength (&quot;Jo&quot;, 23)),
+   TestCase $ assertEqual &quot;totalNeededLength&quot;
+         9
+         (totalNeededLength [(&quot;Jo&quot;, 23), (&quot;Patrick&quot;, 4), (&quot;Peter&quot;, 123)]),
+   TestCase $ assertEqual &quot;formatPair&quot;
+         &quot;Jo    123&quot;
+         (formatPair 9 (&quot;Jo&quot;, 123)),
+   TestCase $ assertEqual &quot;formatAll&quot;
+         [&quot;Jo   123&quot;, &quot;Peter 23&quot;]
+         (formatAll [(&quot;Jo&quot;, 123), (&quot;Peter&quot;, 23)])
+   ]</code></pre>
+<p>Remember to run your tests with:</p>
+<pre class="haskell"><code>runTestTT tests</code></pre>
+<p>Note that there are two type aliases, one to represent candidates as strings and another to represent a “Vote” as a list of candidates.</p>
+<p>Here are the functions you should implement. You should start by specifying their types and a “stub” implementation that does nothing. That way your tests will be runnable.</p>
+<ul>
+<li>The first is a little helper function called <code>downFromN</code>. It takes as input an integer <code>n</code> and returns the list of numbers from <code>n</code> down to <code>1</code>.</li>
+<li>Next is a method <code>withRanks</code>. It takes a vote and returns a list of candidate-integer pairs where the ranks have been added. For example the vote <code>["A", "B","C"]</code> becomes <code>[("A", 3), ("B", 2), ("C", 1)]</code>. You can achieve this easily using <code>zip</code>.</li>
+<li>Next is a method <code>allRanks</code>. It takes a list of votes and returns a list of all the pairs produced by <code>withRanks</code> for each of the votes in the list. So this will merge all the votes together into one big list, which is OK since we know how many points each candidate got from a voter by the rank number. For example the two votes <code>[["A", "B", "C"], ["B", "A", "C"]]</code> would produce (in some order) the list <code>[("A", 3), ("B", 2), ("C", 1), ("B", 3), ("A", 2), ("C", 1)]</code>.</li>
+<li>Next is a method <code>totalRank</code>. This takes in a candidate and a list of candidate-integer pairs, and adds up the integers <em>only</em> for those pairs matching the candidate. For example for candidate <code>"B"</code> and ranked pairs <code>[("B", 2), ("C", 1), ("B", 3)]</code> the answer would be <code>5</code>.</li>
+<li>Next is a method <code>allCandidates</code> which takes a list of candidate-integers pairs and returns a list of the candidates only, removing duplicates. The function <code>nub</code> will help you remove duplicates.</li>
+<li>Next we write a method <code>totalCounts</code> which takes a list of votes and returns a list of candidate-integer pairs which lists each candidate once, with corresponding number being the number of points they got. See the example in the test. The order of the candidates does not matter at this point.</li>
+<li>We will next want to sort this list of total counts, to have the winner near the top. In order to do that, we will need to implement a comparison function, so this is next. Write a <code>cmp</code> function that takes in two “candidate-integer” pairs and “compares” them by simply comparing the integers using the built-in <code>compare</code> function, and in reverse order (so a pair is “smaller” than another pair if its integer is larger). This will list larger integers first. The return type of this function if a bit unusual: it’s a type called <code>Ordering</code> with the three values <code>LT</code> for “less than”, <code>EQ</code> for “equal” and <code>GT</code> for “greater than”. You don’t need to return these values directly, the call you make to the integer <code>compare</code> function does that.</li>
+<li>Next we write a <code>sortedCounts</code> function. It takes as input the list of candidate-integer pairs, and returns the “sorted” list using the sort based on the <code>cmp</code> function. You can achieve this by calling the <code>sortBy</code> function and giving it the <code>cmp</code> function as its first parameter (and your list as its second).</li>
+<li>Now we need to work towards producing a printout of the candidate scores. We start with a function <code>neededLength</code> that returns, for a candidate-integer pair, the length needed to properly present it, which should be the length of the candidate followed by one space followed by the length of the integer. You can use the <code>show</code> function to turn the integer into a string. Look at the test for example input.</li>
+<li>Next we define a function <code>totalNeededLength</code>. This takes a list of candidate-integer pairs, and produces the line length needed to be able to show all them (so it should be the largest of their individual lengths). You will need a list comprehension together with the list <code>maximum</code>, which returns the largest number from a list.</li>
+<li>Next we need a <code>formatPair</code> function that takes an integer length and a candidate-integer pair and returns a string of that length that starts with the candidate, ends with the integer, and fills the remaining space with empty spaces.</li>
+<li>Next we have a function <code>formatAll</code> which takes a list of candidate-integer pairs and returns a list of strings, where each pair has been formatted using <code>formatPair</code>, and where the length used is the total needed length produced by <code>totalNeededLength</code>.</li>
+<li>The function <code>getResults</code> puts all these together and is provided for you. You can run it as:</li>
+</ul>
+<pre class="haskell"><code>getResults allVotes</code></pre>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");
 for (const el of els) {
@@ -42,5 +129,6 @@ for (const el of els) {
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-haskell.js"></script>
 </body>
 </html>
