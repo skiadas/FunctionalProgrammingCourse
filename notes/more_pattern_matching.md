@@ -1,6 +1,40 @@
 # More Practice with Pattern Matching
 
-In this section we look at gaining more practice with pattern-matching techniques, by writing standard library methods using pattern matches.
+### Implementation of `map`
+
+Before moving on, we can now give a straightforward implementation of the `map` function:
+```haskell
+map :: (a -> b) -> [a] -> [b]
+map f []       = []
+map f (x:xs)   = f x : map f xs
+```
+This is a typical recursive function, and we will study recursive functions in more detail later. But in effect, we recursively build the correct list for the tail of our input, then fix it by appending the value from the head.
+
+### More Complex Patterns
+
+Let us proceed to some more advanced pattern-matching with list patterns. One of the cool features is that you can dig deeper into a list with a single pattern. As an example, imagine we wanted to write a function `allEqual` that checks if all values in a list are equal to each other. The logic of it could go something like this:
+
+1. If the list has 1 or fewer elements, then the answer is `True`.
+2. If the list has at least two elements, then we check that the *first two* elements are equal to each other, then drop the first element and expect all the rest to equal each other.
+
+This could look as follows:
+```haskell
+allEqual :: Eq t => [t] -> Bool
+allEqual []         = True
+allEqual (x:[])     = True
+allEqual (x:y:rest) = x == y && allEqual (y:rest)
+```
+**Question**: Why is it wrong to just say `allEqual rest` at the end?
+
+**Warning**: It is very tempting to change the last pattern to say `(x:x:rest)`, expecting that this would only match if the first two elements of the list match. This *does not work*. You cannot repeat variables in a pattern. It would work with literals though, like `(True:True:rest)`.
+
+## Practice
+
+1. Write pattern-matching definitions for the function `fst` that given a pair returns the first entry, and the function `snd` that given a pair returns the second entry. Don't forget to use wildcards for values you dont need, and to start by writing the types of the functions.
+2. Using `allEqual` as a starting template, write a function `isIncreasing` that checks if a list of numbers is in increasing order, each next number in the list being larger than the ones before it.
+3. Using `allEqual` as a starting template, write a function `hasDups` that given a list of elements tests if the list has any *consecutive duplicates*, i.e. if there is ever a point in the list where two consecutive elements are equal.
+4. Using `allEqual` as a starting template, write a function `addStrange` that given a list of numbers looks at each pair (1st&2nd, 3rd&4th etc), and from each one picks the largest number, then adds those. If there is a single element remaining at the end, just use it.
+
 
 ## Pattern-matching examples
 

@@ -69,7 +69,8 @@ Wed
     - [Assignment 2. Due Wed 1/29](assignments/assignment2.md)
 
 Fri
-  ~ TBD
+  ~ - Reading: 7.1-7.4
+    - [Pattern Matching.](notes/pattern_matching.md) (4.4)
 
 ## Week 4
 
@@ -185,11 +186,12 @@ Fri
 
 ## Old links
 
+- [More practice with Pattern Matching.](notes/more_pattern_matching.md)
+
+
 - [Currying](notes/currying.md)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes. (cont)](notes/types_advanced.md) (3.6-3.9)
-- [Pattern Matching.](notes/pattern_matching.md) (4.4)
-- [More practice with Pattern Matching.](notes/more_pattern_matching.md)
 - [Version Control](notes/version_control.md)
 - [Assignment 2. Due 09/29](assignments/assignment2.md)
 - [Recursion](notes/recursion.md) (6.1-6.6)

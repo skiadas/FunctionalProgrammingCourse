@@ -15,7 +15,32 @@
 </head>
 <body>
 <h1 id="more-practice-with-pattern-matching">More Practice with Pattern Matching</h1>
-<p>In this section we look at gaining more practice with pattern-matching techniques, by writing standard library methods using pattern matches.</p>
+<h3 id="implementation-of-map">Implementation of <code>map</code></h3>
+<p>Before moving on, we can now give a straightforward implementation of the <code>map</code> function:</p>
+<pre class="haskell"><code>map :: (a -&gt; b) -&gt; [a] -&gt; [b]
+map f []       = []
+map f (x:xs)   = f x : map f xs</code></pre>
+<p>This is a typical recursive function, and we will study recursive functions in more detail later. But in effect, we recursively build the correct list for the tail of our input, then fix it by appending the value from the head.</p>
+<h3 id="more-complex-patterns">More Complex Patterns</h3>
+<p>Let us proceed to some more advanced pattern-matching with list patterns. One of the cool features is that you can dig deeper into a list with a single pattern. As an example, imagine we wanted to write a function <code>allEqual</code> that checks if all values in a list are equal to each other. The logic of it could go something like this:</p>
+<ol type="1">
+<li>If the list has 1 or fewer elements, then the answer is <code>True</code>.</li>
+<li>If the list has at least two elements, then we check that the <em>first two</em> elements are equal to each other, then drop the first element and expect all the rest to equal each other.</li>
+</ol>
+<p>This could look as follows:</p>
+<pre class="haskell"><code>allEqual :: Eq t =&gt; [t] -&gt; Bool
+allEqual []         = True
+allEqual (x:[])     = True
+allEqual (x:y:rest) = x == y &amp;&amp; allEqual (y:rest)</code></pre>
+<p><strong>Question</strong>: Why is it wrong to just say <code>allEqual rest</code> at the end?</p>
+<p><strong>Warning</strong>: It is very tempting to change the last pattern to say <code>(x:x:rest)</code>, expecting that this would only match if the first two elements of the list match. This <em>does not work</em>. You cannot repeat variables in a pattern. It would work with literals though, like <code>(True:True:rest)</code>.</p>
+<h2 id="practice">Practice</h2>
+<ol type="1">
+<li>Write pattern-matching definitions for the function <code>fst</code> that given a pair returns the first entry, and the function <code>snd</code> that given a pair returns the second entry. Don’t forget to use wildcards for values you dont need, and to start by writing the types of the functions.</li>
+<li>Using <code>allEqual</code> as a starting template, write a function <code>isIncreasing</code> that checks if a list of numbers is in increasing order, each next number in the list being larger than the ones before it.</li>
+<li>Using <code>allEqual</code> as a starting template, write a function <code>hasDups</code> that given a list of elements tests if the list has any <em>consecutive duplicates</em>, i.e. if there is ever a point in the list where two consecutive elements are equal.</li>
+<li>Using <code>allEqual</code> as a starting template, write a function <code>addStrange</code> that given a list of numbers looks at each pair (1st&amp;2nd, 3rd&amp;4th etc), and from each one picks the largest number, then adds those. If there is a single element remaining at the end, just use it.</li>
+</ol>
 <h2 id="pattern-matching-examples">Pattern-matching examples</h2>
 <p>The most common use of pattern-matching is in writing functions that process a list. We already saw a number of examples in that direction. The main elements of the process are as follows:</p>
 <ol type="1">
