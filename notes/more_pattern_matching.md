@@ -40,6 +40,7 @@ As one last example, let's implement the list concatenation operator, `++`. This
 (++) :: [a] -> [a] -> [a]
 []       ++ ys = ys
 (x : xs) ++ ys = x : (xs ++ ys)
+```
 
 ## Practice
 

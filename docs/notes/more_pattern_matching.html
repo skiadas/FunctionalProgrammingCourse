@@ -41,7 +41,9 @@ unzip [] = ([], [])
 unzip ((x, y):rest) = (x:xs, y:ys)
     where (xs, ys) = unzip rest</code></pre>
 <p>As one last example, let’s implement the list concatenation operator, <code>++</code>. This is an example of writing a definition for an infix operator. This is also an example where the input has two lists. We recurse on the first list:</p>
-<p>```haskell (++) :: [a] -&gt; [a] -&gt; [a] [] ++ ys = ys (x : xs) ++ ys = x : (xs ++ ys)</p>
+<pre class="haskell"><code>(++) :: [a] -&gt; [a] -&gt; [a]
+[]       ++ ys = ys
+(x : xs) ++ ys = x : (xs ++ ys)</code></pre>
 <h2 id="practice">Practice</h2>
 <ol type="1">
 <li>Write pattern-matching definitions for the function <code>fst</code> that given a pair returns the first entry, and the function <code>snd</code> that given a pair returns the second entry. Don’t forget to use wildcards for values you dont need, and to start by writing the types of the functions.</li>

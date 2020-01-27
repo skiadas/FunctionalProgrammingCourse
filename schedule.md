@@ -75,7 +75,8 @@ Fri
 ## Week 4
 
 Mon
-  ~ - [More practice with Pattern Matching.](notes/more_pattern_matching.md)
+  ~ - Reading: 7.5-7.6
+    - [More practice with Pattern Matching.](notes/more_pattern_matching.md)
 
 Wed
   ~ TBD
