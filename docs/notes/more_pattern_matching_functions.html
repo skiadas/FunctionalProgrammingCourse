@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>more_pattern_matching_functions</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h2 id="practice-with-pattern-matching-and-function-parameters.">Practice with pattern matching and function parameters.</h2>
+<p>The most common use of pattern-matching is in writing functions that process a list. We already saw a number of examples in that direction. The main elements of the process are as follows:</p>
+<ol type="1">
+<li>We handle in some special way the “base” cases of the empty list, and possibly the list of one element.</li>
+<li>We handle the general case of a list with a head and a tail. This typically involves calling the function recursively onto the tail, then doing some more work with the result.</li>
+</ol>
+<p>The <code>map</code> function is a good example of this process:</p>
+<pre class="haskell"><code>map :: (a -&gt; b) -&gt; [a] -&gt; [b]
+map f []       = []
+map f (x:xs)   = f x : map f xs</code></pre>
+<p>Note the second case. We call <code>map f xs</code> to obtain the result for the tail of our list. Then we also compute <code>f x</code> and put it at the front of the list.</p>
+<p>Let us also write the function <code>filter</code>: <code>filter</code> takes a predicate, which is a function of type <code>a -&gt; Bool</code>. Then it takes a list of values, applies the predicate to them, and only returns those for which the predicate is <code>True</code>. Here’s how that looks like:</p>
+<pre class="haskell"><code>filter :: (a -&gt; Bool) -&gt; [a] -&gt; [a]
+filter p []                 = []
+filter p (x:xs) | p x       = x :: filter p xs
+                | otherwise = filter p xs</code></pre>
+<p>Let us look at some more examples. For instance let us write the function <code>take</code> that returns the first however many elements from a list. The logic would go like this:</p>
+<ol type="1">
+<li>If we are asked to take 0 or less elements, then we simply return the empty list.</li>
+<li>If we are asked to take a number of elements from the empty list, then we simply return the empty list.</li>
+<li>If we are asked to take <code>n</code> elements from a non-empty list, then we will take <code>n-1</code> elements from its tail, then append the head element.</li>
+</ol>
+<p>Let us translate that into code:</p>
+<pre class="haskell"><code>take :: Int -&gt; [a] -&gt; [a]
+take _ []                   = []
+take n (x:xs) | n &lt;= 0      = []
+              | otherwise   = x : take (n-1) xs</code></pre>
+<h3 id="practice-problems">Practice Problems</h3>
+<p>You are expected to do these using pattern-matching and recursion as above, and not via other means.</p>
+<ol start="7" type="1">
+<li>Write a function <code>zipWith :: (a -&gt; b -&gt; c) -&gt; [a] -&gt; [b] -&gt; [c]</code>. It takes a function that turns an <code>a</code> and a <code>b</code> into a value of type <code>c</code>, and also takes a list of <code>a</code>s and a list of <code>b</code>s. It then forms a list out of the result of applying the function to the corresponding pairs of elements.</li>
+<li>(difficult) Write a function <code>splitWith :: (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])</code> which take as input a predicate and a list, and separates the list in two lists, with the first list containing those elements for which the predicate is <code>True</code> and the second list containing those elements for which the predicate is <code>False</code>. The order of elements must be maintained within each list.</li>
+</ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-haskell.js"></script>
+</body>
+</html>

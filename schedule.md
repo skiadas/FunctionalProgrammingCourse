@@ -75,7 +75,7 @@ Fri
 ## Week 4
 
 Mon
-  ~ TBD
+  ~ - [More practice with Pattern Matching.](notes/more_pattern_matching.md)
 
 Wed
   ~ TBD
@@ -186,12 +186,10 @@ Fri
 
 ## Old links
 
-- [More practice with Pattern Matching.](notes/more_pattern_matching.md)
-
+- [Practice with pattern matching and function parameters.](notes/more_pattern_matching_functions.md)
 
 - [Currying](notes/currying.md)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
-- [More advanced typing: Curried Functions. Polymorphism, Type classes. (cont)](notes/types_advanced.md) (3.6-3.9)
 - [Version Control](notes/version_control.md)
 - [Assignment 2. Due 09/29](assignments/assignment2.md)
 - [Recursion](notes/recursion.md) (6.1-6.6)
