@@ -16,27 +16,26 @@
 <body>
 <h1 id="interactive-programming-in-haskell">Interactive Programming in Haskell</h1>
 <p>In this section we discuss the challenge of creating interactive applications in Haskell, and how Haskell addresses the problem.</p>
-<h2 id="reading">Reading</h2>
-<ul>
-<li>Sections 10.1-10.5</li>
-<li>Practice exercises (10.10): 1, 4, 5, 6</li>
-</ul>
 <h2 id="interactive-programming-in-a-pure-world">Interactive Programming in a Pure World</h2>
 <p>In Haskell all functions are <strong>pure</strong>, which means that their outputs are completely determined by their inputs. This is a wonderful feature that provides numerous guarantees. We can more easily argue about the correctness of a program if we know exactly what the results will be.</p>
 <p>By contrast, interacting with the user requires that we break this purity. If the user is expected to type some string in, how can our function return a predictable result? And what about functions that print something to the screen? Each time we run the function, a new “effect” is produced, as a new string is printed to the screen. This is in addition to and distinct from whatever return value the function might produce.</p>
-<p>So the question becomes how to represent such a situation, when our language does not allow such “side-effects”. The answer is that we imagine the rest of the system as one big structure, of type <code>World</code>. A value of this type represents the state of the system, including what files are open, what is shown on the screen via the standard output, what has been read from the keyboard/standard input, and so on. An action that interacts with the user/system in some way takes us from one state of the world to a new state.</p>
-<h3 id="actions">Actions</h3>
-<p>As an example, imagine the act of reading a single character from the standard input. We could imagine this act as a function:</p>
-<pre class="haskell"><code>getChar :: World -&gt; (Char, World)
-getChar w1 = .... read a char and return that char and the new state of the world.</code></pre>
-<p>Similarly we could imagine a function that prints a character. This takes as input a character, and also the current world state, and returns an updated world state (plus an empty tuple as a meaningless result — all functions must return a result and the updated world is not enough).</p>
-<pre class="haskell"><code>putChar :: Char -&gt; World -&gt; ((), World)
-putChar c w1 = ((), w2)  -- w2 is the updated world state with the character printed</code></pre>
-<p>We have a specific type to represent these “functions”:</p>
-<pre class="haskell"><code>type IO a = World -&gt; (a, World)</code></pre>
-<p>So a value of type <code>IO a</code> interacts with the world in some way and also produces a value of type <code>a</code>. We can now write the types of the two functions above as:</p>
+<p>So the question becomes how to represent such a situation, when our language does not allow such “side-effects”. The answer is with a new type:</p>
+<pre class="haskell"><code>type IO a</code></pre>
+<p>So a value of type <code>IO a</code> interacts with the “world” in some way and also produces a value of type <code>a</code>. We can now write the types of two key functions:</p>
 <pre class="haskell"><code>getChar :: IO Char
 putChar :: Char -&gt; IO ()</code></pre>
+<p>So <code>getChar</code> is an <code>IO Char</code> type: It interacts with the user in some way (reading a character) and returns a value of type <code>Char</code>. <code>putChar</code> on the other hand takes as input a character and produces an interaction with the user (i.e. printing the character), where this interaction doesn’t produce anything.</p>
+<p>We can test a simple interaction this way (we will explain <code>do</code> in a minute):</p>
+<pre class="haskell"><code>main :: IO ()
+main = do
+    x &lt;- getChar
+    putChar x</code></pre>
+<p>If we load this and type <code>main</code>, then the interface will wait for us to type a character, then echo that character back to us before exiting. Try it out!</p>
+<p>Some other useful functions, you can probably guess what they do, but make surey you understand the <em>types</em>:</p>
+<pre class="haskell"><code>getLine :: IO String
+putStr :: String -&gt; IO ()
+putStrLn :: String -&gt; IO ()
+print :: (Show a) =&gt; a -&gt; IO ()</code></pre>
 <p>Values of type <code>IO a</code> are called <strong>actions</strong>. They are “impure” in the sense that their results depend on external factors such as user interaction, and as such they cannot be used inside of “pure” functions. What this means in practical terms is that we cannot get the value of type <code>a</code> completely out of its <code>IO</code> context: There is no function of type <code>IO a -&gt; a</code> that we can make. Once you are in IO you are stuck there.</p>
 <p>So the main idea of working with interactive programming is as follows:</p>
 <ul>
@@ -58,8 +57,7 @@ putChar :: Char -&gt; IO ()</code></pre>
 <li>If the character is the newline, then we need to return an empty list/string, so that the process of prepending characters can begin.</li>
 </ul>
 <p>In the above a key step is to be able to “return” a specific value, like a string. This means that we need to turn an actual value into an <em>action</em> that does not change the world but that contains this value as its value. This is done by a function aptly called <code>return</code>:</p>
-<pre class="haskell"><code>return :: a -&gt; IO a
-return v = \world -&gt; (v, world)     -- Imaginary definition if IO a was really World -&gt;...</code></pre>
+<pre class="haskell"><code>return :: a -&gt; IO a</code></pre>
 <p>The function <code>return</code> simply takes a value and turns it into the trivial action.</p>
 <p>Now let’s look at the code for our <code>getLine</code> function:</p>
 <pre class="haskell"><code>getLine :: IO String
@@ -74,13 +72,15 @@ getLine = do
 <p>Let us similarly write a function that prints a string. It must take as input a string, and returns an action with no value.</p>
 <pre class="haskell"><code>putStr :: String -&gt; IO ()
 putStr []     = return ()
-putStr (c:cs) = do putChar c
-                   putStr cs</code></pre>
+putStr (c:cs) = do
+    putChar c
+    putStr cs</code></pre>
 <p>There is also a version that follows the string with a newline:</p>
 <pre class="haskell"><code>putStrLn :: String -&gt; IO ()
-putStrLn s = do putStr s
-                putChar &#39;\n&#39;</code></pre>
-<p>All these are already implemented in Haskell, but even if they were we could have easily added them.</p>
+putStrLn s = do
+    putStr s
+    putChar &#39;\n&#39;</code></pre>
+<p>All these are already implemented in Haskell, but even if they were not we could have easily added them.</p>
 <p>Before we move on, let us consider another useful function, called <code>sequence_</code>. It has type:</p>
 <pre class="haskell"><code>sequence_ :: [IO a] -&gt; IO ()</code></pre>
 <p>It takes a list of actions, and it performs them in sequence, ignoring their results. It could be implemented as follows:</p>
@@ -88,13 +88,25 @@ putStrLn s = do putStr s
 sequence_ (ac:acs) = do ac
                         sequence_ acs</code></pre>
 <p>You should notice a similarity between this function and <code>putStr</code> earlier. In fact, think of how you could implement <code>putStr</code> using <code>sequence_</code> and a list comprehension (or map) to form a list of actions out of a list of characters.</p>
+<p>To show some more possibilities, let’s write a function that reads in a number if it’s the only thing on a line. We use here the special function <code>read</code> which converts a string to another kind of value, like an integer:</p>
+<pre class="haskell"><code>getInt :: IO Int
+getInt = do
+    s &lt;- getLine
+    return (read s)</code></pre>
+<p>And here is an example usage:</p>
+<pre class="haskell"><code>addUp :: IO ()
+addUp = do
+    i1 &lt;- getInt
+    i2 &lt;- getInt
+    putStrLn (&quot;The sum is: &quot; ++ show (i1 + i2))</code></pre>
+<p>More complex example (do as time permits): Write an action that asks for an integer, then asks the user to type in that many numbers, and returns their sum, with some prompts along the way.</p>
 <h3 id="practice">Practice</h3>
 <ol type="1">
-<li>Implement <code>putStr</code> using <code>sequence_</code>. The types should help guide you in the process.</li>
-<li>Implement a function <code>getUntil :: (Char -&gt; Bool) -&gt; IO Char -&gt; IO String</code> that keeps collecting characters as long as the predicate is <code>True</code>. It then returns the concatenation of those characters.</li>
-<li>Use the function <code>getUntil</code> to provide an alternative implementation of <code>getLine</code>.</li>
+<li>Implement an action that will ask for a line of input from the user and then test whether that line forms a palindrome or not, and return an appropriate message.</li>
+<li>Implement a <code>prompt :: String -&gt; IO String</code> method which presents the provided prompt to the user, then reads a line of input (and returns that line as its value; <code>getLine</code> will take care of that part).</li>
+<li>Implement <code>putStr</code> using <code>sequence_</code>. The types should help guide you in the process (You start with a <code>[Char]</code>, which you should turn into a <code>[IO ()]</code> before calling <code>sequence_</code>).</li>
+<li>Implement a function <code>getWord :: IO String</code> that reads and returns a word (and stops when it encounters a non-word character. The built-in function <code>Data.Char.isAlpha :: Char -&gt; Bool</code> can tell you if a character is alphabetic.</li>
 <li>Implement the action <code>sequence :: [IO a] -&gt; IO [a]</code>. It takes a list of actions, performs them all, and collects the results into one list.</li>
-<li>Implement the action <code>(&lt;$&gt;) :: (a -&gt; b) -&gt; IO a -&gt; IO b</code>. It performs the action, then passes it through the function before returning it.</li>
 </ol>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");

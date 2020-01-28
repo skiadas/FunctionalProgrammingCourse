@@ -39,7 +39,7 @@ Here is some start code. You may want to add your own tests.
 module Voting where
 
 import Test.HUnit
-import Data.List (sortBy, nub)
+import Data.List (sortBy, nub, sort)
 
 type Candidate = String
 type Vote = [Candidate]

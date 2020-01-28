@@ -16,10 +16,6 @@
 <body>
 <h1 id="interactive-programming-examples">Interactive Programming Examples</h1>
 <p>In this section we will implement a larger interactive game, Hangman. As we do so we will see how one structures such programs so as to separate the pure components from the unpure ones.</p>
-<h2 id="reading">Reading</h2>
-<ul>
-<li>Section 10.6</li>
-</ul>
 <h2 id="hangman">Hangman</h2>
 <p>The Hangman game we implement will be somewhat different from the version in the book, but it has many things in common. The game starts by asking the user for a string. It then offers the user a fixed number of chances to guess a single character from the string, and it visually shows all matched characters from the string.</p>
 <p>Usually implementing a program like that consists of two levels:</p>
@@ -34,7 +30,7 @@ main = do
     word &lt;- readHiddenWord
     guessWord word
     main</code></pre>
-<p>We need to implement two actions. One that reads a word from the user, without showing it, and another that interacts with the user as they are trying to guess it. The main function then simply performs these two operations, and calls itself again for an infinite set of attempts.</p>
+<p>We need to implement two actions. One that reads a word from the user, without showing it, and another that interacts with the user as they are trying to guess it. The main function then simply performs these two operations, and calls itself again for an infinite set of games.</p>
 <h3 id="reading-the-word">Reading The Word</h3>
 <p>The first half of the project has to do with implementing <code>readHiddenWord</code>. We will break that part further in smaller chunks:</p>
 <pre class="haskell"><code>readHiddenWord :: IO String
@@ -48,8 +44,8 @@ withoutEcho action = do
     v &lt;- action
     hSetEcho stdin True
     return v</code></pre>
-<p>The action <code>hSetEcho</code> is a built in action that is given a “stream”, standard input in this case, and a new boolean value, and it sets the echo-ing state of that stream.</p>
-<p><code>readWord</code> simply reads the character and puts a start in its place. It must however still print newlines:</p>
+<p>The action <code>hSetEcho</code> is a built-in action that is given a “stream”, standard input in this case, and a new boolean value, and it sets the echo-ing state of that stream.</p>
+<p><code>readWord</code> simply reads the character and puts an asterisk in its place. It must however still print the newline (and returns):</p>
 <pre class="haskell"><code>readWord :: IO String
 readWord = do
     c &lt;- getChar
@@ -59,13 +55,13 @@ readWord = do
         else do putChar &#39;*&#39;
                 cs &lt;- readWord
                 return (c:cs)</code></pre>
-<p>This finishes the first part of the application, that of reading in a guess from the user. We could test this out by using a dummy <code>withoutEcho</code> for now.</p>
+<p>This finishes the first part of the application, that of reading in a guess from the user.</p>
 <h3 id="interactive-guessing">Interactive Guessing</h3>
 <p>The second part of the project requires that we implement the <code>guessWord</code> action. Let us think of what that might involve:</p>
 <ul>
 <li>We must keep track of the characters that the user has guessed. We could also keep a count of how many guesses the user has made, but we can simply find that out from the list of guessed characters. This means that our main function should take a second argument in addition to the word, namely the list of guesses, which probably will start life as empty.</li>
 <li>We must have a way of comparing the list of guessed characters with the word, and see if all characters in the word have been guessed. This will be a pure function.</li>
-<li>We must have a way of forming visual representation of the word where all not-yet-guessed characters are replaced by an underscore. This will also be a pure function.</li>
+<li>We must have a way of forming a visual representation of the word where all not-yet-guessed characters are replaced by an underscore. This will also be a pure function.</li>
 </ul>
 <p>Let us see how <code>guessWord</code> would look like, with all this in mind. The heart of the matter is the <code>guessLoop</code> action (<strong>Question</strong>: Why did we write <code>[Char]</code> instead of <code>String</code> for the second parameter to <code>guessLoop</code>?).</p>
 <pre class="haskell"><code>guessWord :: String -&gt; IO ()
@@ -105,7 +101,7 @@ readNextGuess word guesses = do
 <p>We used some function compositions there, and also the <code>hSetBuffering</code> action to set the input to do no buffering (so that we can immediately read every character typed rather than wait for the whole line). Note the structure of the <code>putEachGuess</code> action. In order for this to work, we had to import the corresponding modules:</p>
 <pre class="haskell"><code>import System.IO
 import Data.List (intercalate)</code></pre>
-<p>All that remains are the pure functions. We need one function to mask a word given some guesses, and one function to check if a words is fully guessed from its guesses. Both are simple:</p>
+<p>All that remains are the pure functions. We need one function to mask a word given some guesses, and one function to check if a word is fully guessed from its guesses. Both are simple:</p>
 <pre class="haskell"><code>isFullyGuessed :: String -&gt; [Char] -&gt; Bool
 isFullyGuessed word guesses = all (`elem` guesses) word
 

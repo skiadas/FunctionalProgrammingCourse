@@ -70,7 +70,7 @@ Wed
 
 Fri
   ~ - Reading: 7.1-7.4
-    - [Pattern Matching.](notes/pattern_matching.md) (4.4)
+    - [Pattern Matching.](notes/pattern_matching.md)
 
 ## Week 4
 
@@ -79,7 +79,10 @@ Mon
     - [More practice with Pattern Matching.](notes/more_pattern_matching.md)
 
 Wed
-  ~ TBD
+  ~ - Reading: 8.2-8.5
+    - [Interactive Programming](notes/interactive.md)
+    - [Practice with Interactive Programming](notes/interactive_hangman.md)
+
 
 Fri
   ~ TBD
@@ -200,8 +203,6 @@ Fri
 - [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 - [Functions as Values: Difference Lists, Composition (cont)](notes/difference_lists.md) (7.5)
 - MIDTERM ([study guide](notes/midterm_study_guide.md))
-- [Interactive Programming](notes/interactive.md) (10.1-10.5)
-- [Practice with Interactive Programming](notes/interactive_hangman.md) (10.6)
 - BREAK
 - [Recursive Types](notes/recursive_types.md) (8.4)
 - [Assignment 4. Due 11/03](assignments/assignment4.md)
