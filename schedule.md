@@ -81,11 +81,11 @@ Mon
 Wed
   ~ - Reading: 8.2-8.5
     - [Interactive Programming](notes/interactive.md)
-    - [Practice with Interactive Programming](notes/interactive_hangman.md)
 
 
 Fri
-  ~ TBD
+  ~ - [Practice with Interactive Programming](notes/interactive_hangman.md)
+    - [Assignment 3. Due Fri 2/7](assignments/assignment3.md)
 
 ## Week 5
 
