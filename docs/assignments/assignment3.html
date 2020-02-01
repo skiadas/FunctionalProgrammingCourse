@@ -15,7 +15,171 @@
 </head>
 <body>
 <h1 id="assignment-3">Assignment 3</h1>
-<p>In this assignment we will do a bit of “lexical analysis” on a text.</p>
+<p>In this assignment we will do a bit of “lexical analysis” on a text. We will read a text and record information as we encounter it. We will concentrate on the following:</p>
+<ol type="1">
+<li>Words</li>
+<li>Punctuation marks</li>
+<li>end of line marks</li>
+</ol>
+<p>Our goal would be to refine such a text, as well as provide some information about it, as follows:</p>
+<ol type="1">
+<li>Convert three consecutive periods into an “ellipsis”, two consecutive dashes into an “em-dash” which is a special longer-than normal dash (you can read all about hyphens, en-dashes and em-dashes and their uses in any good writing-style document).</li>
+<li>Convert “programmer’s quotes: <code>"</code>” into more fancy open-close quotation marks.</li>
+<li>Count the number of words, sentences, and paragraphs.</li>
+<li>Reformat the text to a given width limit, with two variants: One preserves any earlier newline characters (i.e. shorter lines allowed) the other tries to make all lines as full as possible (without trying to add extra spaces to really fill it all out).</li>
+</ol>
+<p>We start by reading a large string of the entire text, then breaking it into “terms”. Here is the definition of the <code>term</code> type:</p>
+<pre class="haskell"><code>data Term = Word String | Punc Char | Space | NewL | Para deriving (Eq, Show)
+type Text = [Term]</code></pre>
+<p>So a term is either a word (containg a string information) or a punctuation (containing a character information), a space (marked by the space character), a newline (marked by the newline character) or a paragraph mark (a paragraph consists of 2 or more consecutive newline character). As a quick example, the string: <code>"Hello there!\nNew"</code> will become:</p>
+<pre class="haskell"><code>[Word &quot;Hello&quot;, Space, Word &quot;there&quot;, Punc &#39;!&#39;, NewL, Word &quot;New&quot;]</code></pre>
+<p>Your assignment is to provide code that does a number of processing steps to a string. You can run the automated tests with:</p>
+<pre class="bash"><code># Run in shell
+# Compile first
+ghc assignment3
+./assignment3 tests</code></pre>
+<p>You should ADD YOUR OWN TESTS; The ones provided are by no means exhaustive.</p>
+<p>Remember that you will need to create STUB implementations for all your functions in advance, in order for the tests to compile.</p>
+<p>You can test how your script performs on a particular text file (once you have implemented the needed functions) with the following shell commands:</p>
+<pre class="bash"><code># Run in shell
+# Compile first
+ghc assignment3
+./assignment3 stats &lt; inputfile
+./assignment3 long &lt; inputfile   &gt; outputfile</code></pre>
+<p>This assignment is meant to exercise your skills in writing pattern-matching functions. Please avoid other techniques for writing these functions.</p>
+<p>First, a brief overview of the functions you need to implement and/or are given:</p>
+<ol type="1">
+<li><p><code>processText</code> is a function that is provided to you, but which uses functions you will need to write. It takes as input a string and returns a <code>Text</code> value for that string, which is the result of the initial processing of the string followed by a number of post-read steps.</p></li>
+<li><p><code>readText</code> is a function you will need to write. It takes in a string and reads it through, turning it into a <code>Text</code> value by converting each character to an appropriate term. The rules are as follows:</p>
+<ul>
+<li>Any punctuation character becomes a <code>Punc</code> value. You can use the function <code>isPunctuation</code> to determine if a given character is a punctuation character or not.</li>
+<li>A space character is converted to a <code>Space</code> value. (we will not consider tabs as characters that occur in our texts, but if you want to consider them then treat them as 4 spaces.)</li>
+<li>The newline character is converted to the <code>NewL</code> value.</li>
+<li>Any other character is considered a word character, any a as-large-as-possible sequence of consecutive such characters forms the string in a <code>Word</code> value. You can use the next function to help you in handling this case.</li>
+</ul></li>
+<li><p><code>combineChar</code> is a helper function to be used with question 2. It takes as input a character and a <code>Text</code> value which represents the read rest of the string. For example if we were reading the string <code>"cat?"</code> then the <code>combineChar</code> function may be called to operate on the character <code>'c'</code> and the <code>Text</code> value <code>[Word "at", Punc '?']</code>. The desired behavior in this case would be to combine the <code>'c'</code> character with the <code>"at"</code> string and result in the text value <code>[Word "cat", Punc '?']</code>. A little bit deeper in to the recursive calls it may be called to operate on the character <code>'s'</code> and the text value <code>[Punc '?']</code>, in which case it would produce <code>[Word "s", Punc '?']</code>. Make sure you understand these two examples.</p>
+<p>Here is how <code>combineChar</code> is meant to behave on a character <code>ch</code> and a text value <code>txt</code>:</p>
+<ul>
+<li>If the first element in <code>txt</code> is a <code>Word s</code> value, then this means we are in the middle of reading a word, and we need to replace that value with one where the new character has been prepended to the string <code>s</code> in the <code>Word</code> value.</li>
+<li>In all other cases, this character is meant to start a new word and we must forms a new <code>Word</code> value with that character and place it at the front of the <code>Text</code> list. You can handle the empty list case together with this case in one clause.</li>
+</ul></li>
+<li><p>The big workhorse is the <code>commonSubstitutions</code> method, which recursively goes through a <code>Text</code> value and returns a <code>Text</code> value back, attempting to perform various transformation along the way. You will spend a lot of time on this function incrementally adding behavior. It will be a big list of pattern-match cases each handling a different kind of transformation then recursively continuing on the rest.</p>
+<ul>
+<li>Start with a basic recursive function which returns an empty string when given an empty string, and which simply recursively traverses the elements and not losing any elements in the process. At this point the result of your function should basically be a new list that looks just like the original one (but actually had each element “visited” by the function). You should add all the following cases before the trivial recursive step, using that as a catchall: If the current term does not need any transformation done to it, we continue looking at the remaining terms.</li>
+<li>The first thing you should add is a transformation that converts three consecutive periods into a single ellipsis element. There is a variable <code>ellipsis</code> that you can use for that, which uses the special Unicode character for an ellipsis.</li>
+<li>Next you should add a transformation that converts two consecutive dashes/minuses into an “emdash”. Again there is a <code>Term</code> value defined for you for that called <code>emdash</code> which uses the special Unicode character for an emdash.</li>
+<li>Next up you need to handle cases of words separated by a dash. For example the two-word combination <code>"twenty-five"</code> would have been parsed as the three terms <code>Word "twenty"</code>, <code>Punc '-'</code> and <code>Word "five"</code> in that order. Your pattern should match such combinations and replace them with a single <code>Word "twenty-five"</code> combination. Make sure the recursive call allows you to catch the case of two dashes like in <code>"five-and-twentieth"</code> by combining the first dash into a compound word but allowing that word to be part of the recursive match.</li>
+<li>Next up you need to handle apostrophes. There are three cases you need to handle: Where the apostrophe is in the middle of the word (like <code>"isn't"</code>, when it is at the end of the word (<code>"parents'"</code>) or at the beginning indicating omitted text (<code>"'re"</code>). You should handle all three cases, and be careful about the order. Note: You can represent the single quote/apostrophe character as <code>'\''</code>.</li>
+<li>Next up you need to handle periods which are parts of abbreviations. We will handle only a specific set of abbreviations here, so you’ll need a case for each of Mr, Mrs, Ms, Dr and Prof. If any one of those is immediately followed by a period, you need to combine that word and that punctuation mark into one word.</li>
+<li>Next up we have a case to handle roman numerals. A roman numeral for us is a sequence of any of the letters IXVL, either uppercase or lowercase, with possible repetitions, like <code>VII</code> or <code>ix</code>. You should write the helper method <code>isNumeral</code> which takes a string and returns a boolean as to whether that string is a numeral. Then use this helper to handle the cases of a word followed by a period: If that word is a numeral then combine it with the period into a new word, otherwise keep the word as is and continue recursively with the rest (make sure that you still recursively examine the period, in case it is part of an ellipsis for example).</li>
+<li>Lastly, you will need two more cases to handle newline/paragraph related topics. Namely: Any sequence of two or more newline elements <code>NewL</code> needs to be replaced by a single <code>NewL</code> followed by a single <code>Para</code>. You can do this with one case turning a <code>NewL</code> pair into a <code>NewL</code> and <code>Para</code> combination, and another case that reads any <code>NewL</code> which follows a <code>Para</code> and simply skips it.</li>
+</ul></li>
+<li><p>Next up, you need to implement a method called <code>smartQuotes</code>, which takes a <code>Text</code> and replaces the normal quotes with nicer open/close quotation marks, returning a <code>Text</code> value. Use the provided <code>openQuote</code> and <code>closeQuote</code> values. You will need a helper method that uses an extra boolean parameter to remember whether you are in the middle of a quotation (in which case the next quotation mark you see should be a closing one) or outside (in which case the next quotation mark you see should be an opening on).</p></li>
+<li><p>Next up you are asked to implement a series of “counting” functions. Given a text, these functions count various things and return the integer count:</p>
+<ul>
+<li><code>countWords</code> simply counts how many word terms there are.</li>
+<li><code>countSentences</code> counts how many sentences there are. For us, a sentence is any sequence that ends in a period, question mark or exclamation point.</li>
+<li><code>countLines</code> counts how many lines there are. A line happens when the <code>NewL</code> term is encountered (we do not count the empty lines formed by paragraphs. It also occurs at the very last term, <em>unless</em> that term is a <code>Para</code> term.</li>
+<li><code>countParagraphs</code> counts how many paragraphs there are. A paragraph happens when the <code>Para</code> term is encountered or at the very last term (even if that term is not a <code>Para</code> term).</li>
+</ul></li>
+<li><p>Next up you should write a <code>printStats</code> method. It takes as input a <code>Text</code> value and produces an <code>IO ()</code> action which prints stat information. You should be producing output that looks like this:</p>
+<pre><code>Words: 234
+Sentences: 23
+Lines: 12
+Paragraphs: 5</code></pre>
+<p>This will be a simple <code>do</code> sequence of actions, calling on the functions you wrote on the previous step.</p></li>
+<li><p>We will now put together a set of functions whose goal is to print out the text to produce a string.</p>
+<ul>
+<li><code>termToString</code> should take as input a <code>Term</code> and convert it to a <code>String</code>. <code>Word</code> terms result in the corresponding word, <code>Punc</code> terms produce a string containing just that punctuation, <code>Space</code> terms become a single space string <code>" "</code>, and <code>NewL</code> and <code>Para</code> terms both become a string containing a single newline character, <code>"\n"</code>.</li>
+<li><code>toString</code> takes a whole <code>Text</code> and converts it to a string, by simply using the <code>termToString</code> method to turn each term into a string, then concatenating those.</li>
+<li><code>eliminateNewlines</code> eliminates the newline terms <code>NewL</code> as follows: A <code>NewL</code> term that is followed by a paragraph term is simply eliminated, while a <code>NewL</code> term that is not followed by a paragraph term is replaced by a <code>Space</code> term. Don’t forget to recursively traverse the entire term list.</li>
+<li><code>splitOnParagraph</code> takes a <code>Text</code> value and returns a list of <code>Text</code> values by splitting on the <code>Para</code> terms. The resulting <code>Text</code> values should not contain the <code>Para</code> terms. Make sure to NOT create an extra empty <code>Text</code> value if the last term is a <code>Para</code> term.</li>
+<li><code>toParagraphs</code> combines these as follows: It takes a <code>Text</code> value and must result in a list of strings. It does this by first using <code>eliminateNewlines</code> followed by <code>splitOnParagraph</code>, and then it applies the <code>toString</code> function to each of the result <code>Text</code> elements to produce corresponding <code>String</code> elements. You can use a list comprehension for part of this function if you find it helpful.</li>
+<li>Lastly, <code>printParagraphs</code> takes as input a list of strings and produces an <code>IO ()</code> action which prints those strings as paragraphs as follows: It prints the string/paragraph followed by a newline character; then if we are not at the end of the list it prints an extra newline character to create an empty line, then recursively prints the rest of the list. A simple <code>do</code> statement should work for this.</li>
+</ul></li>
+</ol>
+<p>Here are initial file contents:</p>
+<pre class="haskell"><code>module Main where
+
+import Test.HUnit
+import Data.Char (isAlpha, toUpper, isPunctuation)
+
+data Term = Word String | Punc Char
+          | Space | NewL | Para deriving (Eq, Show)
+type Text = [Term]
+
+
+openQuote = Punc &#39;\8220&#39;
+closeQuote = Punc &#39;\8221&#39;
+ellipsis = Punc &#39;\8230&#39;
+emdash = Punc &#39;\8212&#39;
+
+
+processText :: String -&gt; Text
+processText = smartQuotes . commonSubstitutions . readText
+
+tests = TestList [
+   TestCase $ assertEqual &quot;combineChar&quot;
+      [Word &quot;cat&quot;, Punc &#39;!&#39;] (combineChar &#39;c&#39; [Word &quot;at&quot;, Punc &#39;!&#39;]),
+   TestCase $ assertEqual &quot;combineChar&quot;
+      [Word &quot;t&quot;, Punc &#39;!&#39;] (combineChar &#39;t&#39; [Punc &#39;!&#39;]),
+   TestCase $ assertEqual &quot;combineChar&quot;
+      [Word &quot;t&quot;, Space] (combineChar &#39;t&#39; [Space]),
+   TestCase $ assertEqual &quot;commonSubstitutionsEmdash&quot;
+      [Word &quot;say&quot;, emdash, Word &quot;hello&quot;] (processText &quot;say--hello&quot;),
+   TestCase $ assertEqual &quot;commonSubstitutionsEllipsis&quot;
+      [Word &quot;some&quot;, Space, Word &quot;ellipsises&quot;, ellipsis, Punc &#39;.&#39;]
+      (processText &quot;some ellipsises....&quot;),
+   TestCase $ assertEqual &quot;commonSubstitutionsMrAndApostrophe&quot;
+      [Word &quot;Mr.&quot;, Space, Word &quot;Smith&#39;s&quot;, Space, Word &quot;work&quot;]
+      (processText &quot;Mr. Smith&#39;s work&quot;),
+   TestCase $ assertEqual &quot;commonSubstitutionsDashed&quot;
+      [Word &quot;seventy-five&quot;]
+      (processText &quot;seventy-five&quot;),
+   TestCase $ assertEqual &quot;commonSubstitutionsDashedTwice&quot;
+      [Word &quot;five-and-twentieth&quot;]
+      (processText &quot;five-and-twentieth&quot;),
+   TestCase $ assertEqual &quot;isNumeral&quot; False (isNumeral &quot;&quot;),
+   TestCase $ assertEqual &quot;isNumeral&quot; False (isNumeral &quot;IGF&quot;),
+   TestCase $ assertEqual &quot;isNumeral&quot; True (isNumeral &quot;ILX&quot;),
+   TestCase $ assertEqual &quot;commonSubstitutionsNumerals&quot;
+      [Word &quot;I.&quot;, Space, Word &quot;II.&quot;, Space, Word &quot;III.&quot;, Space,
+       Word &quot;IV.&quot;, Space, Word &quot;V.&quot;, Space, Word &quot;VI.&quot;, Space,
+       Word &quot;vii.&quot;, Space, Word &quot;IX.&quot;, Space, Word &quot;X.&quot;, Space,
+       Word &quot;XI.&quot;, Space, Word &quot;Normal&quot;, Punc &#39;.&#39;]
+      (processText &quot;I. II. III. IV. V. VI. vii. IX. X. XI. Normal.&quot;),
+   TestCase $ assertEqual &quot;commonSubstitutionsParagraphs&quot;
+      [Word &quot;word&quot;, NewL, Para]
+      (processText &quot;word\n\n\n\n&quot;),
+   TestCase $ assertEqual &quot;commonSubstitutionsParagraphs&quot;
+      [Word &quot;word&quot;, NewL, Para, Word &quot;More&quot;]
+      (processText &quot;word\n\n\n\n\n\n\nMore&quot;),
+   TestCase $ assertEqual &quot;smartQuotes&quot;
+      [Word &quot;here&quot;, Space, Word &quot;be&quot;, Space, openQuote,
+       Word &quot;double&quot;, Space, Word &quot;quotes&quot;, closeQuote]
+      (processText &quot;here be \&quot;double quotes\&quot;&quot;),
+   TestCase $ assertEqual &quot;countLines1&quot;
+      3
+      (countLines $ processText &quot;one\n\ntwo\nthree&quot;),
+   TestCase $ assertEqual &quot;countLines2&quot;
+      3
+      (countLines $ processText &quot;one\n\ntwo\nthree\n&quot;),
+   TestCase $ assertEqual &quot;countLines3&quot;
+      3
+      (countLines $ processText &quot;one\n\ntwo\nthree\n\n&quot;)
+   ]
+
+main :: IO ()
+main = do
+   args &lt;- getArgs
+   s &lt;- getContents
+   let txt = processText s
+   case args of
+      (&quot;tests&quot; : _) -&gt; do runTestTT tests
+                          return ()
+      (&quot;stats&quot; : _) -&gt; printStats txt
+      (&quot;long&quot; : _)  -&gt; (printParagraphs . toParagraphs) txt
+      _             -&gt; (printParagraphs . toParagraphs) txt</code></pre>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");
 for (const el of els) {

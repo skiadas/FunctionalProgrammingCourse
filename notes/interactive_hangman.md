@@ -86,12 +86,17 @@ putGuesses :: [Char] -> IO ()
 putGuesses guesses = do
     putStr "Guessed: "
     putEachGuess guesses
+    putChar '\n'
 
 putEachGuess :: [Char] -> IO ()
-putEachGuess = putStrLn . intercalate ", " . map (:[])
+putEachGuess []     = return ()
+putEachGuess (g:gs) = do
+    putChar g
+    unless (null gs) (putStr ", ")
+    putEachGuess gs
 
 putMaskedWord :: String -> [Char] -> IO ()
-putMaskedWord word = putStrLn . maskedWord word
+putMaskedWord word guesses = putStrLn $ maskedWord word guesses
 
 readNextGuess :: String -> [Char] -> IO ()
 readNextGuess word guesses = do
@@ -104,19 +109,18 @@ readNextGuess word guesses = do
         else guessLoop word (guess:guesses)
 ```
 
-We used some function compositions there, and also the `hSetBuffering` action to set the input to do no buffering (so that we can immediately read every character typed rather than wait for the whole line). Note the structure of the `putEachGuess` action. In order for this to work, we had to import the corresponding modules:
+We used some function compositions there, and also the `hSetBuffering` action to set the input to do no buffering (so that we can immediately read every character typed rather than wait for the whole line). In order for this to work, we had to import the corresponding modules:
 ```haskell
 import System.IO
-import Data.List (intercalate)
 ```
 
 All that remains are the pure functions. We need one function to mask a word given some guesses, and one function to check if a word is fully guessed from its guesses. Both are simple:
 ```haskell
 isFullyGuessed :: String -> [Char] -> Bool
-isFullyGuessed word guesses = all (`elem` guesses) word
+isFullyGuessed word guesses = and [c `elem` guesses | c <- word]
 
 maskedWord :: String -> [Char] -> String
-maskedWord word guesses = map handleChar word
+maskedWord word guesses = [handleChar c | c <- word]
     where handleChar c | c `elem` guesses   = c
                        | otherwise          = '_'
 ```
