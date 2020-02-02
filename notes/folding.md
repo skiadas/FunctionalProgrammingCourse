@@ -1,15 +1,30 @@
 # Folding
 
-In this section we will look at the important idea of a folding operation, which provides a systematic way to process all elements in a list, or any other recursive structure.
-
-## Reading
-
-- Sections 7.3, 7.4
-- Practice exercises (7.9): 3, 4, 6
+In this section we will look at the important idea of a folding operation, which provides a systematic way to process all elements in a list, or any other recursive structure. Folding effectively captures in a nicely generic way the idea of accumulating the values of a list/array.
 
 ## Folding Lists
 
-Folding is meant to capture a quite generic pattern when traversing lists. This pattern could go as follows:
+We start with a special case, called `foldr1`, which only works for lists that have at least one element. As an example, folding the addition operator over a list of numbers will result in adding those numbers:
+```haskell
+foldr1 (+) [1..5] = 1 + (2 + (3 + (4 + 5)))
+```
+While the parentheses are not needed in this case, they indicate the way in which the function is applied.
+
+As another example, we can implement the `minimum` function which finds the smallest element in an array simply as:
+```haskell
+minimum lst = foldr1 (min) lst
+```
+where `min` is the function that given two numbers returns their maximum.
+
+### Practice
+
+1. Write a `foldr1` call which will determine if *all* the elements in a list of booleans are `True`, as well as one that will determine if *any* of them are `True`.
+2. Write a `foldr1` call that will concatenate together a list of strings.
+3. Determine the type of `foldr1` and then provide an implementation for it.
+
+## foldr
+
+A more general pattern is implemented via the function `foldr` (without the 1). This is the overall pattern we want to employ, which replicates the idea of accumulation:
 
 - We want to process the elements of a list of type `[a]` and return a value of a certain type `b`.
 - We have an initial value to get as the result for the case of the empty list.
@@ -99,38 +114,3 @@ foldl f yinit xs = foldr construct id xs yinit
     where construct x g y = g (f y x)
           id y = y
 ```
-
-## Folding Trees
-
-Recall how we defined trees in the past:
-```haskell
-data Tree a = E | N (Tree a) a (Tree a)
-```
-
-It is natural for us to want to traverse the trees. The most universal way to do so is to define folding functions analogous to `foldr` or `foldl`. We will need three such functions, as trees can be traversed in three ways:
-
-Inorder
-  ~ With *inorder traversal*, the nodes on the left child are visited first, then the root, then the nodes on the right child (left-root-right).
-
-Preorder
-  ~ With *preorder traversal*, the root is visited first, then the nodes on the left child, then the ones on the right child (root-left-right).
-
-Postorder
-  ~ with *postorder traversal*, the nodes on the left child are visited first, then the ones on the right child, and finally the root (left-right-root).
-
-Let's take a look at how we can implement each of these:
-```haskell
-foldin :: (a -> b -> b) -> Tree a -> b -> b
-foldin _ E v                = v
-foldin f (N left x right) v = v3
-    where v1 = foldin f left v
-          v2 = f x v1
-          v3 = foldin f right v2
-```
-We could actually also write these in a "point-free" way, avoiding direct references to `v`:
-```haskell
-foldin _ E             = id          -- The identity function
-foldin f (N left x right) = foldin f right . f x . foldin f left
-```
-
-**Practice**: Implement the other two traversals, `foldpre` and `foldpost`.

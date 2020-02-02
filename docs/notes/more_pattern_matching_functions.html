@@ -14,38 +14,51 @@
 </script>
 </head>
 <body>
-<h2 id="practice-with-pattern-matching-and-function-parameters.">Practice with pattern matching and function parameters.</h2>
-<p>The most common use of pattern-matching is in writing functions that process a list. We already saw a number of examples in that direction. The main elements of the process are as follows:</p>
-<ol type="1">
-<li>We handle in some special way the “base” cases of the empty list, and possibly the list of one element.</li>
-<li>We handle the general case of a list with a head and a tail. This typically involves calling the function recursively onto the tail, then doing some more work with the result.</li>
-</ol>
-<p>The <code>map</code> function is a good example of this process:</p>
+<h1 id="higher-order-functions">Higher-order functions</h1>
+<p>One of the most powerful ideas in Haskell, and functional programming in general, is that <strong>functions are first-class values</strong>. This means that we can use functions in the same places where we use other kinds of values: We can put them in lists, we can store them in variables, and so on. Most importantly, we can <em>pass them as parameters to functions</em>, and we can also <em>return them as the results from functions</em>.</p>
+<p>We focus on the first part of this here: <em>functions that take other functions as parameters</em>.</p>
+<h2 id="map">Map</h2>
+<p>The best place to start this journey is with functions that operate on lists. One of the most important such functions is <code>map</code>:</p>
+<blockquote>
+<p><code>map</code> creates a new list by applying a provided function to each element of a list`.</p>
+</blockquote>
+<p>For example, if <code>double x = 2*x</code>, then <code>map double [1, 2 , 3]</code> will result in <code>[2, 4, 6]</code>. In other words, it behaves exactly like the list comprehension <code>[double x | x &lt;- [1, 2, 3]]</code>. In fact, we can define <code>map</code> as a list comprehension:</p>
+<pre class="map"><code>map :: (a -&gt; b) -&gt; [a] -&gt; [b]
+map f xs = [f x | x &lt;- xs]</code></pre>
+<p>We can also define it via a standard recursive pattern:</p>
 <pre class="haskell"><code>map :: (a -&gt; b) -&gt; [a] -&gt; [b]
 map f []       = []
 map f (x:xs)   = f x : map f xs</code></pre>
 <p>Note the second case. We call <code>map f xs</code> to obtain the result for the tail of our list. Then we also compute <code>f x</code> and put it at the front of the list.</p>
-<p>Let us also write the function <code>filter</code>: <code>filter</code> takes a predicate, which is a function of type <code>a -&gt; Bool</code>. Then it takes a list of values, applies the predicate to them, and only returns those for which the predicate is <code>True</code>. Here’s how that looks like:</p>
+<p>Take a moment to think about the type of the <code>map</code> function: It takes a <code>a-&gt;b</code> function (the parentheses are important), and a list of <code>a</code> values, and produces a list of <code>b</code> values.</p>
+<p>You might wonder why you should prefer the <code>map</code> function over list comprehensions. There are two reasons. The first is the idea of <em>curried functions</em> and <em>partial application</em> which we will discuss later. The other is the fact that <code>map</code> can actually be extended to work with other collection types, not just lists, and more or less in the same way.</p>
+<h3 id="practice">Practice</h3>
+<ol type="1">
+<li>Use <code>map</code> to write a function that converts a string into uppercase. You may use the function <code>Data.Char.toUpper</code> which takes a character and converts it to uppercase, if possible.</li>
+<li>Use <code>map</code> to build a list of all the characters based on their integer codes, starting from the one with code 32 and ending with the one with code 128. The function <code>Data.Char.chr</code> returns the character corresponding to a code.</li>
+<li>Define the <code>length</code> function for lists using <code>map</code> and <code>sum</code>.</li>
+</ol>
+<h2 id="filter">Filter</h2>
+<p>Another important higher-order function is <code>filter</code>. <code>filter</code> takes a predicate, which is a function of type <code>a -&gt; Bool</code>. Then it takes a list of values, applies the predicate to them, and only returns those for which the predicate is <code>True</code>. In effect:</p>
+<blockquote>
+<p><code>filter</code> keeps only those elements from the list that satisfy a provided condition.</p>
+</blockquote>
+<p>With list comprehensions, we could write <code>filter</code> like this:</p>
+<pre class="haskell"><code>filter :: (a -&gt; Bool) -&gt; [a] -&gt; [a]
+filter p xs = [ x | x &lt;- xs, p x]</code></pre>
+<p>Or we can use recursion:</p>
 <pre class="haskell"><code>filter :: (a -&gt; Bool) -&gt; [a] -&gt; [a]
 filter p []                 = []
 filter p (x:xs) | p x       = x :: filter p xs
                 | otherwise = filter p xs</code></pre>
-<p>Let us look at some more examples. For instance let us write the function <code>take</code> that returns the first however many elements from a list. The logic would go like this:</p>
-<ol type="1">
-<li>If we are asked to take 0 or less elements, then we simply return the empty list.</li>
-<li>If we are asked to take a number of elements from the empty list, then we simply return the empty list.</li>
-<li>If we are asked to take <code>n</code> elements from a non-empty list, then we will take <code>n-1</code> elements from its tail, then append the head element.</li>
-</ol>
-<p>Let us translate that into code:</p>
-<pre class="haskell"><code>take :: Int -&gt; [a] -&gt; [a]
-take _ []                   = []
-take n (x:xs) | n &lt;= 0      = []
-              | otherwise   = x : take (n-1) xs</code></pre>
+<p>As an example, we can keep only the digits from a string by doing: <code>filter Data.Char.isDigit lst</code>.</p>
 <h3 id="practice-problems">Practice Problems</h3>
-<p>You are expected to do these using pattern-matching and recursion as above, and not via other means.</p>
-<ol start="7" type="1">
+<p>To practice thinking about higher-order functions, here are some practice problems to work on.</p>
+<ol type="1">
 <li>Write a function <code>zipWith :: (a -&gt; b -&gt; c) -&gt; [a] -&gt; [b] -&gt; [c]</code>. It takes a function that turns an <code>a</code> and a <code>b</code> into a value of type <code>c</code>, and also takes a list of <code>a</code>s and a list of <code>b</code>s. It then forms a list out of the result of applying the function to the corresponding pairs of elements.</li>
-<li>(difficult) Write a function <code>splitWith :: (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])</code> which take as input a predicate and a list, and separates the list in two lists, with the first list containing those elements for which the predicate is <code>True</code> and the second list containing those elements for which the predicate is <code>False</code>. The order of elements must be maintained within each list.</li>
+<li>Write a function <code>takeWhile :: (a -&gt; Bool) -&gt; [a] -&gt; [a]</code> which takes as input a predicate and a list and retains the elements from the list as long as the predicate is true.</li>
+<li>Write a function <code>dropWhile :: (a -&gt; Bool) -&gt; [a] -&gt; [a]</code> which takes as input a predicate and a list and drops the elements from the list as long as the predicate is true.</li>
+<li>Write a function <code>splitWith :: (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])</code> which takes as input a predicate and a list, and separates the list in two lists, with the first list containing those elements for which the predicate is <code>True</code> and the second list containing those elements for which the predicate is <code>False</code>. The order of elements must be maintained within each list.</li>
 </ol>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");

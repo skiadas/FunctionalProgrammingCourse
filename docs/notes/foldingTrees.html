@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>foldingTrees</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="folding-trees">Folding Trees</h1>
+<p>Recall how we defined trees in the past:</p>
+<pre class="haskell"><code>data Tree a = E | N (Tree a) a (Tree a)</code></pre>
+<p>It is natural for us to want to traverse the trees. The most universal way to do so is to define folding functions analogous to <code>foldr</code> or <code>foldl</code>. We will need three such functions, as trees can be traversed in three ways:</p>
+<dl>
+<dt>Inorder</dt>
+<dd>With <em>inorder traversal</em>, the nodes on the left child are visited first, then the root, then the nodes on the right child (left-root-right).
+</dd>
+<dt>Preorder</dt>
+<dd>With <em>preorder traversal</em>, the root is visited first, then the nodes on the left child, then the ones on the right child (root-left-right).
+</dd>
+<dt>Postorder</dt>
+<dd>with <em>postorder traversal</em>, the nodes on the left child are visited first, then the ones on the right child, and finally the root (left-right-root).
+</dd>
+</dl>
+<p>Let’s take a look at how we can implement each of these:</p>
+<pre class="haskell"><code>foldin :: (a -&gt; b -&gt; b) -&gt; Tree a -&gt; b -&gt; b
+foldin _ E v                = v
+foldin f (N left x right) v = v3
+    where v1 = foldin f left v
+          v2 = f x v1
+          v3 = foldin f right v2</code></pre>
+<p>We could actually also write these in a “point-free” way, avoiding direct references to <code>v</code>:</p>
+<pre class="haskell"><code>foldin _ E             = id          -- The identity function
+foldin f (N left x right) = foldin f right . f x . foldin f left</code></pre>
+<p><strong>Practice</strong>: Implement the other two traversals, <code>foldpre</code> and <code>foldpost</code>.</p>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-haskell.js"></script>
+</body>
+</html>

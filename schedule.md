@@ -90,10 +90,12 @@ Fri
 ## Week 5
 
 Mon
-  ~ TBD
+  ~ - Reading: 10.1-10.2
+    - [Higher-order functions](notes/more_pattern_matching_functions.md)
 
 Wed
-  ~ TBD
+  ~ - Reading: 10.3-10.5
+    - [Folding](notes/folding.md)
 
 Fri
   ~ TBD
@@ -187,18 +189,15 @@ Fri
   ~ TBD
 
 
+- [Folding trees](notes/foldingTrees.md)
 
 ## Old links
-
-- [Practice with pattern matching and function parameters.](notes/more_pattern_matching_functions.md)
 
 - [Currying](notes/currying.md)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 - [Version Control](notes/version_control.md)
-- [Assignment 2. Due 09/29](assignments/assignment2.md)
 - [Recursion](notes/recursion.md) (6.1-6.6)
 - [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
-- [Assignment 3. Due 10/13](assignments/assignment3.md)
 - [The Maybe (Option) Type.](notes/maybe.md)
 - [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 - [Functions as Values: Difference Lists, Composition (cont)](notes/difference_lists.md) (7.5)
@@ -206,11 +205,9 @@ Fri
 - BREAK
 - [Recursive Types](notes/recursive_types.md) (8.4)
 - [Assignment 4. Due 11/03](assignments/assignment4.md)
-- [Folding](notes/folding.md) (7.3-7.4)
 - [Overview of Software Development Practices](notes/dev_overview.md)
 - [Information hiding and abstraction with modules](notes/modules.md)
 - [Testing](notes/testing.md)
 - [The State Monad](notes/functors_monads.md)
 - [Functors, Applicatives, Monads](notes/functors_monads.md)
-- [Specification Testing with HSpec](notes/testing_hspec.md)
 - [Final Study Guide](notes/final_study_guide.md)
