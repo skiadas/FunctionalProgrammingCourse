@@ -2,28 +2,23 @@
 
 In this section we discuss two related and useful features, anonymous functions and sections. Anonymous functions allow us to quickly build ephemeral functions that may be used only once or twice. Sections allow us to create such functions from operators.
 
-## Reading
-
-- Sections 4.5, 4.6
-- Practice exercises (4.8): 7
-
 ## Anonymous Functions
 
 A common pattern that we will see in the future is the idea of "higher-order functions". These functions take as input some function, along with other values, and often apply this function.
 
 Often times the functions passed as parameters to these higher-order functions are ephemeral, only used in this one instance and not really needing their own name. This is one of the motivations behind the idea of *anonymous functions*.
 
-**Anonymous functions**, or **lambda expressions**, specify a, typically short, definition for a function and produce a function value. Unlike the named functions, this value will be lost if it is not stored somewhere.
+**Anonymous functions**, or **lambda expressions**, specify a (typically short) definition for a function and produce a function value. Unlike the named functions, this value will be lost if it is not stored somewhere.
 
 > Anonymous functions can appear anywhere where a value/expression is expected.
 
-We can think of most of the function we have seen as defined via a lambda expression. For example:
+We can think of most of the functions we have seen as defined via a lambda expression. For example:
 ```haskell
 increment x = x + 1
 -- It is the same as :
 increment = \x -> x + 1
 ```
-We get to see here the syntax  for anonymous functions: They start with a backslash, followed by the function parameters, followed by an arrow and finally the function body. We can even have multiple parameters, and in so doing can do the same thing in multiple ways:
+We get to see here the syntax for anonymous functions: They start with a backslash, followed by the function parameters, followed by an arrow and finally the function body. We can even have multiple parameters, and in so doing can do the same thing in multiple ways:
 ```haskell
 add x y = x + y
 add x = \y -> x + y
@@ -76,3 +71,6 @@ Notice that the `` `mod` `` example demonstrates that we can even produce sectio
 3. Appending the list `[1, 2]` to the front of another list.
 4. Appending the list `[1, 2]` to the end of another list.
 5. Raising 2 to a given power.
+6. Prepending an element as the head to the list `[]`.
+7. Determining if a character is in the list/string `"0123456789abcdef"`.
+8.

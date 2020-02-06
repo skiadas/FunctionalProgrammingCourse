@@ -4,11 +4,6 @@ In this section we discuss some more advanced topics related to Haskell's typing
 
 We start with as discussion of the process of currying function parameters, which is possible because of the dominant nature of function values in functional programming. We then move on to discuss type variables which enable *generic programming* techniques. We end with a discussion of type classes and their significance.
 
-## Reading
-
-- Sections 3.7-3.9
-- Practice exercises (3.11): 1, 2, 3, 4, 5
-
 ## Curried functions
 
 Looking at the example of the `range` function above:

@@ -16,19 +16,14 @@
 <body>
 <h1 id="anonymous-functions-and-sections">Anonymous Functions and Sections</h1>
 <p>In this section we discuss two related and useful features, anonymous functions and sections. Anonymous functions allow us to quickly build ephemeral functions that may be used only once or twice. Sections allow us to create such functions from operators.</p>
-<h2 id="reading">Reading</h2>
-<ul>
-<li>Sections 4.5, 4.6</li>
-<li>Practice exercises (4.8): 7</li>
-</ul>
 <h2 id="anonymous-functions">Anonymous Functions</h2>
 <p>A common pattern that we will see in the future is the idea of “higher-order functions”. These functions take as input some function, along with other values, and often apply this function.</p>
 <p>Often times the functions passed as parameters to these higher-order functions are ephemeral, only used in this one instance and not really needing their own name. This is one of the motivations behind the idea of <em>anonymous functions</em>.</p>
-<p><strong>Anonymous functions</strong>, or <strong>lambda expressions</strong>, specify a, typically short, definition for a function and produce a function value. Unlike the named functions, this value will be lost if it is not stored somewhere.</p>
+<p><strong>Anonymous functions</strong>, or <strong>lambda expressions</strong>, specify a (typically short) definition for a function and produce a function value. Unlike the named functions, this value will be lost if it is not stored somewhere.</p>
 <blockquote>
 <p>Anonymous functions can appear anywhere where a value/expression is expected.</p>
 </blockquote>
-<p>We can think of most of the function we have seen as defined via a lambda expression. For example:</p>
+<p>We can think of most of the functions we have seen as defined via a lambda expression. For example:</p>
 <pre class="haskell"><code>increment x = x + 1
 -- It is the same as :
 increment = \x -&gt; x + 1</code></pre>
@@ -69,6 +64,9 @@ add = \x -&gt; (\y -&gt; x + y)</code></pre>
 <li>Appending the list <code>[1, 2]</code> to the front of another list.</li>
 <li>Appending the list <code>[1, 2]</code> to the end of another list.</li>
 <li>Raising 2 to a given power.</li>
+<li>Prepending an element as the head to the list <code>[]</code>.</li>
+<li>Determining if a character is in the list/string <code>"0123456789abcdef"</code>.</li>
+<li></li>
 </ol>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");

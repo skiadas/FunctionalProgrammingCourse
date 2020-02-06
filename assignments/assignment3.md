@@ -102,6 +102,7 @@ module Main where
 
 import Test.HUnit
 import Data.Char (isAlpha, toUpper, isPunctuation)
+import System.Environment (getArgs)
 
 data Term = Word String | Punc Char
           | Space | NewL | Para deriving (Eq, Show)

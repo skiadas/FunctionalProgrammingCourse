@@ -98,12 +98,16 @@ Wed
     - [Folding](notes/folding.md)
 
 Fri
-  ~ TBD
+  ~ - Reading: 11.2-11.3
+    - [Types of recursion](notes/recursion.md)
+    - [Anonymous Functions. Sections.](notes/anonymous_functions.md)
 
 ## Week 6
 
 Mon
-  ~ TBD
+  ~ - Reading: 11.1, 11.4
+    - [Currying and partial application](notes/currying.md)
+    - [Function Composition](notes/function_composition.md)
 
 Wed
   ~ TBD
@@ -190,20 +194,17 @@ Fri
 
 
 - [Folding trees](notes/foldingTrees.md)
+- Reading: 14.1-14.3 [Recursive Types](notes/recursive_types.md)
 
 ## Old links
 
-- [Currying](notes/currying.md)
 - [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 - [Version Control](notes/version_control.md)
-- [Recursion](notes/recursion.md) (6.1-6.6)
-- [Anonymous Functions. Sections.](notes/anonymous_functions.md) (4.5-4.6)
 - [The Maybe (Option) Type.](notes/maybe.md)
 - [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 - [Functions as Values: Difference Lists, Composition (cont)](notes/difference_lists.md) (7.5)
 - MIDTERM ([study guide](notes/midterm_study_guide.md))
 - BREAK
-- [Recursive Types](notes/recursive_types.md) (8.4)
 - [Assignment 4. Due 11/03](assignments/assignment4.md)
 - [Overview of Software Development Practices](notes/dev_overview.md)
 - [Information hiding and abstraction with modules](notes/modules.md)

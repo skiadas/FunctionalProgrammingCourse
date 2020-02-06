@@ -2,11 +2,6 @@
 
 In this section we discuss various aspects of recursive functions. We assume that students already have a working knowledge of the basics of recursion.
 
-## Reading
-
-- Sections 6.1-6.6
-- Practice exercises (6.8): 2, 3, 4, 6, 7, 8
-
 ## What is Recursion
 
 Recursion is a fundamental building block of functions, and its idea is simple. Let us recall the basic idea behind a function:

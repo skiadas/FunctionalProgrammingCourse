@@ -97,34 +97,6 @@ append f1 f2 ys = f1 (f2 ys)</code></pre>
 (\ws -&gt; xs ++ ws) (ys ++ zs)
 xs ++ (ys ++ zs)</code></pre>
 <p>So, when the time finally comes to compute the list concatenations, they end up being in the proper order!</p>
-<h2 id="function-composition">Function Composition</h2>
-<p>The operation <code>append</code> earlier actually ended up corresponding to a very common operation, that of <strong>function composition</strong>. In function composition you have two functions, and you build a new function from them by applying one function first, then applying the second function to the result of the first. This is so common that it has a simple notation, namely that of a single dot:</p>
-<pre class="haskell"><code>(.) :: (b -&gt; c) -&gt; (a -&gt; b) -&gt; (a -&gt; c)
-f . g = \x -&gt; f (g x)
--- Can also write as
-f . g x = f (g x)</code></pre>
-<p>With this definition in mind, we could have defined <code>append</code> earlier as simply <code>append=(.)</code>.</p>
-<p>As a trivial example of function composition, consider a linear function:</p>
-<pre class="haskell"><code>f x = 3 * x + 1</code></pre>
-<p>We can think of this function as a composition of two functions: We first multiply by 3, then we add 1. We can think of these two as sections. So a rather convoluted way of writing the above would have been:</p>
-<pre class="haskell"><code>f = (+ 1) . (3 *)</code></pre>
-<p>This doesn’t really show the significance of this function, but it will hopefully help show a bit of the mechanics.</p>
-<p>As another example, suppose we wanted to do the following: Write a function that given a list of numbers squares them then adds the results. We could write this in a number of different ways:</p>
-<pre class="haskell"><code>sumSquares :: Num t =&gt; [t] -&gt; t
--- List comprehension
-sumSquares xs = sum [x^2 | x &lt;- xs]
--- Using map
-sumSquares xs = sum (map (^2) xs)
--- &quot;Point-free&quot; using function composition
-sumSquares = sum . map (^2)</code></pre>
-<p>This type of programming has a certain elegance to it: We define a function via composition of known functions, without ever having to mention the function’s actual parameter. This is often called <strong>point-free style</strong>, some times also called <strong>tacit programming</strong>.</p>
-<p>It is also at times hard to read, so use it with caution.</p>
-<h3 id="practice">Practice</h3>
-<ol type="1">
-<li>Give a point-free definition of a function that is given a list of numbers finds the maximum of the first 3 elements.</li>
-<li>Give a point-free definition of a function that given a list of lists returns a list containing the heads of those lists (you do not need function composition here, this is simply a curried function with only some parameters provided).</li>
-<li>Consider the following “string scrambling” process: For each character, convert it to an integer via the method <code>ord :: Char -&gt; Int</code>, then double that integer, finally convert the corresponding integer back to a character via <code>chr :: Int -&gt; Char</code>. Do this for each character in the string. Write this function of type <code>String -&gt; String</code> that performs this combined task. You can do this as a partially applied <code>map</code>, where the provided function is point-free and composes the functions <code>ord, chr</code> together with a section for the multiplication.</li>
-</ol>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");
 for (const el of els) {

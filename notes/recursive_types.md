@@ -2,11 +2,6 @@
 
 In this section we will consider recursively defined types, which allow us to describe structures of arbitrary size, like lists and trees. We will in particular build search trees using the mechanism of recursive types.
 
-## Reading
-
-- Section 8.4
-- Practice exercises (8.9): 3, 5
-
 ## Recursive Types
 
 A recursive type is a custom data type that refers to itself in one of its variants. In this way, a value of a particular type is either one of the basic options for that type, or a combination of simpler values, possibly of the same type.
@@ -68,7 +63,9 @@ toList :: Tree a -> [a]
 toList E              = []
 toList N left v right = (toList left) ++ (v :: toList right)
 ```
-We will later see other lists like this.
+This provides what is typically called an in-order traversal of the tree.
+
+**Question**: How would we obtain pre-order or post-order traversals instead?
 
 Now let us proceed to write an `insert` method, that inserts a new element into the proper place in the tree. It would need to have type: `Ord a => Tree a -> a -> Tree a`, so it takes an element and a tree, and returns a new tree with the element inserted in the correct spot. This will have various cases:
 
@@ -78,16 +75,21 @@ Now let us proceed to write an `insert` method, that inserts a new element into 
 ```haskell
 insert :: Ord a => Tree a -> a -> Tree a
 insert E v              = N E v E  -- Could also do as: insert E = singleton
-insert (N left v' right) v
-            | v == v'   = N left v' right
-            | v < v'    = N (insert left v) v' right
-            | v > v'    = N left v' (insert right v)
+insert (N left v' right) v =
+    case compare v v' of
+        EQ -> N left v' right
+        LT -> (insert left v) v' right
+        GT -> N left v' (insert right v)
 ```
 
 ### Practice
 
-1. Write a function `contains :: Ord a => a -> Tree a -> Bool` that given a tree and element searches for that element in the tree.
-2. Write a function `any :: (a -> Bool) -> Tree a -> Bool` that given a tree and a predicate returns `True` if there is at least one element in the tree for which the predicate is `True`, and `False` otherwise (including empty trees). Do not use ordering.
-3. Write a function `all :: (a -> Bool) -> Tree a -> Bool` that given a tree and a predicate returns `True` if for all elements in the tree the predicate is `True`, and `False` otherwise. It should be `True` for empty trees (there is no element that can make the predicate `False`). Do not use ordering.
+1. Write a function `contains :: Ord a => a -> Tree a -> Bool` that given a tree and an element searches for that element in the tree.
+2. Write a function `any :: (a -> Bool) -> Tree a -> Bool` that given a tree and a predicate returns `True` if there is at least one element in the tree for which the predicate is `True`, and `False` otherwise (including empty trees). You may need to traverse all branches.
+3. Write a function `all :: (a -> Bool) -> Tree a -> Bool` that given a tree and a predicate returns `True` if for all elements in the tree the predicate is `True`, and `False` otherwise. It should be `True` for empty trees (there is no element that can make the predicate `False`). You may need to traverse all branches.
 4. Write a function `min :: Ord a => Tree a -> a` that given a binary search tree finds the smallest element. It should error on an empty tree. You would more or less have to traverse the left children. Draw some tree examples before attempting this.
-5. Write a function `deleteMin :: Ord a => Tree a -> a` that given a binary search tree removes the smallest element. It should error on an empty tree. You would more or less have to traverse the left children. Draw some tree examples before attempting this.
+5. Write a function `deleteMin :: Ord a => Tree a -> Tree a` that given a binary search tree removes the smallest element. It should error on an empty tree. You would more or less have to traverse the left children. Draw some tree examples before attempting this.
+6. Write a function `delete :: Ord a => Tree a -> a -> Tree a` that given a binary tree removes the provided element (or errors if the element doesn't exist). The process for deleting an element once you have found its node would be as follows:
+
+    - If the element to be deleted has no right child, then simply replace it with its left child.
+    - If the element does have a right child, then: Find the smallest element of the right child, using `min`, remove that smallest element from the right child using `deleteMin`, then place that smallest element in the node of the element you are deleting, forming a new node with the same left child as before, the updated right child, and the new element as the value. Draw a picture of this to understand it first.
