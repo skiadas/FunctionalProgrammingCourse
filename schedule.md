@@ -110,7 +110,7 @@ Mon
     - [Function Composition](notes/function_composition.md)
 
 Wed
-  ~ TBD
+  ~ - [Higher order functions practice: 12.5](notes/higher_order_functions_practice.md)
 
 Fri
   ~ TBD

@@ -2,7 +2,7 @@
 <html>
 <head>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism-dark.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.css" rel="stylesheet" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
@@ -15,26 +15,115 @@
 </head>
 <body>
 <h1 id="assignment-4">Assignment 4</h1>
-<p>On the development-practices side, Assignment 4 introduces unit testing. On the Haskell side, you will work with function values, and get used to thinking of these functions as your primitive values.</p>
+<p>In this assignment we will write a program to play Blackjack. You can familiarize yourself with the rules at <a href="https://bicyclecards.com/how-to-play/blackjack/">this page</a>. Here are the rules in brief (we will ignore some more elaborate play options and stick to a “normal” play, and keep to one player):</p>
 <ul>
-<li>You will work with functions as your primitive values, and combine them in suitable ways.</li>
-<li>You will continue practicing with version control.</li>
-<li>You will continue managing your project by creating issues and milestones in the GitLab interface.</li>
-<li>You will start writing unit tests for your code.</li>
-</ul>
-<p>At this point you should have the following setup:</p>
-<ol type="1">
-<li>You created a fork of my <code>functional-programming-assignments</code> repository in GitLab. It probably has a web address that looks like <code>https://gitlab.com/skiadas/functional-programming-assignments</code> but with your name instead of mine.</li>
-<li>You have also cloned your fork locally on your computers, and it resides in some folder probably called <code>functional-programming-assignments</code>.</li>
-<li>You have added my repository as a new remote called <code>upstream</code>. You now need to update your local repository with my “upstream” changes.
+<li>The game is played with a normal deck of playing cards.</li>
+<li>Each card has a value: Aces count for 1 or 11 (more on that later), face cards count for 10, while all other cards count for their number.</li>
+<li>The goal is to reach a score as close to 21 as possible, but not above.</li>
+<li>The player can choose whether to count any ace as 1 or 11, depending on what works better for them. The dealer’s moves are forced as we will describe shortly. The effect is that aces end up counting as 11 if this would not cause you to go above 21, and as 1 otherwise.</li>
+<li>A combination of an ace and a face card (a total of 21 in two cards) is called a <em>natural</em> or <em>blackjack</em>.</li>
+<li>We will call a hand with score over 21 (with aces counting as 1) <em>busted</em>.</li>
+<li>The play goes as follows:
 <ul>
-<li>Open your project in GitKraken and you should be seeing two remotes on the side, origin and upstream. In this step you will update the remote repositories to fetch the upstream update, and update your local upstream with the changes that happened on my repository. You do this with the little arrow to the right of the “Pull” menu, and you select the “Fetch All” option. You should also be seeing in the main window multiple paths. There is your local master, with a little laptop image to it, and if you have pushed recently then you would also see your fork “origin/master”, with your gitlab avatar, at the same position. And you will probably see another branch, the “upstream/master”, with my picture on it.</li>
-<li>Make sure the current branch is your local master, it should have a checkbox next to it. Also make sure you have no uncommitted changes (they are usually in a WIP item at the top). Then right-click my branch’s latests commit, and you should see a context menu. One of the options would say: “Merge upstream/master into master”. Click it.</li>
-<li>You are ready to go! There should now be a folder containing the assignment4 descriptions. The README in that folder should tell you what you need to do to finish the assignment.</li>
+<li>The dealer deals two cards to the player and two cards to themselves. Only one of the dealer’s cards is face up.</li>
+<li>If the player and the dealer both have naturals, then it’s a tie.</li>
+<li>Otherwise, if the player has a natural, then they win.</li>
+<li>Otherwise, if the dealer has a natural, then the player loses.</li>
+<li>Otherwise, the player if offered the chance to draw another card (<em>Hit</em>) or to stop (<em>Stand</em>). This process ends when the player stands or when they are busted.</li>
+<li>If the player is busted then they lose..</li>
+<li>The dealer then reveals their other card. If they have a score of 17 or above then they stop. Otherwise they draw from the deck until their score is 17 or above or until they are busted.</li>
+<li>If the dealer is busted (but the player is not), then the player wins.</li>
+<li>Otherwise, if the player’s score is <em>larger</em> than the dealer’s then the player wins, otherwise the player loses.</li>
 </ul></li>
+</ul>
+<p>In this lab we will implement a system for playing Blackjack. It will allow us to test a predetermined strategy as well as play an interative game.</p>
+<p>Ways to interact with the system:</p>
+<ul>
+<li><p>Compile as normal via <code>ghc assignment4</code>.</p></li>
+<li><p>You can run the automated tests via <code>./assignment4 tests</code> after you compile.</p></li>
+<li><p>You can combine compilation and test run in one command via:</p>
+<pre class="haskell"><code>ghc assignment4 &amp;&amp; ./assignment4 tests</code></pre></li>
+<li><p>Once you have written the appropriate code, you can see an automated play against a hard-coded strategy by doing <code>./assignment4 auto</code>.</p></li>
+<li><p>Once you have written the appropriate code, you can run a simulation of multiple automated runs and see the total results via <code>./assignment4 sim xxxx</code> where xxxx is the number of simulations to run (1000 is a good minimum, don’t try more than 10000 unless you’re willing to wait for a while).</p></li>
+<li><p>Once you have written the appropriate code, you can play the game interactively via <code>./assignment4 play</code>.</p></li>
+</ul>
+<p>We start with some type definitions:</p>
+<pre class="haskell"><code>data Suit = Hearts | Diamonds | Clubs | Spades    deriving (Eq, Show)
+data Value = Ace | Num Int | Jack | Queen | King  deriving (Eq, Ord, Show)
+type Card = (Suit, Value)
+type Deck = [Card]
+type Hand = [Card]
+data Play = Hit | Stand              deriving (Eq, Show)
+data Result = Win | Loss | Tie       deriving (Eq, Show)
+type Strategy = Hand -&gt; Card -&gt; Play</code></pre>
+<p>These definitions should be fairly explanatory, except perhaps for the last one. A “strategy” is basically the instructions for how the player is going to play: If they have the provided hand and the dealer has the provided card facing up, then they will take the appropriate action.</p>
+<p>As an example, we consider the dealer’s strategy: If their hand value is less than 17 then they choose <code>Hit</code>, otherwise they choose <code>Stand</code>. Its code looks like this:</p>
+<pre class="haskell"><code>dealer :: Strategy
+dealer hand _ | count hand &lt; 17  = Hit
+              | otherwise        = Stand</code></pre>
+<ol type="1">
+<li><p>We start with some simple methods to print cards: Write the methods <code>showCard</code> and <code>showDeck</code> that turn a Card and a Deck respectively into a string. Note that there is already a meaningful method <code>show</code> for suits, so you can do <code>show suit</code> to get a string from the suit. You may find it helpful to write a <code>showValue</code> function to turn a <code>Value</code> into a string. Note that <code>showDeck</code> prints the cards in reverse order (as this will work better for us later on).</p>
+<p>You MUST implement <code>showDeck</code> in a “point-free” way: Write it as a composition of three functions: reverse, map, and intercalate, the last two being provided their first parameter. You can use either of the two composition styles, <code>.</code> and <code>&gt;.&gt;</code>.</p></li>
+<li><p>Next, implement a <code>hasAces</code> function that given a hand returns whether it has any aces in it. You MUST implement this function in a point free way, by doing a partial application to the <code>any</code> function, providing it with a suitable test function (perhaps called <code>isAce</code>).</p></li>
+<li><p>Next, write a <code>value</code> function that given a card produces its “numerical value”: Aces will count as 1 for now, face cards count for 10, while other cards count for their values.</p>
+<p>Also write a <code>normalValue</code> function that given a hand returns the total value of that hand by adding the values of the individual cards. You MUST implement this in a point-free way, by combining the <code>sum</code> function with a suitable application of <code>map</code>.</p>
+<p>Also write a function <code>count</code> that given a hand computes the correct “count” of points for the hand: It starts off with the result of <code>normalValue</code> and possibly adjusts it by 10 if there were any aces and adding 10 won’t get the score above 21.</p></li>
+<li><p>Next, we implement some utility methods for hands. Start with a function <code>isNatural</code> to detect if a hand is a “natural”, namely has count of 21 and consists of exactly two cards.</p>
+<p>Next, write a function <code>isBusted</code> which given a hand returns whether the count is over 21. You MUST implement this function in a point-free way, by composing the <code>count</code> method together with an operator section for the operator <code>&gt;</code>.</p></li>
+<li><p>Next we implement strategies. You are being provided a <code>dealer</code> strategy, which implements the dealer’s play. You are asked to implement your own strategy for a player, called <code>simplePlayer</code>. An example strategy could be “If the dealer card is an Ace of a face card, then hit if our count is less than 18 and stand otherwise, but if the dealer card is a number card then hit if our count is less than 17 and stand otherwise.” You are free to implement whatever strategy you like.</p></li>
 </ol>
-<h2 id="project-management-and-testing">Project Management and Testing</h2>
-<p>You should continue using Issues, Milestones, Labels, and Boards to manage the progress on your project. Everything you work on should be part of an issue you have created before you start work, and that issue should have a suitable label and it should be a part of a milestone.</p>
+<p>Start code:</p>
+<pre class="haskell"><code>module Main where
+
+import Test.HUnit
+import Data.List (intercalate)
+import System.Random
+import System.Environment (getArgs)
+import System.IO (hFlush, stdout)
+
+data Suit = Hearts | Diamonds | Clubs | Spades    deriving (Eq, Show)
+data Value = Ace | Num Int | Jack | Queen | King  deriving (Eq, Ord, Show)
+type Card = (Suit, Value)
+type Deck = [Card]
+type Hand = [Card]
+data Play = Hit | Stand                deriving (Eq, Show)
+data Result = Win | Loss | Tie         deriving (Eq, Show)
+type Strategy = Hand -&gt; Card -&gt; Play
+
+infixl 9 &gt;.&gt;
+(&gt;.&gt;) :: (a -&gt; b) -&gt; (b -&gt; c) -&gt; (a -&gt; c)
+f &gt;.&gt; g = \x -&gt; g (f x)
+
+showCard :: Card -&gt; String
+showCard (s, v) = &quot;&quot;
+
+showHand :: Hand -&gt; String
+showHand = \s -&gt; &quot;stub. replace everything after the =.&quot;
+
+hasAces :: Hand -&gt; Bool
+hasAces = False
+
+value :: Card -&gt; Int
+value _ = -1
+
+normalValue :: Hand -&gt; Int
+normalValue = \h -&gt; -1
+
+count :: Hand -&gt; Int
+count = \h -&gt; -1
+
+isNatural :: Hand -&gt; Bool
+isNatural h = False
+
+isBusted :: Hand -&gt; Bool
+isBusted = \_ -&gt; False
+
+dealer :: Strategy
+dealer hand _ | count hand &lt; 17  = Hit
+              | otherwise        = Stand
+
+simplePlayer :: Strategy
+dealer pHand dCard = Stand</code></pre>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");
 for (const el of els) {
@@ -46,5 +135,6 @@ for (const el of els) {
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-haskell.js"></script>
 </body>
 </html>

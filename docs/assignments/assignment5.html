@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>assignment5</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="assignment-5">Assignment 5</h1>
+<p>In this assignment we will write an engine for regular expressions. A nice interactive tutorial for regular expressions can be found <a href="https://regexone.com/">here</a>, if you have never dealt with regular expressions before.</p>
+<p>Here are the regular expression behaviors we will implement:</p>
+<ul>
+<li>You can match any of a specific set of characters, the equivalent of the regular expression <code>[abcd]</code>.</li>
+<li>You can match the “or” of two regexs, like <code>(ab|c)</code> matches either <code>ab</code> or <code>c</code>, whichever it encounters.</li>
+<li>You can ask for a regex to be matched one or more times, using <code>+</code>, or 0 or more times using <code>*</code>. For example <code>(ab)+</code> will match strings like <code>ab</code>, <code>abab</code>, <code>ababab</code>. These behave in a <em>greedy</em> way: They will match the longest possible number of times.</li>
+<li>You can optionally match a regex with a <code>?</code>. For example <code>a?b</code> will match both <code>b</code> and <code>ab</code>.</li>
+<li>You can match any letter, or any digit.</li>
+<li>You can <em>capture</em> some parts of the match with capture groups. For example <code>(ab(c))d</code> against the string <code>"abcd"</code> will produce two capture groups, the first containing <code>abc</code> and the second containing <code>c</code>.</li>
+</ul>
+<p>For now we will code the regular expressions directly into suitable Haskell code (i.e. we will not try to parse something like <code>a?</code>, we will instead have a Haskell statement like <code>optional (char 'a'))</code>.</p>
+<p>We will represent regular expressions as functions:</p>
+<blockquote>
+<p>A regular expression for us is a function that takes as input a string and attempts to match the regular expression at the beginning of the string, consuming some amount of the string (not necessarily all). The result consists of:</p>
+<ul>
+<li>The string containing the matched portion.</li>
+<li>A list of strings corresponding to the captured parts.</li>
+<li>The string that is remaining.</li>
+</ul>
+<p>Moreover the function returns a list of such results, accounting for all the different ways in which it can match. An empty list means that the regular expression does not match.</p>
+</blockquote>
+<p>While a regular expression by its definition must match at the beginning of a string, we will also write a function that allows a regular expression to match anywhere in the string. In that case the result is a list of 4-tuples, each tuple containing the three above items as well as the amount of the string <em>before</em> a match starts.</p>
+<p>The following type definitions offer us some basic types to work with:</p>
+<pre class="haskell"><code>type Captures   = [String]
+type Match      = String
+type After      = String
+type Before     = String
+type Result     = [(Match, Captures, After)]
+type FullResult = [(Before, Match, Captures, After)]
+
+type RegEx      = String -&gt; Result</code></pre>
+<p>The simplest regular expression is called <code>fails</code>: Given any string, it fails to match (remember that regular expressions are actually functions):</p>
+<pre class="haskell"><code>fails :: RegEx
+fails = \s -&gt; []
+-- Alternative definition:    fails s = []</code></pre>
+<p>Another simple regular expression is <code>anyChar</code>: It simply matches any character (but fails for an empty string). For example <code>anyChar "yup" = [("y", [], "up")]</code>. You will need to provide an implementation for this and other functions to be described shortly.</p>
+<p>An important function that you will provide is <code>matchAnywhere</code>. This function takes a regular expression and a string, and it attempts to match the expression starting anywhere in the string. It returns a <code>FullResult</code>. For example <code>matchAnywhere anyChar "yup"</code> will return three results, for the three possible places where the <code>anyChar</code> regular expression can match.</p>
+<p>Starting code and some initial tests are at the bottom of this file. You can run the tests via:</p>
+<pre class="bash"><code>ghc assignment4.hs
+./assignment4 tests</code></pre>
+<p>You can also see the effect of the regular expressions, once you have implemented all the functions, by feeding a text file in via one of the following:</p>
+<pre class="bash"><code>ghc assignment4.hs
+./assignment4 words &lt; testFile.txt
+./assignment4 numbers &lt; testFile.txt
+./assignment4 wordmatches &lt; testFile.txt
+./assignment4 numbermatches &lt; testFile.txt</code></pre>
+<p>Make sure your terminal supports colors. You can also check out a quick string by something like:</p>
+<pre class="bash"><code>echo &quot;hello 123 there&quot; | ./assignment4 numbers
+echo &quot;hello 123 there&quot; | ./assignment4 words
+echo &quot;hello 123 there&quot; | ./assignment4 numbermatches
+echo &quot;hello 123 there&quot; | ./assignment4 wordmatches</code></pre>
+<p>Here is a list of the functions to implement, and their brief specifications (make sure to check the examples):</p>
+<ol type="1">
+<li><code>anyChar</code> is a regular expression value. It is a function that matches the first character of a non-empty string, without “capturing” anything, and fails on an empty string.</li>
+<li><code>epsilon</code> is a regular expression value. It is a function that matches any string by matching “nothing”.</li>
+<li>Next we will write some helper functions. One is called <code>succeeded</code>. It is a function that takes a <code>Result</code> value as input and returns a boolean indicating whether this is a successful result (i.e. non-empty list) or not. Implement this as a composition of the list method <code>null</code> and the boolean operator <code>not</code>.</li>
+<li>Now we have a function <code>orElse</code>. It takes as input two <code>Result</code> values and returns a <code>Result</code> value as follows: If the second result is the empty list then returns the first result. If the first result is an empty list then it returns the second result. If both result lists are non-empty, then it compares the heads of both lists and puts the largest value first then recursively continues with the rest of the list (if the two values are equal then only keep one). You can use the <code>compare</code> function between two results, then do a <code>case ... of</code> on the three possible comparison outcomes of <code>LT</code>, <code>EQ</code>, <code>GT</code>. This effectively orders the results starting with the longest match.</li>
+<li>Now we return to implementing more regular expressions. <code>char</code> is a function that is given a <code>Char</code> value and returns a <code>RegEx</code> value. That value is in turn a function that takes a string and matches it only if the first character in the string is the provided character. You will need a pattern-match for the empty list and two guard cases for the non-empty list.</li>
+<li>The function <code>anyOne</code> is given a list of characters and returns a <code>RegEx</code> that matches any one of those characters.</li>
+<li>The regular expressions <code>digit</code> and <code>letter</code> match any digit and any letter respectively. Use <code>anyOne</code> to define them, along with providing suitable list ranges (like <code>['a'..'z']</code>). Make sure to also handle uppercase letters. Also implement a regular expression <code>space</code> that matches any normal space, tab or newline character.</li>
+<li>Define the <code>|||</code> (three lines) operator to be given two regular expressions and to return the regular expression that matches either one (but matching the left one first). You can define it as a function that to a given string returns the <code>orElse</code> of the two results from its two regular expressions.</li>
+<li>Define the <code>andThen</code> operator which takes two regular expressions and returns a regular expression as follows: It matches a string when the first regular expression matches (some part of) the string and the second regular expression matches remaining of the string. It should return a list of all such possible matches. You can do this with a list comprehension. This one is somewhat challenging. You will need to go through each match of the first regular expression, and for each one of those go through each match of the second regular expression against the “after” string from the first match, then collect the results.</li>
+<li>Implement a function <code>chained</code> that takes as input a list of regular expressions and returns a single regular expression, by “chaining” those regular expressions using <code>andThen</code>. An empty list should correspond to <code>epsilon</code>. You can do this using a fold. Also implement a function <code>options</code> which takes as input a list of regular expressions and returns a single regular expression by using those regular expressions as alternatives (any one can match) in the order they appear. The empty list case should correspond to <code>fails</code>.</li>
+<li>Next we write a function <code>optional</code>. In regular expression language this is the question mark (<code>?</code>). It takes as input a regular expression and returns a regular expression. It matches the regular expression if it can, otherwise it matches an empty string (via <code>epsilon</code>). You can write it by simply using the <code>|||</code> operator on the provided regular expression and <code>epsilon</code>.</li>
+<li>Now we write a function <code>capture</code>. It takes as input a regular expression and returns a regular expression that does the same match as the provided regular expression, except that it adds the match to the front of the captures list. You can do this with a <code>map</code> or list comprehension.</li>
+<li>Next we define two functions that depend on each other. <code>plus</code> and <code>star</code>. They correspond to the regular expression operations <code>+</code> and <code>*</code>. They both are given a regular expression and return a regular expression. The <code>plus</code> one requires that the provided regular expression is matched one or more times, while the <code>star</code> requires it to be matched zero or more times. Define the <code>plus</code> or a regular expression to equal the regular expression followed by the star of the regular expression (in regular expression speak we define <code>r+ = rr*</code>). Then define <code>star</code> of a regular expression as <code>plus</code> of the expression with alternative (<code>|||</code>) the epsilon expression (in regular expression speak we would say <code>r*=r+|epsilon</code>). You need to ensure that the match is done “greedily”: It should try to match as many occurences of the regular expression as possible, and only fall back to the <code>epsilon</code> match if needed. The order of the expressions around <code>|||</code> will determine that.</li>
+<li>Now we will reap the benefits of our work. Define two regular expressions, <code>word</code> and <code>int</code> which match a whole word (one or more letters) and an integer (one or more digits) respectively. You can do this easily using earlier functions.</li>
+<li>Next, we will write the function <code>matchAnywhere</code>. This takes as input a regular expression and a string, and it tries to match the regular expression anywhere within the string. It returns a <code>FullResult</code> (list of 4-tuples), prioritizing matches that start earlier in the string. This is somewhat complicated. Handle the case of the empty string separately. For a non-empty string, concatenate together two lists: The matches starting at the beginning of the string (adjusted to be 4-tuples with an “empty string” before them) and the matches that skip the first character and match anywhere in the remaining string (adjusted to have the correct “before” part). Each of these can be done via a list comprehension.</li>
+<li>Now we write a function <code>allMatchesFull</code> which repeatedly matches the regular expression, choosing the earliest and longest match each time, then keeps going with the remaining string. You should use a <code>case ... of</code> statement on the result of <code>matchAnywhere</code> of the regular expression on the string. If the result is an empty list, meaning no matches, then return an empty list. Otherwise, look at the first match (it’s the earliest and longest possible by our earlier work), recursively call <code>allMatches</code> on the “after” part of that match, and prepend the matched 4-tuple to that result.</li>
+<li>Using the previous function, write a function <code>allMatches</code> that instead returns a list of all the matched strings (rather than the whole 4-tuples).</li>
+<li>Write a function <code>splitOn</code> which takes as input a regular expression and a string and “splits” the string on matches of the regular expression, returning a list of the surrounding text. You can implement this starting with <code>allMatchesFull</code> and then collecting together all the “before” pieces from the 4-tuples, as well as the “after” piece of the very last 4-tuple. You will likely want to use a helper function that picks those pieces, then combine it with <code>allMatchesFull</code>. The empty-list case of the helper is special here because it suggests no match, and would therefore return the entire initial string as is (as a one-element list).</li>
+</ol>
+<p>And we are done! You can test your handiwork by running the script on a file as described earlier.</p>
+<p>Start code:</p>
+<pre class="haskell"><code>module Main where
+
+import Test.HUnit
+import Control.Monad (when)
+import Data.Char (isAlpha, toUpper, isPunctuation)
+import System.Environment (getArgs)
+
+type Captures   = [String]
+type Match      = String
+type After      = String
+type Before     = String
+type Result     = [(Match, Captures, After)]
+type FullResult = [(Before, Match, Captures, After)]
+
+type RegEx      = String -&gt; Result
+
+fails :: RegEx
+fails = \s -&gt; []
+
+-- Your code here
+
+
+
+tests = TestList [
+   fails &quot;&quot;                     ~?= [],
+   fails &quot;yup&quot;                  ~?= [],
+   anyChar &quot;yup&quot;                ~?= [(&quot;y&quot;, [], &quot;up&quot;)],
+   anyChar &quot;&quot;                   ~?= [],
+   epsilon &quot;yup&quot;                ~?= [(&quot;&quot;, [], &quot;yup&quot;)],
+   epsilon &quot;&quot;                   ~?= [(&quot;&quot;, [], &quot;&quot;)],
+   succeeded []                 ~?= False,
+   succeeded [(&quot;&quot;, [], &quot;&quot;)]     ~?= True,
+   [(&quot;a&quot;, [], &quot;b&quot;)] `orElse`
+      [(&quot;&quot;, [], &quot;ab&quot;)]          ~?= [(&quot;a&quot;, [], &quot;b&quot;), (&quot;&quot;, [], &quot;ab&quot;)],
+   [(&quot;&quot;, [], &quot;ab&quot;)] `orElse`
+      [(&quot;a&quot;, [], &quot;b&quot;)]          ~?= [(&quot;a&quot;, [], &quot;b&quot;), (&quot;&quot;, [], &quot;ab&quot;)],
+   [(&quot;&quot;, [], &quot;ab&quot;)] `orElse`
+      [(&quot;ab&quot;, [], &quot;&quot;),
+       (&quot;a&quot;, [], &quot;b&quot;)]          ~?= [(&quot;ab&quot;, [], &quot;&quot;), (&quot;a&quot;, [], &quot;b&quot;),
+                                     (&quot;&quot;, [], &quot;ab&quot;)],
+   [(&quot;a&quot;, [], &quot;b&quot;)] `orElse`
+      [(&quot;ab&quot;, [], &quot;&quot;),
+       (&quot;&quot;, [], &quot;ab&quot;)]          ~?= [(&quot;ab&quot;, [], &quot;&quot;), (&quot;a&quot;, [], &quot;b&quot;),
+                                     (&quot;&quot;, [], &quot;ab&quot;)],
+   (char &#39;a&#39;) &quot;abc&quot;             ~?= [(&quot;a&quot;, [], &quot;bc&quot;)],
+   (char &#39;A&#39;) &quot;abc&quot;             ~?= [],
+   (char &#39;a&#39;) &quot;&quot;                ~?= [],
+   (anyOne &quot;dae&quot;) &quot;abc&quot;         ~?= [(&quot;a&quot;, [], &quot;bc&quot;)],
+   (anyOne &quot;bde&quot;) &quot;abc&quot;         ~?= [],
+   digit  &quot;12a&quot;                 ~?= [(&quot;1&quot;, [], &quot;2a&quot;)],
+   digit  &quot;a23&quot;                 ~?= [],
+   letter &quot;a23&quot;                 ~?= [(&quot;a&quot;, [], &quot;23&quot;)],
+   letter &quot;ABC&quot;                 ~?= [(&quot;A&quot;, [], &quot;BC&quot;)],
+   letter &quot;2a3&quot;                 ~?= [],
+   space  &quot; 23&quot;                 ~?= [(&quot; &quot;, [], &quot;23&quot;)],
+   space  &quot;A C&quot;                 ~?= [],
+   space  &quot;\t g&quot;                ~?= [(&quot;\t&quot;, [], &quot; g&quot;)],
+   space  &quot;fgr&quot;                 ~?= [],
+   space  &quot;&quot;                    ~?= [],
+   (digit ||| letter) &quot;abc&quot;     ~?= [(&quot;a&quot;, [], &quot;bc&quot;)],
+   (digit ||| letter) &quot;1bc&quot;     ~?= [(&quot;1&quot;, [], &quot;bc&quot;)],
+   (digit `andThen` letter)
+      &quot;abc&quot;                     ~?= [],
+   (digit `andThen` letter)
+      &quot;1bc&quot;                     ~?= [(&quot;1b&quot;, [], &quot;c&quot;)],
+   (digit `andThen` letter)
+      &quot;123&quot;                     ~?= [],
+   chained [
+      digit, letter, digit
+      ] &quot;2a3b&quot;                  ~?= [(&quot;2a3&quot;, [], &quot;b&quot;)],
+   options [
+      digit, letter,
+      chained [
+         letter, letter,
+         letter]
+      ] &quot;abc&quot;                   ~?= [(&quot;abc&quot;, [], &quot;&quot;), (&quot;a&quot;, [], &quot;bc&quot;)],
+   (optional digit) &quot;123&quot;       ~?= [(&quot;1&quot;, [], &quot;23&quot;), (&quot;&quot;, [], &quot;123&quot;)],
+   (optional digit) &quot;a23&quot;       ~?= [(&quot;&quot;, [], &quot;a23&quot;)],
+   chained [
+      char &#39;a&#39;,
+      capture (char &#39;b&#39;)
+      ] &quot;ab3&quot;                   ~?= [(&quot;ab&quot;, [&quot;b&quot;], &quot;3&quot;)],
+   (capture $
+      chained [
+         char &#39;a&#39;,
+         capture (char &#39;b&#39;)
+         ]) &quot;ab3&quot;               ~?= [(&quot;ab&quot;, [&quot;ab&quot;, &quot;b&quot;], &quot;3&quot;)],
+   (plus digit) &quot;12b&quot;           ~?= [(&quot;12&quot;, [], &quot;b&quot;), (&quot;1&quot;, [], &quot;2b&quot;)],
+   (plus digit) &quot;a12b&quot;          ~?= [],
+   (star digit) &quot;12b&quot;           ~?= [(&quot;12&quot;, [], &quot;b&quot;), (&quot;1&quot;, [], &quot;2b&quot;),
+                                     (&quot;&quot;, [], &quot;12b&quot;)],
+   (star digit) &quot;a12b&quot;          ~?= [(&quot;&quot;, [], &quot;a12b&quot;)],
+   word &quot;acme star&quot;             ~?= [(&quot;acme&quot;, [], &quot; star&quot;),
+                                     (&quot;acm&quot;, [], &quot;e star&quot;),
+                                     (&quot;ac&quot;, [], &quot;me star&quot;),
+                                     (&quot;a&quot;, [], &quot;cme star&quot;)],
+   int &quot;123a&quot;                   ~?= [(&quot;123&quot;, [], &quot;a&quot;),
+                                     (&quot;12&quot;, [], &quot;3a&quot;),
+                                     (&quot;1&quot;, [], &quot;23a&quot;)],
+   matchAnywhere letter &quot;12a3&quot;  ~?= [(&quot;12&quot;, &quot;a&quot;, [], &quot;3&quot;)],
+   matchAnywhere letter &quot;&quot;      ~?= [],
+   matchAnywhere
+      (optional letter) &quot;&quot;      ~?= [(&quot;&quot;, &quot;&quot;, [], &quot;&quot;)],
+   matchAnywhere word &quot;2abc3&quot;   ~?= [(&quot;2&quot;, &quot;abc&quot;, [], &quot;3&quot;),
+                                     (&quot;2&quot;, &quot;ab&quot;, [], &quot;c3&quot;),
+                                     (&quot;2&quot;, &quot;a&quot;, [], &quot;bc3&quot;),
+                                     (&quot;2a&quot;, &quot;bc&quot;, [], &quot;3&quot;),
+                                     (&quot;2a&quot;, &quot;b&quot;, [], &quot;c3&quot;),
+                                     (&quot;2ab&quot;, &quot;c&quot;, [], &quot;3&quot;)],
+   allMatchesFull
+      letter &quot;1a23b&quot;            ~?= [(&quot;1&quot;, &quot;a&quot;, [], &quot;23b&quot;),
+                                     (&quot;23&quot;, &quot;b&quot;, [], &quot;&quot;)],
+   allMatches word &quot;1ab2cd5&quot;    ~?= [&quot;ab&quot;, &quot;cd&quot;],
+   splitOn int &quot;1ab2cd5&quot;        ~?= [&quot;&quot;, &quot;ab&quot;, &quot;cd&quot;, &quot;&quot;],
+   splitOn int &quot;abc&quot;            ~?= [&quot;abc&quot;],
+   splitOn space &quot;big bad wolf&quot; ~?= [&quot;big&quot;, &quot;bad&quot;, &quot;wolf&quot;]
+   ]
+
+printMatches :: RegEx -&gt; String -&gt; IO ()
+printMatches re s = let ms = allMatchesFull re s
+    in do printResults ms
+          putStrLn $ &quot;Total matches: &quot; ++ show (length ms)
+
+printOnlyMatches :: RegEx -&gt; String -&gt; IO ()
+printOnlyMatches re s = sequence_ $ map putStrLn $ allMatches re s
+
+printResults :: FullResult -&gt; IO ()
+printResults []                = return ()
+printResults ((b,m,_,a):rest)  = do
+      putStr b
+      putMatch m
+      if null rest
+         then putStrLn a
+         else printResults rest
+
+putMatch :: String -&gt; IO ()
+putMatch m = do
+   -- Set background and foreground colors
+   -- See https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_codes
+   putStr &quot;\x1b[32m&quot;
+   putStr &quot;\x1b[44m&quot;
+   putStr m
+   -- Set background and foreground colors
+   putStr &quot;\x1b[39m&quot;
+   putStr &quot;\x1b[49m&quot;
+
+main :: IO ()
+main = do
+   args &lt;- getArgs
+   txt &lt;- getContents
+   case args of
+      (&quot;tests&quot; : _) -&gt; do runTestTT tests
+                          return ()
+      (&quot;numbers&quot; : _) -&gt; printMatches int txt
+      (&quot;words&quot; : _)  -&gt; printMatches word txt
+      (&quot;wordmatches&quot;: _) -&gt; printOnlyMatches word txt
+      (&quot;numbermatches&quot;: _) -&gt; printOnlyMatches int txt</code></pre>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-haskell.js"></script>
+</body>
+</html>
