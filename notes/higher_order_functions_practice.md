@@ -22,7 +22,7 @@ makeIndex
 
 - `lines` takes the document and splits it into a list of lines
 - `numberLines` takes the list of lines and adds line-numbers to them, forming pairs.
-- `allNumberedWords replaces each numbered line with a list of number-word pairs.
+- `allNumberedWords` replaces each numbered line with a list of number-word pairs.
 - `sortWords` reorders the list of number-word pairs by word.
 - `intsToLists` turns each integer into an 1-integer list.
 - `groupByWord` puts together those lists corresponding to the same word.
@@ -30,7 +30,7 @@ makeIndex
 
 1. What should be the types for each of these intermediate functions?
 2. `lines` is a built-in method. What is its type? Does that match our usage of it?
-3. `numberLines` is supposed to replace each line with the pair of an increasing number an the line. How can we implement that using list functions?
+3. `numberLines` is supposed to replace each line with the pair of an increasing number and the line. How can we implement that using list functions?
 4. `allNumberedWords` is supposed to take each line and split it in to a list of words, then put those words together with the line's number. We can split this in steps:
 
     - A function that turns a line into a list of words.

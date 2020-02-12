@@ -31,7 +31,7 @@ makeIndex
 <ul>
 <li><code>lines</code> takes the document and splits it into a list of lines</li>
 <li><code>numberLines</code> takes the list of lines and adds line-numbers to them, forming pairs.</li>
-<li>`allNumberedWords replaces each numbered line with a list of number-word pairs.</li>
+<li><code>allNumberedWords</code> replaces each numbered line with a list of number-word pairs.</li>
 <li><code>sortWords</code> reorders the list of number-word pairs by word.</li>
 <li><code>intsToLists</code> turns each integer into an 1-integer list.</li>
 <li><code>groupByWord</code> puts together those lists corresponding to the same word.</li>
@@ -40,7 +40,7 @@ makeIndex
 <ol type="1">
 <li><p>What should be the types for each of these intermediate functions?</p></li>
 <li><p><code>lines</code> is a built-in method. What is its type? Does that match our usage of it?</p></li>
-<li><p><code>numberLines</code> is supposed to replace each line with the pair of an increasing number an the line. How can we implement that using list functions?</p></li>
+<li><p><code>numberLines</code> is supposed to replace each line with the pair of an increasing number and the line. How can we implement that using list functions?</p></li>
 <li><p><code>allNumberedWords</code> is supposed to take each line and split it in to a list of words, then put those words together with the line’s number. We can split this in steps:</p>
 <ul>
 <li>A function that turns a line into a list of words.</li>
