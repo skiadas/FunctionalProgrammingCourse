@@ -113,7 +113,7 @@ Wed
   ~ - [Higher order functions practice: 12.5](notes/higher_order_functions_practice.md)
 
 Fri
-  ~ TBD
+  ~ [Random number generation in Haskell](notes/random_numbers.md)
 
 ## Week 7
 

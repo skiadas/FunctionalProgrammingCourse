@@ -31,7 +31,7 @@ makeIndex
 1. What should be the types for each of these intermediate functions?
 2. `lines` is a built-in method. What is its type? Does that match our usage of it?
 3. `numberLines` is supposed to replace each line with the pair of an increasing number and the line. How can we implement that using list functions?
-4. `allNumberedWords` is supposed to take each line and split it in to a list of words, then put those words together with the line's number. We can split this in steps:
+4. `allNumberedWords` is supposed to take each line and split it into a list of words, then put those words together with the line's number. We can split this in steps:
 
     - A function that turns a line into a list of words.
     - A function that turns a numbered line into a list of numbered words.

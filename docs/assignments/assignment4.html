@@ -43,6 +43,7 @@
 <li><p>You can run the automated tests via <code>./assignment4 tests</code> after you compile.</p></li>
 <li><p>You can combine compilation and test run in one command via:</p>
 <pre class="haskell"><code>ghc assignment4 &amp;&amp; ./assignment4 tests</code></pre></li>
+<li><p>Most of the <code>IO</code> actions cannot be automatically tested. You should instead just try them out in the interactive terminal and observe what they do.</p></li>
 <li><p>Once you have written the appropriate code, you can see an automated play against a hard-coded strategy by doing <code>./assignment4 auto</code>.</p></li>
 <li><p>Once you have written the appropriate code, you can run a simulation of multiple automated runs and see the total results via <code>./assignment4 sim xxxx</code> where xxxx is the number of simulations to run (1000 is a good minimum, don’t try more than 10000 unless you’re willing to wait for a while).</p></li>
 <li><p>Once you have written the appropriate code, you can play the game interactively via <code>./assignment4 play</code>.</p></li>
@@ -68,16 +69,90 @@ dealer hand _ | count hand &lt; 17  = Hit
 <li><p>Next, write a <code>value</code> function that given a card produces its “numerical value”: Aces will count as 1 for now, face cards count for 10, while other cards count for their values.</p>
 <p>Also write a <code>normalValue</code> function that given a hand returns the total value of that hand by adding the values of the individual cards. You MUST implement this in a point-free way, by combining the <code>sum</code> function with a suitable application of <code>map</code>.</p>
 <p>Also write a function <code>count</code> that given a hand computes the correct “count” of points for the hand: It starts off with the result of <code>normalValue</code> and possibly adjusts it by 10 if there were any aces and adding 10 won’t get the score above 21.</p></li>
-<li><p>Next, we implement some utility methods for hands. Start with a function <code>isNatural</code> to detect if a hand is a “natural”, namely has count of 21 and consists of exactly two cards.</p>
-<p>Next, write a function <code>isBusted</code> which given a hand returns whether the count is over 21. You MUST implement this function in a point-free way, by composing the <code>count</code> method together with an operator section for the operator <code>&gt;</code>.</p></li>
-<li><p>Next we implement strategies. You are being provided a <code>dealer</code> strategy, which implements the dealer’s play. You are asked to implement your own strategy for a player, called <code>simplePlayer</code>. An example strategy could be “If the dealer card is an Ace of a face card, then hit if our count is less than 18 and stand otherwise, but if the dealer card is a number card then hit if our count is less than 17 and stand otherwise.” You are free to implement whatever strategy you like.</p></li>
+<li><p>Next, we implement some utility methods for hands.</p>
+<p>Write functions <code>isTwentyOne</code> and <code>isBusted</code> which given a hand return whether the count is exactly 21 (respectively over 21). You MUST implement these functions in a point-free way, by composing the <code>count</code> method together with an operator section for the operator <code>==</code> or <code>&gt;</code> as needed.</p>
+<p>Now implement a function <code>isNatural</code> to detect if a hand is a “natural”, namely has count of 21 and consists of exactly two cards.</p></li>
+<li><p>Next we implement strategies. You are being provided a <code>dealer</code> strategy, which implements the dealer’s play. You are asked to implement your own strategy for a player, called <code>simplePlayer</code>. An example strategy could be “If the dealer card is an Ace of a face card, then hit if our count is less than 18 and stand otherwise, but if the dealer card is a number card then hit if our count is less than 17 and stand otherwise.” You are free to implement whatever strategy you like. (You will have to write your own tests for that of course)</p></li>
+<li><p>Next we start working towards dealing and actually playing the game. Start by implementing two functions, <code>deal</code> and <code>draw</code>. <code>deal</code> is given a deck and returns a pair of a hand containing the first two cards from the deck and a deck containing the remaining cards. <code>draw</code> draws the single card from the top and returns a pair of the card and the remaining deck. These are both fairly simple functions. You do NOT need to worry about running out of cards in your deck (so your matching doesn’t need to deal with an empty deck case for example). Use a simple pattern match for these, and do NOT rely on any built-in list functions.</p></li>
+<li><p>Now we need to write some of our main functions. Write a function <code>dealPlayer</code> which takes as input four things: A strategy, a hand (the player’s hand), a card (the player’s visible card) and a deck. It is supposed to effectively play the strategy, and return a pair of the resulting player’s hand and the remaining deck.</p>
+<ul>
+<li>The function should ask the provided strategy with the provided hand and dealer card, and find out the play.</li>
+<li>If the play is a Stand then it can return the correct state.</li>
+<li>If the play is a Hit then it must draw a card from the deck, add it to the hand, then recursively continue.</li>
+</ul>
+<p>You will likely need to use a <code>case ... of</code> construct, make sure to read up on it.</p></li>
+<li><p>Next we need a function <code>playRound</code>. This function takes in a strategy and a deck, and it effectively “plays” one round:</p>
+<ul>
+<li>It deals cards to the player and the dealer.</li>
+<li>It uses <code>dealPlayer</code> to carry out the player’s play.</li>
+<li>It uses <code>dealPLayer</code> to carry out the dealer’s play.</li>
+<li>It returns a triple of the player’s hand, the dealer’s hand, and the remaining deck.</li>
+</ul>
+<p>Your function needs to be very careful to keep track of the updated deck as it does each of the above steps. Each next step needs to use the updated deck returned from the earlier step.</p></li>
+<li><p>Next we need a function <code>determineResult</code> which takes as input two hands (player’s and dealer’s) and returns the result of comparing those two hands, as a value of type <code>Result</code>. Specifically:</p>
+<ul>
+<li>If they are both “natural” then it’s a tie (<code>Tie</code>).</li>
+<li>Otherwise if the player has a natural then they win (<code>Win</code>).</li>
+<li>Otherwise if the dealer has a natural then the player loses (<code>Loss</code>).</li>
+<li>Otherwise if the player is busted then they lose.</li>
+<li>Otherwise if the dealer is busted then the player wins.</li>
+<li>Otherwise if the player’s count is larger than the dealer’s then they win, otherwise they lose.</li>
+</ul>
+<p>This will likely be a simple function with many guard statements.</p></li>
+<li><p>In order to be able to actually play the game, we need the ability to first create a full deck and then to shuffle the deck. This is difficult to do in a functional programming setting, as it fundamentally requires that the output of a computation be varied. Make sure you have understood the section on <a href="../notes/random_numbers.html">random numbers</a> first before attempting this part.</p>
+<p>This part consists of writing five functions that collectively perform a shuffle. Refer to the notes above for details on these functions: <code>getRs</code>, <code>pluck</code>, <code>shuffle</code>, <code>shuffleGen</code>, <code>shuffleIO</code>.</p></li>
+<li><p>Once you have the general shuffling functions in place, it is time to tie them into our game. Our goal is to produce a shuffled deck. This will occur in two steps:</p>
+<ul>
+<li>Write a value <code>fullDeck</code> which contains the full deck of 52 cards. You can do this easily with a list comprehension, together with two helper functions <code>allValues</code> and <code>allSuits</code>.</li>
+<li>Write an action <code>shuffledDeck</code> which simply uses <code>shuffleIO</code> on the <code>fullDeck</code>.</li>
+</ul></li>
+<li><p>Next up is a method <code>playShuffled</code>. It takes in a strategy and returns an action that uses <code>playRound</code> to play that strategy, then returns the pair of hands of the player and the dealer at the end of the round.</p></li>
+<li><p>Next up you should implement an <code>autoPlay</code> action. It uses <code>playShuffled</code> to play the <code>simplePlayer</code> strategy, then prints out the hands of the player and the dealer using the provided <code>showLabeledHand</code> function. It ends up with printing the result on a new line, using <code>determineResult</code>. The result should be three lines.</p>
+<p>After you implement this function, you can now execute <code>./assignment4 auto</code> and have an automatic game played.</p></li>
+<li><p>Next you will help implement a function called <code>playMany</code>. It is used by the provided function <code>simulate</code>. It takes as input an integer <code>n</code>, then plays <code>n</code> rounds and tallies the results. <code>playMany</code> is provided for you, but you will need to implement the two helper methods it uses.</p>
+<p>One of these methods is <code>playShuffledResult</code>. It takes a strategy and produces an <code>IO Result</code>. You MUST implement this as a composition of two functions: One is <code>playShuffled</code>, and the other is the result of applying <code>fmap</code> to a suitable function. <code>fmap</code> is a function like <code>map</code> but it works with <code>IO</code> instead: If <code>f :: a -&gt; b</code> then <code>fmap f :: IO a -&gt; IO b</code>.</p>
+<p>The other method is called <code>countStats</code>. It takes as input a list of results, <code>[Result]</code>, and retuns a pair of integers <code>(Int, Int)</code> holding the number of wins and losses that showed up (ignoring ties). You MUST implement this as <code>foldr f (0, 0)</code>, where you must implement the function <code>f</code> to update the current count with the current value. For example if the current value is a <code>Win</code> and we have so far 5 wins and 3 losses, we should now have 6 wins and 3 losses. There are some tests for this function.</p>
+<p>Once you have implemented these methods, you should now be able to execute <code>./assignment4 sim 500</code> to run 500 simulations and print the results. You can see this way how good your <code>simplePlayer</code> algorithm is, and try to make it better.</p></li>
+<li><p>In this last part, you will implement the manual player interaction. It is split up into a series of functions that you need to implement. Each will be a <code>do</code> sequence of actions.</p>
+<p>The top level function is <code>manualPlay</code>, with type <code>IO ()</code>. It should do the following:</p>
+<ul>
+<li>Print an empty line</li>
+<li>Get a shuffled deck using the <code>shuffledDeck</code> action and storing its result</li>
+<li>Draw the player’s card and the dealer’s card, and remember the updated deck through each step</li>
+<li>Call the <code>playerInteract</code> function which takes as input the player’s hand, the dealer’s hand and the remaining deck.</li>
+<li>End by recursively calling <code>manualPlay</code>, to allow the player to start a new round.</li>
+</ul>
+<p>The next function to write is <code>playerInteract</code>, with type <code>Hand -&gt; Hand -&gt; Deck -&gt; IO ()</code>. It should do the following steps:</p>
+<ul>
+<li><p>Show the player’s hand (using <code>showLabeledHand</code>) as well as the dealer’s top card only (using <code>showLabeledHand</code> again).</p></li>
+<li><p>Use <code>readPlayerChoice</code> (you’ll implement it next) to read a player’s choice an store its result in a variable.</p></li>
+<li><p>Use a <code>case ... of</code> construct on that choice to consider two cases:</p>
+<ul>
+<li>If the choice was <code>Hit</code>, then you must draw a card from the deck to add to the player’s hand, then recursively call <code>playerInteract</code> with the updated player’s hand, the dealer’s hand and the updated deck.</li>
+<li>If the choice was <code>Stand</code>, then you use the <code>dealPlayer</code> function to play the dealer’s hand, resulting in an updated dealer’s hand and deck, and then call the <code>endGame</code> function with the player’s and dealer’s hands. You will implement the <code>endGame</code> function in a moment.</li>
+</ul></li>
+</ul>
+<p>Now implement the <code>endGame</code> function. It is given the two hands for the player an the dealer, then uses <code>showLabeledHand</code> to print them both, then print on a line a message for the result, which is computed via determineResult.</p>
+<p>Lastly, implement the <code>readPlayerChoice</code> action, which does the following:</p>
+<ul>
+<li>Prompts the user to type “Hit” or “Stand”.</li>
+<li>Then you use the action <code>hFlush stdout</code>. This makes sure your message is printed out even without a newline.</li>
+<li>Use <code>getLine</code> to read the user’s input.</li>
+<li>Use a <code>case ... of</code> construct to test the user input:
+<ul>
+<li>If the input is the string “Hit” or the string “Stand”, then return the corresponding <code>Play</code> values <code>Hit</code> or <code>Stand</code>.</li>
+<li>Otherwise, recursively call <code>readPlayerChoice</code> to let the user type again.</li>
+</ul></li>
+</ul>
+<p>If you have implement these correctly, you’ll be able to play the game using <code>./assignment4 play</code>.</p></li>
 </ol>
-<p>Start code:</p>
+<h3 id="start-code">Start code</h3>
 <pre class="haskell"><code>module Main where
 
 import Test.HUnit
-import Data.List (intercalate)
 import System.Random
+import Data.List (intercalate)
+import Control.Monad (replicateM)
 import System.Environment (getArgs)
 import System.IO (hFlush, stdout)
 
@@ -101,7 +176,7 @@ showHand :: Hand -&gt; String
 showHand = \s -&gt; &quot;stub. replace everything after the =.&quot;
 
 hasAces :: Hand -&gt; Bool
-hasAces = False
+hasAces = \_ -&gt; False
 
 value :: Card -&gt; Int
 value _ = -1
@@ -115,6 +190,9 @@ count = \h -&gt; -1
 isNatural :: Hand -&gt; Bool
 isNatural h = False
 
+isTwentyOne :: Hand -&gt; Bool
+isTwentyOne = \_ -&gt; False
+
 isBusted :: Hand -&gt; Bool
 isBusted = \_ -&gt; False
 
@@ -123,7 +201,172 @@ dealer hand _ | count hand &lt; 17  = Hit
               | otherwise        = Stand
 
 simplePlayer :: Strategy
-dealer pHand dCard = Stand</code></pre>
+simplePlayer pHand dCard = Stand
+
+deal :: Deck -&gt; (Hand, Deck)
+deal d = ([], d)                -- dummy implementation
+
+draw :: Deck -&gt; (Card, Deck)
+draw _ = ((Spades, Ace), [])    -- dummy value
+
+dealPlayer :: Strategy -&gt; Hand -&gt; Card -&gt; Deck -&gt; (Hand, Deck)
+dealPlayer strat hand card deck = (hand, deck)
+
+playRound :: Strategy -&gt; Deck -&gt; (Hand, Hand, Deck)
+playRound strat deck = ([], [], deck)
+
+determineResult :: Hand -&gt; Hand -&gt; Result
+determineResult pHand dHand = Tie
+
+getRs :: RandomGen g =&gt; Int -&gt; g -&gt; ([Int], g)
+getRs n gen = ([], gen)
+
+pluck :: Int -&gt; [a] -&gt; (a, [a])
+pluck n (x:xs)  = (x, xs)
+
+shuffle :: [Int] -&gt; [b] -&gt; [b]
+shuffle rs xs = xs
+
+shuffleGen :: RandomGen g =&gt; [a] -&gt; g -&gt; ([a], g)
+shuffleGen xs gen = (xs, gen)
+
+shuffleIO :: [a] -&gt; IO [a]
+shuffleIO d = return d
+
+shuffledDeck :: IO Deck
+shuffledDeck = return []
+
+playShuffled :: Strategy -&gt; IO (Hand, Hand)
+playShuffled strat = return ([], [])
+
+showLabeledHand :: String -&gt; Hand -&gt; String
+showLabeledHand label hand = label ++ &quot;: &quot; ++ show (reverse hand)
+
+playShuffledResult :: Strategy -&gt; IO Result
+playShuffledResult = \strat -&gt; return Tie
+
+autoPlay :: IO ()
+autoPlay = return ()
+
+countStats :: [Result] -&gt; (Int, Int)
+countStats = foldr f (0, 0)
+    where f _ _ = (0, 0)
+
+playMany :: Int -&gt; IO (Int, Int)
+playMany n = fmap countStats $ replicateM n (playShuffledResult simplePlayer)
+
+simulate :: Int -&gt; IO ()
+simulate n = do
+  (wins, losses) &lt;- playMany n
+  putStrLn $ &quot;Wins: &quot; ++ show wins ++ &quot; Losses: &quot; ++ show losses
+  putStrLn $ &quot;Win ratio: &quot; ++ show (fromIntegral(wins) / fromIntegral(wins + losses))
+
+readPlayerChoice :: IO Play
+readPlayerChoice = return Stand
+
+playerInteract :: Hand -&gt; Hand -&gt; Deck -&gt; IO ()
+playerInteract pHand dHand deck = return ()
+
+endGame :: Hand -&gt; Hand -&gt; IO ()
+endGame pHand dHand = return ()
+
+manualPlay :: IO ()
+manualPlay = return ()
+
+naturalHand = [(Clubs, Ace), (Hearts, Jack)]
+seventeen   = [(Clubs, Num 8), (Hearts, Num 5), (Hearts, Num 4)]
+sixteen     = [(Clubs, Num 7), (Hearts, Num 5), (Hearts, Num 4)]
+aceAsOne    = [(Clubs, Num 10), (Clubs, Ace), (Hearts, Jack)]
+bustedHand  = [(Clubs, Num 8), (Clubs, Num 5), (Hearts, Jack)]
+sampleDeck = [
+    (Spades,Num 3), (Clubs,Num 8), (Diamonds,Num 7),
+    (Spades,Num 7), (Clubs,Num 4), (Hearts,Num 10),
+    (Diamonds,King), (Diamonds,Num 9), (Diamonds,Num 4),
+    (Clubs,Num 9)]
+drawsOnce hand _ | length hand &gt; 2    = Stand
+                 | otherwise          = Hit
+testGen  = mkStdGen 1
+testGen2 = mkStdGen 2
+
+tests = TestList [
+    showCard (Clubs, Ace)             ~?= &quot;Ace of Clubs&quot;,
+    showCard (Spades, Num 4)          ~?= &quot;4 of Spades&quot;,
+    showCard (Diamonds, Jack)         ~?= &quot;Jack of Diamonds&quot;,
+    showCard (Hearts, Queen)          ~?= &quot;Queen of Hearts&quot;,
+    showHand naturalHand              ~?= &quot;Jack of Hearts, Ace of Clubs&quot;,
+    hasAces naturalHand               ~?= True,
+    hasAces seventeen                 ~?= False,
+    hasAces []                        ~?= False,
+    value (Clubs, Ace)                ~?= 1,
+    value (Clubs, Jack)               ~?= 10,
+    value (Clubs, Num 5)              ~?= 5,
+    normalValue naturalHand           ~?= 11,
+    normalValue seventeen             ~?= 17,
+    normalValue aceAsOne              ~?= 21,
+    count naturalHand                 ~?= 21,
+    count seventeen                   ~?= 17,
+    count aceAsOne                    ~?= 21,
+    count bustedHand                  ~?= 23,
+    isTwentyOne bustedHand            ~?= False,
+    isTwentyOne naturalHand           ~?= True,
+    isTwentyOne seventeen             ~?= False,
+    isTwentyOne aceAsOne              ~?= True,
+    isBusted bustedHand               ~?= True,
+    isBusted naturalHand              ~?= False,
+    isNatural naturalHand             ~?= True,
+    isNatural seventeen               ~?= False,
+    isNatural aceAsOne                ~?= False,
+    dealer seventeen (Clubs, Ace)     ~?= Stand,
+    dealer sixteen   (Clubs, Ace)     ~?= Hit,
+    deal sampleDeck                   ~?= ([sampleDeck!!0, sampleDeck!!1],
+                                            drop 2 sampleDeck),
+    draw sampleDeck                   ~?= (sampleDeck!!0, tail sampleDeck),
+    playRound drawsOnce sampleDeck    ~?= (
+                                            [sampleDeck!!4, sampleDeck!!0, sampleDeck!!1],
+                                            [sampleDeck!!5, sampleDeck!!2, sampleDeck!!3],
+                                            drop 6 sampleDeck),
+    determineResult
+      naturalHand naturalHand         ~?= Tie,
+    determineResult
+      naturalHand aceAsOne            ~?= Win,
+    determineResult
+      aceAsOne naturalHand            ~?= Loss,
+    determineResult
+      bustedHand seventeen            ~?= Loss,
+    determineResult
+      seventeen bustedHand            ~?= Win,
+    determineResult
+      bustedHand bustedHand           ~?= Loss,
+    determineResult
+      seventeen seventeen             ~?= Loss,
+    determineResult
+      sixteen seventeen               ~?= Loss,
+    determineResult
+      seventeen sixteen               ~?= Win,
+    fst (getRs 4 testGen)             ~?= [3, 1, 1, 0],
+    fst (getRs 4 testGen2)            ~?= [1, 0, 0, 0],
+    pluck 3 &quot;ABCD&quot;                     ~?= (&#39;D&#39;, &quot;ABC&quot;),
+    pluck 2 &quot;ABCD&quot;                     ~?= (&#39;C&#39;, &quot;ABD&quot;),
+    pluck 1 &quot;ABCD&quot;                     ~?= (&#39;B&#39;, &quot;ACD&quot;),
+    pluck 0 &quot;ABCD&quot;                     ~?= (&#39;A&#39;, &quot;BCD&quot;),
+    shuffle [3,1,1,0] &quot;ABCD&quot;           ~?= &quot;DBCA&quot;,
+    fst(shuffleGen &quot;ABCD&quot; testGen)     ~?= &quot;DBCA&quot;,
+    fst(shuffleGen &quot;ABCD&quot; testGen2)    ~?= &quot;BACD&quot;,
+    countStats []                      ~?= (0, 0),
+    countStats [Win, Win, Loss]        ~?= (2, 1),
+    countStats [Loss, Tie, Loss]       ~?= (0, 2)
+  ]
+
+main :: IO ()
+main = do
+   args &lt;- getArgs
+   case args of
+      (&quot;tests&quot; : _) -&gt; do runTestTT tests
+                          return ()
+      (&quot;auto&quot; : _) -&gt; autoPlay
+      (&quot;play&quot; : _) -&gt; manualPlay
+      (&quot;sim&quot;: nums : _) -&gt; simulate $ read nums
+      _  -&gt; putStrLn &quot;Allowed options: tests, auto, play, sim &lt;nTimes&gt;&quot;</code></pre>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");
 for (const el of els) {
