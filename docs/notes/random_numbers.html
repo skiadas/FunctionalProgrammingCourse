@@ -16,7 +16,7 @@
 <body>
 <h1 id="random-numbers-in-haskell">Random numbers in Haskell</h1>
 <p>Computers are <em>deterministic</em>: Given a certain state of things, they produce a consistent result.</p>
-<p>To have the appearance of “random-ness”, computers often implement what is known as a “pseudo-random number generator”. This is a <em>deterministic</em> function that given one value produces a new value, in such a way that those values appear to be unrelated to each other, and uniformly distributed across the range of values (so that each number is equally likely to show up).</p>
+<p>To have the appearance of “randomness”, computers often implement what is known as a <strong>pseudo-random number generator</strong>. This is a <em>deterministic</em> function that given one value produces a new value, in such a way that those values appear to be unrelated to each other, and uniformly distributed across the range of values (so that each number is equally likely to show up).</p>
 <p>BUT this is still a deterministic function: We provide it with an initial number “seed”, and it will produce a consistent set of “random-looking” numbers, but always the same set for the same seed. This helps us write tests for code that uses the random number generator.</p>
 <p>To use this in practice, we need to create an initial “seed” that is sufficiently random. This is often done by for example looking at the computer’s exact clock time, or something like that.</p>
 <p>In Haskell the <code>System.Random</code> module has various definitions related to random number generations. In particular, it has the type <code>StdGen</code> for “standard generator”. We can create one with an initial seed like so:</p>
@@ -29,8 +29,8 @@ let gen = mkStdGen 5     -- You can pick any number</code></pre>
 <pre class="haskell"><code>take 50 $ randomRs (0, 10) $ mkStdGen 2</code></pre>
 <p>We typically use the generator in a slightly different way, with the methods provided by the <code>Random</code> class. These methods typically return both a result <em>and</em> a new generator:</p>
 <pre class="haskell"><code>-- randomR :: RandomGen g =&gt; (a, a) -&gt; g -&gt; (a, g)
-let (a, gen2) = randomR (0, 100) gen    --
-let (b, _) = randomR (0, 100) gen       --   b will be the same as a
+let (a, gen2) = randomR (0, 100) gen    --   a is in range [0..100]
+let (b,    _) = randomR (0, 100) gen    --   b will be the same as a
 let (b, gen3) = randomR (0, 100) gen2   --   b will be possibly different</code></pre>
 <p>So to keep generating random numbers, we need to keep updating our generator through the process. As an example, let’s write a function that picks a specific set of random numbers from a given range, and puts them in a list:</p>
 <pre class="haskell"><code>getMany :: RandomGen g =&gt;  (a, a) -&gt; Int -&gt; g -&gt; ([a], g)
@@ -40,9 +40,22 @@ let getMany range n gen
                 where (x, gen&#39;)   = randomR range gen
                       (xs, gen&#39;&#39;) = getMany range (n-1) gen&#39;</code></pre>
 <p>Practice: Run this on the generators <code>gen</code> and <code>gen2</code> we defined earlier and notice the relation between the two.</p>
+<p><strong>Practice:</strong></p>
+<ol type="1">
+<li>Write a function that is given a generator and returns a lowercase letter at random. The function <code>randomR</code> can actually accept characters rather than integers as the delimiters.</li>
+<li>Write a function that is given a generator and a length and returns a random string of lowercase letters of that length.</li>
+<li>Write a function that is given a generator and returns a random string of lowercase letters, of a random length between 0 and 50.</li>
+</ol>
 <p>In order to produce truly random numbers, we have to do it within the IO system. There is in fact a function that will give us the standard generator in an IO setup:</p>
 <pre class="haskell"><code>getStdGen :: IO StdGen</code></pre>
-<p>We would normally have to worry about updating that generator, and there is a provided method for us to do that. In fact there is something better: There is a method that takes as input the kind of function we created via <code>getMany</code> and makes it work with the IO standard generator:</p>
+<p>We would normally have to worry about updating that generator, and there is a provided method for us to do that. So we could do something like:</p>
+<pre class="haskell"><code>getManyIO :: (a, a) -&gt; Int -&gt; IO [a]
+getManyIO range n = do
+    gen &lt;- getStdGen                       -- Get the current generator
+    let (xs, gen&#39;) = getMany range n gen   -- Generate our values
+    setStdGen gen&#39;                         -- Update the generator
+    return xs                              -- Return our values</code></pre>
+<p>In fact there is something better: There is a method that takes as input the kind of function we created via <code>getMany</code> and makes it work with the IO standard generator, essentially automatically doing the above steps:</p>
 <pre class="haskell"><code>getStdRandom :: (StdGen -&gt; (a, StdGen)) -&gt; IO a</code></pre>
 <p>For example we can implement a version of <code>getMany</code> that works with this generator, as follows:</p>
 <pre class="haskell"><code>getManyIO :: (a, a) -&gt; Int -&gt; IO [a]
@@ -55,7 +68,7 @@ getManyIO (0, 6) 10</code></pre>
 <p>In this way we have both a testable version (without the IO) as well as a real one (with the IO).</p>
 <h2 id="shuffling-a-list">Shuffling a list</h2>
 <p>We will now discuss how to implement a list shuffle in Haskell. One key output from such a shuffle is that any of the possible arrangements should all be equally likely. For example if we were shuffling the list <code>[1,2,3]</code> we would want to have an equal chance of getting any of the 6 possible orderings.</p>
-<p>A somewhat inefficient idea, which will be good enough for what we want to do is this:</p>
+<p>A somewhat inefficient idea, which will be good enough for what we want to do, is this:</p>
 <ul>
 <li>In order to shuffle a list with <code>n</code> elements, we will start by generating <code>n</code> random numbers <code>r1, r2, ..., rn</code>, with some very specific properties.</li>
 <li>The first number, <code>r1</code>, is in the range from <code>0</code> to <code>n-1</code>. It is supposed to tell us which of the elements will be chosen first. For example if we were shuffling the list of characters <code>"ABC"</code> and <code>r1=1</code> then the first element in the resulting shuffled list would be the <code>'B'</code>.</li>

@@ -111,9 +111,11 @@ Mon
 
 Wed
   ~ - [Higher order functions practice: 12.5](notes/higher_order_functions_practice.md)
+    - [Assignment 4. Due Fri 3/6](assignments/assignment4.md)
+
 
 Fri
-  ~ [Random number generation in Haskell](notes/random_numbers.md)
+  ~ - [Random number generation in Haskell](notes/random_numbers.md)
 
 ## Week 7
 

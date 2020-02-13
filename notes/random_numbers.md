@@ -2,7 +2,7 @@
 
 Computers are *deterministic*: Given a certain state of things, they produce a consistent result.
 
-To have the appearance of "random-ness", computers often implement what is known as a "pseudo-random number generator". This is a *deterministic* function that given one value produces a new value, in such a way that those values appear to be unrelated to each other, and uniformly distributed across the range of values (so that each number is equally likely to show up).
+To have the appearance of "randomness", computers often implement what is known as a **pseudo-random number generator**. This is a *deterministic* function that given one value produces a new value, in such a way that those values appear to be unrelated to each other, and uniformly distributed across the range of values (so that each number is equally likely to show up).
 
 BUT this is still a deterministic function: We provide it with an initial number "seed", and it will produce a consistent set of "random-looking" numbers, but always the same set for the same seed. This helps us write tests for code that uses the random number generator.
 
@@ -29,8 +29,8 @@ We typically use the generator in a slightly different way, with the methods pro
 
 ```haskell
 -- randomR :: RandomGen g => (a, a) -> g -> (a, g)
-let (a, gen2) = randomR (0, 100) gen    --
-let (b, _) = randomR (0, 100) gen       --   b will be the same as a
+let (a, gen2) = randomR (0, 100) gen    --   a is in range [0..100]
+let (b,    _) = randomR (0, 100) gen    --   b will be the same as a
 let (b, gen3) = randomR (0, 100) gen2   --   b will be possibly different
 ```
 So to keep generating random numbers, we need to keep updating our generator through the process. As an example, let's write a function that picks a specific set of random numbers from a given range, and puts them in a list:
@@ -44,11 +44,27 @@ let getMany range n gen
 ```
 Practice: Run this on the generators `gen` and `gen2` we defined earlier and notice the relation between the two.
 
+**Practice:**
+
+1. Write a function that is given a generator and returns a lowercase letter at random. The function `randomR` can actually accept characters rather than integers as the delimiters.
+2. Write a function that is given a generator and a length and returns a random string of lowercase letters of that length.
+3. Write a function that is given a generator and returns a random string of lowercase letters, of a random length between 0 and 50.
+
 In order to produce truly random numbers, we have to do it within the IO system. There is in fact a function that will give us the standard generator in an IO setup:
 ```haskell
 getStdGen :: IO StdGen
 ```
-We would normally have to worry about updating that generator, and there is a provided method for us to do that. In fact there is something better: There is a method that takes as input the kind of function we created via `getMany` and makes it work with the IO standard generator:
+We would normally have to worry about updating that generator, and there is a provided method for us to do that. So we could do something like:
+```haskell
+getManyIO :: (a, a) -> Int -> IO [a]
+getManyIO range n = do
+    gen <- getStdGen                       -- Get the current generator
+    let (xs, gen') = getMany range n gen   -- Generate our values
+    setStdGen gen'                         -- Update the generator
+    return xs                              -- Return our values
+```
+
+In fact there is something better: There is a method that takes as input the kind of function we created via `getMany` and makes it work with the IO standard generator, essentially automatically doing the above steps:
 ```haskell
 getStdRandom :: (StdGen -> (a, StdGen)) -> IO a
 ```
@@ -72,7 +88,7 @@ In this way we have both a testable version (without the IO) as well as a real o
 
 We will now discuss how to implement a list shuffle in Haskell. One key output from such a shuffle is that any of the possible arrangements should all be equally likely. For example if we were shuffling the list `[1,2,3]` we would want to have an equal chance of getting any of the 6 possible orderings.
 
-A somewhat inefficient idea, which will be good enough for what we want to do is this:
+A somewhat inefficient idea, which will be good enough for what we want to do, is this:
 
 - In order to shuffle a list with `n` elements, we will start by generating `n` random numbers `r1, r2, ..., rn`, with some very specific properties.
 - The first number, `r1`, is in the range from `0` to `n-1`. It is supposed to tell us which of the elements will be chosen first. For example if we were shuffling the list of characters `"ABC"` and `r1=1` then the first element in the resulting shuffled list would be the `'B'`.
