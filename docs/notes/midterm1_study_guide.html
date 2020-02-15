@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>midterm1_study_guide</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="midterm-study-guide">Midterm Study Guide</h1>
+<p>You should read all the notes we have discussed so far (up to but NOT including random numbers), and the corresponding textbook sections. These questions are here to help guide your studies, but are not meant to be exhaustive of everything you should know (though they do try to touch all the areas).</p>
+<p>In all “coding” problems below, you must always include a type for each value/function/action you write.</p>
+<ol type="1">
+<li><p>Describe 5 ways in which Haskell differs from most other languages.</p></li>
+<li><p>List at least 7 methods that operate on lists, write their type and explain what they do.</p></li>
+<li><p>What are the differences between <strong>lists</strong> and <strong>tuples</strong>?</p></li>
+<li><p>In Haskell a function that is meant to have two integer inputs can be written in two different ways. Describe those ways and the corresponding types for the function.</p></li>
+<li><p>Write the types of the following functions, and describe their use: <code>zip</code>, <code>map</code>, <code>filter</code>, <code>(++)</code>, <code>zip</code>, <code>unzip</code>, <code>take</code>, <code>drop</code>. Write (possibly recursive) implementations for these functions.</p></li>
+<li><p>Explain what <strong>parametric polymorphism</strong> and <strong>ad-hoc polymorphism</strong> are and how they differ. Provide concrete examples from any language other than Haskell you wish. Also describe how these two features are present in Haskell.</p></li>
+<li><p>Describe what <strong>pattern matching</strong> is and provide examples. Be able to write functions that use pattern matching in various ways.</p></li>
+<li><p>Describe what guards are and how they work. Give examples.</p></li>
+<li><p>What are <strong>type aliases</strong>? What are <strong>custom data types</strong>? How do they differ?</p></li>
+<li><p>Write list comprehensions to perform the following:</p>
+<ol type="a">
+<li>Given two lists of integers, it builds a list of all pairs of integers, one from each list, where the first integer is less than the second integer.</li>
+<li>Given a list of string, it builds a new list of pairs, where one part of the pair is the string and the other part is the length of that string, but only for those strings whose length is at least 5.</li>
+<li>Given a list of integers and a list of operators (e.g. <code>[(+), (*)]</code>) return a list of triples <code>(x, y, z)</code> where <code>x</code> and <code>y</code> come from the list of integers, and <code>z</code> is the result of applying one of the operators. The final result for a list with <code>n</code> integers and a list with <code>m</code> operators would have <code>n*n*m</code> entries.</li>
+<li>Build the list of all positive multiples of 3 (at least three different ways to do it, two with regular expressions and one with the <code>[x,y..z]</code> syntax).</li>
+</ol></li>
+<li><p>Write operator sections for the following functions:</p>
+<ol type="a">
+<li>Dividing by 3. Also, integer-dividing by 3 (done via the <code>div</code> function).</li>
+<li>Testing if a number is negative.</li>
+<li>Appending the string <code>"!"</code> at the end of a string.</li>
+<li>Squaring a number.</li>
+<li>Testing if a string contains the character <code>'a'</code> (using the <code>elem :: a -&gt; [a] -&gt; Bool</code> function).</li>
+<li>Testing if a character is one of the vowels (use a string containing the vowels).</li>
+</ol></li>
+<li><p>Use function composition and operator sections and/or direct functions to write functions that perform the following:</p>
+<ol type="a">
+<li>Compute <code>3x+2</code> for a given number <code>x</code>.</li>
+<li>Find the largest string length for a list of strings.</li>
+<li>Test if all numbers in a list are greater than 10 (and get a single True/False answer).</li>
+</ol></li>
+<li><p>Write (recursive, maybe using pattern matching or guards, possibly with a helper) functions for the following:</p>
+<ol type="a">
+<li>Test if a list of numbers is in decreasing order.</li>
+<li>Find the largest of a list of numbers (error for empty list).</li>
+<li>Reverse a list.</li>
+<li>Split a list after n characters (n being an input to the function), returning the lists of the two parts, as a pair.</li>
+<li>Split a list in two parts (returning a pair), one list containing the negative numbers, the other containing the positive numbers, and discarding any zeroes.</li>
+<li>Given a list, group up every 3 elements together in a tuple and return a list of those tuples (possibly discarding up to 2 elements at the end).</li>
+</ol></li>
+<li><p>Write IO actions, or functions producing IO actions, to perform the following (primitives you can use at <code>putChar</code>, <code>putStr</code>, <code>putStrLn</code>, <code>getLine</code>):</p>
+<ol type="a">
+<li>Ask the user via a prompt, then read a string in and return the string.</li>
+<li>Given a list of string, produce the action that prints each string on its own line.</li>
+<li>Reads one line at a time, until an empty line is provided, then returns the resulting list of strings (one for each line).</li>
+<li>Reads an integer on its own line (you can use <code>read</code> to turn a string into an integer) and returns it.</li>
+<li>Given a function <code>f: a-&gt; b</code> and an action <code>IO a</code> create an action <code>IO b</code> which uses the provided action to get an <code>a</code> value, then uses <code>f</code> to obtain a <code>b</code> value and returns that.</li>
+</ol></li>
+<li><p>Provide the type and implementation for <code>foldr</code>.</p></li>
+<li><p>Implement the following using <code>foldr</code>:</p>
+<ol type="a">
+<li><code>length</code></li>
+<li><code>sum</code> and <code>prod</code> (type <code>[Int] -&gt; Int</code>)</li>
+<li><code>and</code> and <code>or</code> (type <code>[Bool] -&gt; Bool</code>)</li>
+<li><code>any</code> and <code>all</code> (type <code>(a-&gt;Bool) -&gt; [a] -&gt; Bool</code>)</li>
+<li><code>concat</code> (type <code>[[a]] -&gt; a</code>)</li>
+</ol></li>
+</ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-haskell.js"></script>
+</body>
+</html>

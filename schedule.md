@@ -126,7 +126,7 @@ Wed
   ~ TBD
 
 Fri
-  ~ TBD
+  ~ [Midterm 1](notes/midterm1_study_guide.md)
 
 ## Week 8
 
