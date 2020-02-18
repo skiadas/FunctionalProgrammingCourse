@@ -126,7 +126,30 @@ shuffleIO :: [a] -> IO [a]
 Some details on these functions:
 
 - `getRs` produces the list of `r1, r2, ..., rn` that we described earlier. It will use `randomR` as well as a recursive call. Make sure to update the generator through each step, and return the newest version along with the list of numbers.
-- `pluck` is simply a list-manipulation function: It is given an index into the list, and is supposed to select the element at that index, remove it from the list, and return both the element and the updated list. You won't have to worry about the case where the index is not valid for the list (at least not unless you didn't implement `getRs` correctly).
+- `pluck` is simply a list-manipulation function: It is given an index into the list, and is supposed to select the element at that index, remove it from the list, and return both the element and the updated list (as a pair). You won't have to worry about the case where the index is not valid for the list (at least not unless you didn't implement `getRs` correctly).
 - `shuffle` is given this list of integers `rs` and the list elements `xs`, and returns the shuffled list. It will require a recursive call using `pluck` along the way.
 - `shuffleGen` combines `getRs` and `shuffle`, to get the `r1,r2,...,rn` from `getRs` and then use them with `shuffle`. Make sure that you return the updated generator that `getRs` gives you.
 - `shuffleIO` uses `getStdRandom` together with `shuffleGen` to produce a shuffle using the IO generator, similarly to what our `getManyIO` did a few steps above.
+
+Here are some tests for the testable parts.
+```haskell
+testGen  = mkStdGen 1
+testGen2 = mkStdGen 2
+
+tests = [
+    fst (getRs 4 testGen)             ~?= [3, 1, 1, 0],
+    fst (getRs 4 testGen2)            ~?= [1, 0, 0, 0],
+    pluck 3 "ABCD"                     ~?= ('D', "ABC"),
+    pluck 2 "ABCD"                     ~?= ('C', "ABD"),
+    pluck 1 "ABCD"                     ~?= ('B', "ACD"),
+    pluck 0 "ABCD"                     ~?= ('A', "BCD"),
+    shuffle [3,1,1,0] "ABCD"           ~?= "DBCA",
+    fst(shuffleGen "ABCD" testGen)     ~?= "DBCA",
+    fst(shuffleGen "ABCD" testGen2)    ~?= "BACD"
+    ]
+
+main :: IO ()
+main = do
+    runTestTT tests
+    return ()
+```

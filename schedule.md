@@ -120,10 +120,10 @@ Fri
 ## Week 7
 
 Mon
-  ~ TBD
+  ~ Sick day
 
 Wed
-  ~ TBD
+  ~ - [Shuffling a list](notes/random_numbers.md)
 
 Fri
   ~ [Midterm 1](notes/midterm1_study_guide.md)

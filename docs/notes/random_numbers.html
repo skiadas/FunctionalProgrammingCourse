@@ -99,11 +99,31 @@ shuffleIO :: [a] -&gt; IO [a]</code></pre>
 <p>Some details on these functions:</p>
 <ul>
 <li><code>getRs</code> produces the list of <code>r1, r2, ..., rn</code> that we described earlier. It will use <code>randomR</code> as well as a recursive call. Make sure to update the generator through each step, and return the newest version along with the list of numbers.</li>
-<li><code>pluck</code> is simply a list-manipulation function: It is given an index into the list, and is supposed to select the element at that index, remove it from the list, and return both the element and the updated list. You won’t have to worry about the case where the index is not valid for the list (at least not unless you didn’t implement <code>getRs</code> correctly).</li>
+<li><code>pluck</code> is simply a list-manipulation function: It is given an index into the list, and is supposed to select the element at that index, remove it from the list, and return both the element and the updated list (as a pair). You won’t have to worry about the case where the index is not valid for the list (at least not unless you didn’t implement <code>getRs</code> correctly).</li>
 <li><code>shuffle</code> is given this list of integers <code>rs</code> and the list elements <code>xs</code>, and returns the shuffled list. It will require a recursive call using <code>pluck</code> along the way.</li>
 <li><code>shuffleGen</code> combines <code>getRs</code> and <code>shuffle</code>, to get the <code>r1,r2,...,rn</code> from <code>getRs</code> and then use them with <code>shuffle</code>. Make sure that you return the updated generator that <code>getRs</code> gives you.</li>
 <li><code>shuffleIO</code> uses <code>getStdRandom</code> together with <code>shuffleGen</code> to produce a shuffle using the IO generator, similarly to what our <code>getManyIO</code> did a few steps above.</li>
 </ul>
+<p>Here are some tests for the testable parts.</p>
+<pre class="haskell"><code>testGen  = mkStdGen 1
+testGen2 = mkStdGen 2
+
+tests = [
+    fst (getRs 4 testGen)             ~?= [3, 1, 1, 0],
+    fst (getRs 4 testGen2)            ~?= [1, 0, 0, 0],
+    pluck 3 &quot;ABCD&quot;                     ~?= (&#39;D&#39;, &quot;ABC&quot;),
+    pluck 2 &quot;ABCD&quot;                     ~?= (&#39;C&#39;, &quot;ABD&quot;),
+    pluck 1 &quot;ABCD&quot;                     ~?= (&#39;B&#39;, &quot;ACD&quot;),
+    pluck 0 &quot;ABCD&quot;                     ~?= (&#39;A&#39;, &quot;BCD&quot;),
+    shuffle [3,1,1,0] &quot;ABCD&quot;           ~?= &quot;DBCA&quot;,
+    fst(shuffleGen &quot;ABCD&quot; testGen)     ~?= &quot;DBCA&quot;,
+    fst(shuffleGen &quot;ABCD&quot; testGen2)    ~?= &quot;BACD&quot;
+    ]
+
+main :: IO ()
+main = do
+    runTestTT tests
+    return ()</code></pre>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");
 for (const el of els) {
