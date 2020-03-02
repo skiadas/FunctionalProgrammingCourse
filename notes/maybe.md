@@ -1,4 +1,4 @@
-### The Maybe option type
+# The Maybe option type
 
 One particular built-in datatype deserves special mention. It is known as the `Maybe` type in Haskell, and also as the Option type in other languages. Its premise is simple: It allows you to carry one value around, but also allows the possibility of no value at all. For example, imagine we write a `lookup` method that looks for an key in an associative list:
 ```haskell
@@ -39,7 +39,18 @@ safeDivide _ 0  = Nothing
 safeDivide n m  = Just (n / m)
 ```
 
-#### Standard functions for Maybe
+**Practice**:
+
+1. The `uncons` function is meant to take a list and "uncons" it, which means to return the pair of the first element (head) and the rest of the list (tail). This of course is only valid if the list is nonempty. Using `Maybe` makes the function work always:
+
+    ```haskell
+    uncons :: [a] -> Maybe (a, [a])
+    ```
+    Implement it.
+2. Write the type and implementation for a `safeMax` function, which returns the maximum of a list (or `Nothing` if there is no maximum, i.e. if the list is empty). Your list element values only need to be comparable, so use the appropriate type class constraint.
+3. Write a function `unmaybe :: [Maybe a] -> [a]` that takes a list of `Maybe a`'s and returns a list of the actual values that are there, if any, in the same order.
+
+## Standard functions for Maybe
 
 There are a number of standard functions for the Maybe type. We declare them here, and ask you to implement them for practice:
 ```haskell

@@ -1,7 +1,4 @@
-# Advanced Haskell Typing concepts
-
-
-### Ad-hoc Polymorphism: Overloaded Types and Type Classes
+# Ad-hoc Polymorphism: Overloaded Types and Type Classes
 
 Ad-hoc polymorphism is a bit trickier, especially in a language that performs type inference, as the system must be able to see an expression like `x+y` and infer some type information regarding `x` and `y`. This is accomplished by a couple of related ideas, namely *overloaded types* (often refered to as *bounded polymorphism*) and *type classes*.
 
@@ -73,7 +70,7 @@ Ord
     ```
 
 Show
-  ~ This represents types whose value have a string representation. These are the only values that Haskell will print out for you without complaining. They need to implement a single function:
+  ~ This represents types whose values have a string representation. These are the only values that Haskell will print out for you without complaining. They need to implement a single function:
 
     ```haskell
     show :: a -> String
@@ -124,6 +121,113 @@ Many of these type classes extend to compound types if there is a specification 
 3. `has` that checks for the existence of an element in a list, and is defined by:
 
     ```haskell
-    has elem []       = False
-    has elem (x:rest) = elem == x || has elem rest
+    has el []       = False
+    has el (x:rest) = el == x || has el rest
     ```
+
+## Default implementations:
+
+Functions in a class definition can be provided with *default implementations*. This way someone trying to create an instance of such a class does not need to implement all the methods in the class. As an example, let's take a look at the `Eq` and and `Ord` classes, and their actual definitions
+([you can find them here for example](https://hackage.haskell.org/package/base-4.4.1.0/docs/src/GHC-Classes.html)):
+```haskell
+class  Eq a  where
+    (==), (/=)           :: a -> a -> Bool
+
+    x /= y               = not (x == y)
+    x == y               = not (x /= y)
+
+-- Must specify either (==) and (<=) or compare
+class  (Eq a) => Ord a  where
+    compare              :: a -> a -> Ordering
+    (<), (<=), (>), (>=) :: a -> a -> Bool
+    max, min             :: a -> a -> a
+
+    -- compare defined in terms of == and <=
+    compare x y
+        | x == y    = EQ
+        | x <= y    = LT
+        | otherwise = GT
+
+    -- all operators defined in terms of compare
+    x <  y = case compare x y of { LT -> True;  _ -> False }
+    x <= y = case compare x y of { GT -> False; _ -> True }
+    x >  y = case compare x y of { GT -> True;  _ -> False }
+    x >= y = case compare x y of { LT -> False; _ -> True }
+
+    max x y = if x <= y then y else x
+    min x y = if x <= y then x else y
+```
+
+## Other important classes
+
+Here is a list of other important built-in classes:
+
+Enum
+  ~ Used for "enumerated types", i.e. types that we can list "one, two, three, etc". For a type that satisfies Enum, we can write `[n,m,...]` and similar expressions.
+
+Bounded
+  ~ Used for "bounded types", whose values have a minimum bound and a maximum bound.
+
+Show
+  ~ Used for types that can be "shown", i.e. turned to a string.
+
+Read
+  ~ Used for types that can be "read", i.e. for which we can obtain a value from a string.
+
+You can see the definition of Enum and Bounded [here](https://hackage.haskell.org/package/base-4.12.0.0/docs/src/GHC.Enum.html):
+```haskell
+class Bounded a where
+    minBound, maxBound :: a
+
+class Enum a where
+    toEnum              :: Int -> a
+    fromEnum            :: a -> Int
+
+    succ                :: a -> a              -- next
+    pred                :: a -> a              -- previous
+
+    enumFrom            :: a -> [a]            -- [n ..]
+    enumFromThen        :: a -> a -> [a]       -- [n,m ..]
+    enumFromTo          :: a -> a -> [a]       -- [n .. m]
+    enumFromThenTo      :: a -> a -> a -> [a]  -- [n,m, .. p]
+
+    succ                   = toEnum . (+ 1)  . fromEnum
+    pred                   = toEnum . (subtract 1) . fromEnum
+    enumFrom x             = map toEnum [fromEnum x ..]
+    enumFromThen x y       = map toEnum [fromEnum x, fromEnum y ..]
+    enumFromTo x y         = map toEnum [fromEnum x .. fromEnum y]
+    enumFromThenTo x1 x2 y = map toEnum [fromEnum x1, fromEnum x2 .. fromEnum y]
+```
+
+The `Random` module we have used before also defines two classes, called `RandomGen` and `Random`, as [follows](https://hackage.haskell.org/package/random-1.1/docs/src/System.Random.html#RandomGen):
+
+```haskell
+class RandomGen g where
+   next     :: g -> (Int, g)
+   genRange :: g -> (Int,Int)
+
+   genRange _ = (minBound, maxBound)
+
+class Random a where
+  randomR :: RandomGen g => (a,a) -> g -> (a,g)
+  random  :: RandomGen g => g -> (a, g)
+  randomRs :: RandomGen g => (a,a) -> g -> [a]
+
+  randoms  :: RandomGen g => g -> [a]
+
+  randomRIO :: (a,a) -> IO a
+  randomRIO range  = getStdRandom (randomR range)
+
+  randomIO  :: IO a
+  randomIO         = getStdRandom random
+```
+
+**Practice:**
+
+1. Define `randomRs` based on `randomR`.
+2. The Random module provides a function with the following signature:
+
+    ```haskell
+    buildRandoms :: RandomGen g => (a -> as -> as) -> (g -> (a,g)) -> g -> as
+    ```
+    Understand this signature, and use this function to write `randomRs` instead of your previous version. Then implement this function.

@@ -14,7 +14,7 @@
 </script>
 </head>
 <body>
-<h3 id="the-maybe-option-type">The Maybe option type</h3>
+<h1 id="the-maybe-option-type">The Maybe option type</h1>
 <p>One particular built-in datatype deserves special mention. It is known as the <code>Maybe</code> type in Haskell, and also as the Option type in other languages. Its premise is simple: It allows you to carry one value around, but also allows the possibility of no value at all. For example, imagine we write a <code>lookup</code> method that looks for an key in an associative list:</p>
 <pre class="haskell"><code>lookup :: Eq a =&gt; a -&gt; [(a, b)] -&gt; b</code></pre>
 <p>This function is meant to search for the <code>a</code> part of the pair in the list, and if it finds it then it returns the corresponding <code>b</code> part. But what should happen if a suitable <code>a</code> part is not found? What value would the function return?</p>
@@ -40,7 +40,15 @@ reportLookupResult key lst = handleResult (lookup key lst)
 <pre class="haskell"><code>safeDivide :: Num t =&gt; t -&gt; t -&gt; Maybe t
 safeDivide _ 0  = Nothing
 safeDivide n m  = Just (n / m)</code></pre>
-<h4 id="standard-functions-for-maybe">Standard functions for Maybe</h4>
+<p><strong>Practice</strong>:</p>
+<ol type="1">
+<li><p>The <code>uncons</code> function is meant to take a list and “uncons” it, which means to return the pair of the first element (head) and the rest of the list (tail). This of course is only valid if the list is nonempty. Using <code>Maybe</code> makes the function work always:</p>
+<pre class="haskell"><code>uncons :: [a] -&gt; Maybe (a, [a])</code></pre>
+<p>Implement it.</p></li>
+<li><p>Write the type and implementation for a <code>safeMax</code> function, which returns the maximum of a list (or <code>Nothing</code> if there is no maximum, i.e. if the list is empty). Your list element values only need to be comparable, so use the appropriate type class constraint.</p></li>
+<li><p>Write a function <code>unmaybe :: [Maybe a] -&gt; [a]</code> that takes a list of <code>Maybe a</code>’s and returns a list of the actual values that are there, if any, in the same order.</p></li>
+</ol>
+<h2 id="standard-functions-for-maybe">Standard functions for Maybe</h2>
 <p>There are a number of standard functions for the Maybe type. We declare them here, and ask you to implement them for practice:</p>
 <pre class="haskell"><code>-- Empty or one-element list
 toList :: Maybe a -&gt; [a]

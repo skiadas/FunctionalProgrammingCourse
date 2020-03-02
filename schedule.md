@@ -131,10 +131,11 @@ Fri
 ## Week 8
 
 Mon
-  ~ TBD
+  ~ - Reading: 13.1-13.4
+    - [Ad-hoc Polymorphism: Overloaded Types and Type Classes](notes/types_advanced.md)
 
 Wed
-  ~ TBD
+  ~ - [The Maybe (Option) Type.](notes/maybe.md)
 
 Fri
   ~ TBD
@@ -200,9 +201,7 @@ Fri
 
 ## Old links
 
-- [More advanced typing: Curried Functions. Polymorphism, Type classes.](notes/types_advanced.md) (3.6-3.9)
 - [Version Control](notes/version_control.md)
-- [The Maybe (Option) Type.](notes/maybe.md)
 - [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
 - [Functions as Values: Difference Lists, Composition (cont)](notes/difference_lists.md) (7.5)
 - MIDTERM ([study guide](notes/midterm_study_guide.md))

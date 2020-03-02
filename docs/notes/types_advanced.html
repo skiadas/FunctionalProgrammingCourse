@@ -14,8 +14,7 @@
 </script>
 </head>
 <body>
-<h1 id="advanced-haskell-typing-concepts">Advanced Haskell Typing concepts</h1>
-<h3 id="ad-hoc-polymorphism-overloaded-types-and-type-classes">Ad-hoc Polymorphism: Overloaded Types and Type Classes</h3>
+<h1 id="ad-hoc-polymorphism-overloaded-types-and-type-classes">Ad-hoc Polymorphism: Overloaded Types and Type Classes</h1>
 <p>Ad-hoc polymorphism is a bit trickier, especially in a language that performs type inference, as the system must be able to see an expression like <code>x+y</code> and infer some type information regarding <code>x</code> and <code>y</code>. This is accomplished by a couple of related ideas, namely <em>overloaded types</em> (often refered to as <em>bounded polymorphism</em>) and <em>type classes</em>.</p>
 <p>A <strong>overloaded type</strong> is a type that comes with a certain constraint. For instance the type of an <code>add</code> function may look like this:</p>
 <pre class="haskell"><code>add :: Num t =&gt; t -&gt; t -&gt; t
@@ -62,7 +61,7 @@ min :: a -&gt; a -&gt; Bool
 max :: a -&gt; a -&gt; Bool</code></pre>
 </dd>
 <dt>Show</dt>
-<dd><p>This represents types whose value have a string representation. These are the only values that Haskell will print out for you without complaining. They need to implement a single function:</p>
+<dd><p>This represents types whose values have a string representation. These are the only values that Haskell will print out for you without complaining. They need to implement a single function:</p>
 <pre class="haskell"><code>show :: a -&gt; String</code></pre>
 </dd>
 <dt>Read</dt>
@@ -93,8 +92,100 @@ recip :: a -&gt; a</code></pre>
 maxList (x:xs) = if x &gt; restMax then x else restMax
             where restMax = maxList xs</code></pre></li>
 <li><p><code>has</code> that checks for the existence of an element in a list, and is defined by:</p>
-<pre class="haskell"><code>has elem []       = False
-has elem (x:rest) = elem == x || has elem rest</code></pre></li>
+<pre class="haskell"><code>has el []       = False
+has el (x:rest) = el == x || has el rest</code></pre></li>
+</ol>
+<h2 id="default-implementations">Default implementations:</h2>
+<p>Functions in a class definition can be provided with <em>default implementations</em>. This way someone trying to create an instance of such a class does not need to implement all the methods in the class. As an example, let’s take a look at the <code>Eq</code> and and <code>Ord</code> classes, and their actual definitions (<a href="https://hackage.haskell.org/package/base-4.4.1.0/docs/src/GHC-Classes.html">you can find them here for example</a>):</p>
+<pre class="haskell"><code>class  Eq a  where
+    (==), (/=)           :: a -&gt; a -&gt; Bool
+
+    x /= y               = not (x == y)
+    x == y               = not (x /= y)
+
+-- Must specify either (==) and (&lt;=) or compare
+class  (Eq a) =&gt; Ord a  where
+    compare              :: a -&gt; a -&gt; Ordering
+    (&lt;), (&lt;=), (&gt;), (&gt;=) :: a -&gt; a -&gt; Bool
+    max, min             :: a -&gt; a -&gt; a
+
+    -- compare defined in terms of == and &lt;=
+    compare x y
+        | x == y    = EQ
+        | x &lt;= y    = LT
+        | otherwise = GT
+
+    -- all operators defined in terms of compare
+    x &lt;  y = case compare x y of { LT -&gt; True;  _ -&gt; False }
+    x &lt;= y = case compare x y of { GT -&gt; False; _ -&gt; True }
+    x &gt;  y = case compare x y of { GT -&gt; True;  _ -&gt; False }
+    x &gt;= y = case compare x y of { LT -&gt; False; _ -&gt; True }
+
+    max x y = if x &lt;= y then y else x
+    min x y = if x &lt;= y then x else y</code></pre>
+<h2 id="other-important-classes">Other important classes</h2>
+<p>Here is a list of other important built-in classes:</p>
+<dl>
+<dt>Enum</dt>
+<dd>Used for “enumerated types”, i.e. types that we can list “one, two, three, etc”. For a type that satisfies Enum, we can write <code>[n,m,...]</code> and similar expressions.
+</dd>
+<dt>Bounded</dt>
+<dd>Used for “bounded types”, whose values have a minimum bound and a maximum bound.
+</dd>
+<dt>Show</dt>
+<dd>Used for types that can be “shown”, i.e. turned to a string.
+</dd>
+<dt>Read</dt>
+<dd>Used for types that can be “read”, i.e. for which we can obtain a value from a string.
+</dd>
+</dl>
+<p>You can see the definition of Enum and Bounded <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/src/GHC.Enum.html">here</a>:</p>
+<pre class="haskell"><code>class Bounded a where
+    minBound, maxBound :: a
+
+class Enum a where
+    toEnum              :: Int -&gt; a
+    fromEnum            :: a -&gt; Int
+
+    succ                :: a -&gt; a              -- next
+    pred                :: a -&gt; a              -- previous
+
+    enumFrom            :: a -&gt; [a]            -- [n ..]
+    enumFromThen        :: a -&gt; a -&gt; [a]       -- [n,m ..]
+    enumFromTo          :: a -&gt; a -&gt; [a]       -- [n .. m]
+    enumFromThenTo      :: a -&gt; a -&gt; a -&gt; [a]  -- [n,m, .. p]
+
+    succ                   = toEnum . (+ 1)  . fromEnum
+    pred                   = toEnum . (subtract 1) . fromEnum
+    enumFrom x             = map toEnum [fromEnum x ..]
+    enumFromThen x y       = map toEnum [fromEnum x, fromEnum y ..]
+    enumFromTo x y         = map toEnum [fromEnum x .. fromEnum y]
+    enumFromThenTo x1 x2 y = map toEnum [fromEnum x1, fromEnum x2 .. fromEnum y]</code></pre>
+<p>The <code>Random</code> module we have used before also defines two classes, called <code>RandomGen</code> and <code>Random</code>, as <a href="https://hackage.haskell.org/package/random-1.1/docs/src/System.Random.html#RandomGen">follows</a>:</p>
+<pre class="haskell"><code>class RandomGen g where
+   next     :: g -&gt; (Int, g)
+   genRange :: g -&gt; (Int,Int)
+
+   genRange _ = (minBound, maxBound)
+
+class Random a where
+  randomR :: RandomGen g =&gt; (a,a) -&gt; g -&gt; (a,g)
+  random  :: RandomGen g =&gt; g -&gt; (a, g)
+  randomRs :: RandomGen g =&gt; (a,a) -&gt; g -&gt; [a]
+
+  randoms  :: RandomGen g =&gt; g -&gt; [a]
+
+  randomRIO :: (a,a) -&gt; IO a
+  randomRIO range  = getStdRandom (randomR range)
+
+  randomIO  :: IO a
+  randomIO         = getStdRandom random</code></pre>
+<p><strong>Practice:</strong></p>
+<ol type="1">
+<li><p>Define <code>randomRs</code> based on <code>randomR</code>.</p></li>
+<li><p>The Random module provides a function with the following signature:</p>
+<pre class="haskell"><code>buildRandoms :: RandomGen g =&gt; (a -&gt; as -&gt; as) -&gt; (g -&gt; (a,g)) -&gt; g -&gt; as</code></pre>
+<p>Understand this signature, and use this function to write <code>randomRs</code> instead of your previous version. Then implement this function.</p></li>
 </ol>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");
