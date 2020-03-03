@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>type_classes_defining</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="defining-type-classes-and-type-class-instances">Defining Type Classes and Type Class Instances</h1>
+<p>In this note we will see how we can define our own instances of a type class. As a running example, consider the <code>Card</code> class and its friends, that we used in assignment 3:</p>
+<pre class="haskell"><code>data Suit = Clubs | Diamonds | Hearts | Spades
+data Value = Ace | Num Int | Jack | Queen | King
+
+data Card = Cd Suit Value</code></pre>
+<p>In the assignment, we automatically <em>derived</em> definitions for <code>Eq</code> and <code>Show</code> as well as <code>Ord</code>. We also used simply pairs for the cards. But in order to assign our own implementations of comparisions, we have to create a custom data type, so we use the prefix <code>Cd</code> for cards.</p>
+<p>We will now implement “manual” definitions of <code>Eq</code>, <code>Show</code> and <code>Ord</code>, with slight variations.</p>
+<pre class="haskell"><code>instance Eq Suit where
+    Clubs == Clubs       = True
+    Diamonds == Diamonds = True
+    Hearts == Hearts     = True
+    Spades == Spades     = True
+    _      == _          = False
+
+instance Ord Suit where
+    compare Clubs Clubs       = EQ
+    compare Clubs _           = LT
+    compare Diamonds Clubs    = GT
+    compare Diamonds Diamonds = EQ
+    compare Diamonds _        = LT
+    compare Hearts Spades     = LT
+    compare Hearts Hearts     = EQ
+    compare Hearts _          = GT
+    compare Spades Spades     = EQ
+    compare Spades _          = GT</code></pre>
+<p>After these definitions, we can ask, for example whether <code>Club &lt; Diamonds</code> and then get the answer <code>True</code>: The default implementation for <code>&lt;</code> using our <code>compare</code> function kicks in.</p>
+<p>For <code>Show</code> let’s do something different! Each suit has a Unicode character corresponding to it. They come in “black” and “white” variants, depending on whether their interior is filled or not.</p>
+<pre class="haskell"><code>instance Show Suit where
+    show Clubs    = &quot;\x2663&quot;
+    show Diamonds = &quot;\x2666&quot;
+    show Hearts   = &quot;\x2665&quot;
+    show Spades   = &quot;\x2660&quot;</code></pre>
+<p>Now we can do something like this and see a beautiful symbol for a club: <code>putStrLn $ show Clubs</code>.</p>
+<p>Let’s further define <code>Enum</code> and <code>Bounded</code> instances. <code>Bounded</code> is easy:</p>
+<pre class="haskell"><code>instance Bounded Suit where
+    minBound = Clubs
+    maxBound = Spades</code></pre>
+<p>We can now ask for <code>minBound :: Suit</code> and we will see the Clubs symbol printed out.</p>
+<pre class="haskell"><code>instance Enum Suit where
+    toEnum 0 = Clubs
+    toEnum 1 = Diamonds
+    toEnum 2 = Hearts
+    toEnum 3 = Spades
+    fromEnum Clubs    = 0
+    fromEnum Diamonds = 1
+    fromEnum Hearts   = 2
+    fromEnum Spades   = 3</code></pre>
+<p>After that definition, we can do <code>[minBound .. maxBound] :: [Suit]</code> and see a list of the four suits.</p>
+<p>Next, we will create instances of <code>Eq</code>, <code>Ord</code>, <code>Bounded</code>, <code>Enum</code> and <code>Show</code> for the <code>Value</code> type:</p>
+<pre class="haskell"><code>instance Eq Value where
+    Ace   == Ace     = True
+    Jack  == Jack    = True
+    Queen == Queen   = True
+    King  == King    = True
+    Num x == Num y   = x == y
+    _     == _       = False
+
+instance Ord Value where
+    compare Ace Ace           = EQ
+    compare Jack Jack         = EQ
+    compare Queen Queen       = EQ
+    compare King King         = EQ
+    compare Ace _             = LT
+    compare _ Ace             = LT
+    compare _ King            = LT
+    compare King _            = GT
+    compare _ Queen           = LT
+    compare Queen _           = GT
+    compare _ Jack            = LT
+    compare Jack _            = GT
+    compare (Num n) (Num m)   = compare n m
+
+instance Bounded Value where
+    minBound = Ace
+    maxBound = King
+
+instance Enum Value where
+    toEnum 1    = Ace
+    toEnum 11   = Jack
+    toEnum 12   = Queen
+    toEnum 13   = King
+    toEnum n    = Num n
+    fromEnum Ace     = 1
+    fromEnum Jack    = 11
+    fromEnum Queen   = 12
+    fromEnum King    = 13
+    fromEnum (Num n) = n
+
+instance Show Value where
+    show Ace     = &quot;A&quot;
+    show (Num n) = show n
+    show Jack    = &quot;J&quot;
+    show Queen   = &quot;Q&quot;
+    show King    = &quot;K&quot;</code></pre>
+<p>Now we should implement the same functionality for <code>Card</code>, which consists of a suit and a value. The convention we will follow is that “smaller values come first”. So we first compare the values and then compare the suits.</p>
+<pre class="haskell"><code>instance Eq Card where
+    Cd s1 v1 == Cd s2 v2   =    s1 == s2 &amp;&amp; v1 == v2
+
+instance Ord Card where
+    Cd s1 v1 `compare` Cd s2 v2   = compare v1 v2 `orElse` compare s1 s2
+            where EQ `orElse` o   = o
+                  o   `orElse` _  = o</code></pre>
+<p>We “show” a card by showing the value and the suit next to each other:</p>
+<pre class="haskell"><code>instance Show Card where
+    show (Cd s v) = show v ++ show s</code></pre>
+<p>We can easily make <code>Card</code> and instance of <code>Bounded</code> too:</p>
+<pre class="haskell"><code>instance Bounded Card where
+    minBound = Cd minBound minBound
+    maxBound = Cd maxBound maxBound</code></pre>
+<p>Now <code>minBound :: Card</code> brings up the Ace of Clubs.</p>
+<p>Lastly, <code>Enum</code>. We want to make sure we keep the ordering of the cards, starting with the 13 clubs cards at 1-13, then the diamonds cards 14-26, and so on. In order to do that, we can do some “modulo 13” math on the values of suits and cards. We need to do a bit of work for the <code>toEnum</code> function, because the numbers are “1-13” instead of “0-12”.</p>
+<pre class="haskell"><code>instance Enum Card where
+    fromEnum (Cd s v) = fromEnum v + 13 * fromEnum s
+    toEnum n = Cd s v where s = toEnum ((n-1) `div` 13)
+                            v = toEnum ((n-1) `mod` 13 + 1)</code></pre>
+<p>Now we can put all the cards in one list easily:</p>
+<pre class="haskell"><code>[minBound .. maxBound] :: [Card]</code></pre>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-haskell.js"></script>
+</body>
+</html>

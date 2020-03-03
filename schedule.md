@@ -135,10 +135,11 @@ Mon
     - [Ad-hoc Polymorphism: Overloaded Types and Type Classes](notes/types_advanced.md)
 
 Wed
-  ~ - [The Maybe (Option) Type.](notes/maybe.md)
+  ~ - Reading: 13.5-13.8
+    - [Defining type classes and type class instances](notes/type_classes_defining.md)
 
 Fri
-  ~ TBD
+  ~ - [The Maybe (Option) Type.](notes/maybe.md)
 
 ## Week 9
 
