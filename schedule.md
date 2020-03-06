@@ -144,7 +144,8 @@ Fri
 ## Week 9
 
 Mon
-  ~ TBD
+  ~ - Reading: 14.1-14.4
+    - [Recursive Types: Implementing Binary Search Trees](notes/recursive_types.md)
 
 Wed
   ~ TBD
@@ -198,19 +199,14 @@ Fri
 
 
 - [Folding trees](notes/foldingTrees.md)
-- Reading: 14.1-14.3 [Recursive Types](notes/recursive_types.md)
 
 ## Old links
 
-- [Version Control](notes/version_control.md)
 - [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
-- [Functions as Values: Difference Lists, Composition (cont)](notes/difference_lists.md) (7.5)
-- MIDTERM ([study guide](notes/midterm_study_guide.md))
-- BREAK
-- [Assignment 4. Due 11/03](assignments/assignment4.md)
-- [Overview of Software Development Practices](notes/dev_overview.md)
 - [Information hiding and abstraction with modules](notes/modules.md)
 - [Testing](notes/testing.md)
 - [The State Monad](notes/functors_monads.md)
 - [Functors, Applicatives, Monads](notes/functors_monads.md)
 - [Final Study Guide](notes/final_study_guide.md)
+- [Version Control](notes/version_control.md)
+- [Overview of Software Development Practices](notes/dev_overview.md)
