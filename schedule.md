@@ -148,15 +148,15 @@ Mon
     - [Recursive Types: Implementing Binary Search Trees](notes/recursive_types.md)
 
 Wed
-  ~ TBD
+  ~ - [Information hiding and abstraction with modules](notes/modules.md)
 
 Fri
-  ~ TBD
+  ~ - [Expressing State in Haskell](notes/state_monad.md)
 
 ## Week 10
 
 Mon
-  ~ TBD
+  ~ - [Type classes over parametrized types: Foldables, Functors, Applicatives, Monads](notes/functors_monads.md)
 
 Wed
   ~ TBD
@@ -203,10 +203,7 @@ Fri
 ## Old links
 
 - [Functions as Values: Difference Lists, Composition](notes/difference_lists.md) (7.5)
-- [Information hiding and abstraction with modules](notes/modules.md)
 - [Testing](notes/testing.md)
-- [The State Monad](notes/functors_monads.md)
-- [Functors, Applicatives, Monads](notes/functors_monads.md)
 - [Final Study Guide](notes/final_study_guide.md)
 - [Version Control](notes/version_control.md)
 - [Overview of Software Development Practices](notes/dev_overview.md)
