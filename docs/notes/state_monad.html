@@ -137,17 +137,20 @@ fmap f (PST pst) =
 <p>Now we can say:</p>
 <pre class="haskell"><code>evalStmt PrintMem = fmap printMemory getMemory
 -- was: evalStmt PrintMem = PST (\mem -&gt; (printMemory mem, mem))</code></pre>
-<p>This is a lot nicer to read once we get used to the pieces that brought it to life.</p>
+<p>This is a lot nicer to read once we get used to the pieces that brought it to life. And so far we have used two important generic functions/values that the <code>State</code> monad supports:</p>
+<pre class="haskell"><code>getState :: State s s   -- for us: getMemory :: ProgStateT Memory
+fmap :: (a -&gt; b) -&gt; State s a -&gt; State s b</code></pre>
 <p>Now let’s consider the <code>Print</code> case. It’s a bit different, as it uses <code>evalExpr</code>:</p>
 <pre class="haskell"><code>evalStmt (Print expr) =
   PST (\mem -&gt; let v = evalExpr expr mem
-               in (putStrLn $ show v, mem))</code></pre>
+               in (print v, mem))</code></pre>
 <p>We can still use <code>fmap</code> however (the comments explain the types):</p>
 <pre class="haskell"><code>evalStmt (Print expr) = fmap (print . evalExpr expr) getMemory
   -- print is putStrLn and show combined
   -- evalExpr expr :: Memory -&gt; Value
   -- print :: Value -&gt; IO ()
   -- print . evalExpr expr :: Memory -&gt; IO ()</code></pre>
+<h3 id="the-binding-operation-sequencing-state-transformations">The binding operation : Sequencing state transformations</h3>
 <p>We tackle <code>Assign</code> next:</p>
 <pre class="haskell"><code>evalStmt (Assign symbol expr) =
     PST (\mem -&gt; let v    = evalExpr expr mem
@@ -158,6 +161,7 @@ fmap f (PST pst) =
 updateMemory f = PST (\mem -&gt; ((), f mem))</code></pre>
 <p>In our case <code>store symbol v :: Memory -&gt; Memory</code> is such a function. Therefore we can consider <code>updateMemory (store symbol v)</code> as a <code>ProgStateT ()</code> value. Our main problem is that we need to compute the <code>v</code>, which depends on the memory as well. So perhaps we should better think of the storing problem as a function:</p>
 <pre class="haskell"><code>store symbol :: Value -&gt; ProgStateT ()</code></pre>
+<p>This requires a slight rewrite of our <code>store</code> function, but not too much.</p>
 <p>We also have a function that produces a value, given a memory, and hence is a memory transformer that produces a value:</p>
 <pre class="haskell"><code>evalExpr expr :: ProgStateT Value</code></pre>
 <p>So our goal is to now combine these two steps:</p>
@@ -165,12 +169,12 @@ updateMemory f = PST (\mem -&gt; ((), f mem))</code></pre>
 store symbol :: Value -&gt; ProgStateT ()</code></pre>
 <p>This is a special case of a more generic problem. A function that combines these two by first performing the <code>evalExpr expr</code>, then performing the <code>store symbol</code> with the resulting value. In general we would like a function as follows:</p>
 <pre class="haskell"><code>(&gt;&gt;=) :: ProgStateT a -&gt; (a -&gt; ProgStateT b) -&gt; ProgStateT b</code></pre>
-<p>We can define this operation as follows:</p>
+<p>This function is also often called <strong>bind</strong>. We can define this operation as follows:</p>
 <pre class="haskell"><code>(&gt;&gt;=) :: ProgStateT a -&gt; (a -&gt; ProgStateT b) -&gt; ProgStateT b
 (PST pst1) &gt;&gt;= f = PST (\mem -&gt; let (v, mem&#39;) = pst1 mem
                                     PST pst2  = f v
                                 in pst2 mem&#39;)</code></pre>
-<p>This looks a bit awkward, but it will look better if we introduce a simply <code>run</code> function:</p>
+<p>This looks a bit awkward, but it will look better if we introduce a simple <code>run</code> function:</p>
 <pre class="haskell"><code>run :: ProgStateT a -&gt; Memory -&gt; (a, Memory)
 run (PST pst) = pst</code></pre>
 <p>Then we can say:</p>
@@ -213,6 +217,7 @@ evalStmt stmt2 :: ProgStateT (IO ())</code></pre>
 
 yield :: a -&gt; ProgStateT a
 yield v = PST (\mem -&gt; (v, mem))</code></pre>
+<p>We will see later an even nicer way to do it, because as we will learn later the bind operation <code>&gt;&gt;=</code> allows us to use a <code>do ...</code> setup, and work with <code>ProgStateT</code>-chaining just like we did with <code>IO</code>-chaining.</p>
 <p>And now, here is our final version for <code>evalStmt</code>:</p>
 <pre class="haskell"><code>evalStmt :: Stmt -&gt; ProgStateT (IO ())
 evalStmt (Assign symbol expr) =
@@ -227,10 +232,15 @@ evalStmt (Print expr) = useMemory (print . evalExpr expr)</code></pre>
 <p>Let’s recap some of the helper functions we used along the way:</p>
 <pre class="haskell"><code>fmap :: (a -&gt; b) -&gt; ProgStateT a -&gt; ProgStateT b
 
-yield :: a -&gt; ProgStateT a
+yield :: a -&gt; ProgStateT a     -- Usually called &#39;return&#39;
 
 (&gt;&gt;=) :: ProgStateT a -&gt; (a -&gt; ProgStateT b) -&gt; ProgStateT b</code></pre>
 <p>In fact these are all common properties of many “container classes”, like <code>[a]</code>, <code>IO a</code>, as well as <code>Maybe a</code>. We will discuss the details more in the next section, before returning to this example.</p>
+<p><strong>Practice</strong>:</p>
+<ol type="1">
+<li>We want to allow for a <code>PrintSymbols</code> statement, which simply prints the symbols in memory (without their values). What changes do we need to make?</li>
+<li>We want to allow for a <code>Delete Symbol</code> statement, which deletes a symbol from memory if it is present. Add a step in the <code>evalStmt</code> method for handling this case (along with a helper method to manage the deletion from the <code>Memory</code> object, to go with our <code>lookup</code> and <code>store</code> methods).</li>
+</ol>
 <script type="text/javascript">
 let els = document.getElementsByTagName("pre");
 for (const el of els) {

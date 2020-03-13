@@ -166,13 +166,17 @@ Now we can say:
 evalStmt PrintMem = fmap printMemory getMemory
 -- was: evalStmt PrintMem = PST (\mem -> (printMemory mem, mem))
 ```
-This is a lot nicer to read once we get used to the pieces that brought it to life.
+This is a lot nicer to read once we get used to the pieces that brought it to life. And so far we have used two important generic functions/values that the `State` monad supports:
+```haskell
+getState :: State s s   -- for us: getMemory :: ProgStateT Memory
+fmap :: (a -> b) -> State s a -> State s b
+```
 
 Now let's consider the `Print` case. It's a bit different, as it uses `evalExpr`:
 ```haskell
 evalStmt (Print expr) =
   PST (\mem -> let v = evalExpr expr mem
-               in (putStrLn $ show v, mem))
+               in (print v, mem))
 ```
 We can still use `fmap` however (the comments explain the types):
 ```haskell
@@ -182,6 +186,8 @@ evalStmt (Print expr) = fmap (print . evalExpr expr) getMemory
   -- print :: Value -> IO ()
   -- print . evalExpr expr :: Memory -> IO ()
 ```
+
+### The binding operation : Sequencing state transformations
 
 We tackle `Assign` next:
 ```haskell
@@ -199,6 +205,8 @@ In our case `store symbol v :: Memory -> Memory` is such a function. Therefore w
 ```haskell
 store symbol :: Value -> ProgStateT ()
 ```
+This requires a slight rewrite of our `store` function, but not too much.
+
 We also have a function that produces a value, given a memory, and hence is a memory transformer that produces a value:
 ```haskell
 evalExpr expr :: ProgStateT Value
@@ -212,14 +220,14 @@ This is a special case of a more generic problem. A function that combines these
 ```haskell
 (>>=) :: ProgStateT a -> (a -> ProgStateT b) -> ProgStateT b
 ```
-We can define this operation as follows:
+This function is also often called **bind**. We can define this operation as follows:
 ```haskell
 (>>=) :: ProgStateT a -> (a -> ProgStateT b) -> ProgStateT b
 (PST pst1) >>= f = PST (\mem -> let (v, mem') = pst1 mem
                                     PST pst2  = f v
                                 in pst2 mem')
 ```
-This looks a bit awkward, but it will look better if we introduce a simply `run` function:
+This looks a bit awkward, but it will look better if we introduce a simple `run` function:
 ```haskell
 run :: ProgStateT a -> Memory -> (a, Memory)
 run (PST pst) = pst
@@ -283,6 +291,7 @@ evalStmt (Seq stmt1 stmt2) =
 yield :: a -> ProgStateT a
 yield v = PST (\mem -> (v, mem))
 ```
+We will see later an even nicer way to do it, because as we will learn later the bind operation `>>=` allows us to use a `do ...` setup, and work with `ProgStateT`-chaining just like we did with `IO`-chaining.
 
 And now, here is our final version for `evalStmt`:
 ```haskell
@@ -302,8 +311,13 @@ Let's recap some of the helper functions we used along the way:
 ```haskell
 fmap :: (a -> b) -> ProgStateT a -> ProgStateT b
 
-yield :: a -> ProgStateT a
+yield :: a -> ProgStateT a     -- Usually called 'return'
 
 (>>=) :: ProgStateT a -> (a -> ProgStateT b) -> ProgStateT b
 ```
 In fact these are all common properties of many "container classes", like `[a]`, `IO a`, as well as `Maybe a`. We will discuss the details more in the next section, before returning to this example.
+
+**Practice**:
+
+1. We want to allow for a `PrintSymbols` statement, which simply prints the symbols in memory (without their values). What changes do we need to make?
+2. We want to allow for a `Delete Symbol` statement, which deletes a symbol from memory if it is present. Add a step in the `evalStmt` method for handling this case (along with a helper method to manage the deletion from the `Memory` object, to go with our `lookup` and `store` methods).
