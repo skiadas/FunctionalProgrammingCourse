@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.css" rel="stylesheet" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>state_monad_revisited</title>
+  <style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="https://skiadas.github.io/css/course.css" type="text/css" />
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<body>
+<h1 id="the-state-monad-revisited">The State monad revisited</h1>
+<p>Now it is time to revisit the state monad, in more generality. Recall the definition (using ST now instead of PST, for the state transformer function). The state monad has two parameters, one for the type of the state we try to maintain, and one for the kind of value being produced/contained:</p>
+<pre class="haskell"><code>data State s a = ST (s -&gt; (a, s))</code></pre>
+<p>What we store is really a “state transformation”: Given a certain current state, a value of type <code>State s a</code> returns a pair of a transformed state and a produced value.</p>
+<p>Here are some common methods for working with <code>State s a</code> values:</p>
+<pre class="haskell"><code>-- Creates state out of function. Just another name for ST
+state :: (s -&gt; (a, s)) -&gt; State s a
+state = ST
+
+-- Runs the transformation on initial state
+runState :: State s a -&gt; s -&gt; (a, s)
+runState (ST f) s = f s
+
+-- Runs the transformation on initial state and only returns value
+evalState :: State s a -&gt; s -&gt; a
+evalState = fst . runState
+
+-- Returns the current state as value
+get :: State s s
+get = state $ \s -&gt; (s, s)
+
+-- Sets the state, ignoring any previous state
+put :: s -&gt; State s ()
+put s = state $ \ _ -&gt; ((), s)
+
+-- Update the state to the result of applying the function
+modify :: (s -&gt; s) -&gt; State s ()
+modify f = state $ \ s -&gt; ((), f s)
+
+-- Gets specific &quot;result&quot; of applying function to state
+gets :: (s -&gt; a) -&gt; State s a
+gets f = state $ \ s -&gt; (f s, s)
+
+-- Note that we can define:  get = gets id
+-- Note that we can define:  put = modify id
+
+instance Functor (State s) where
+    -- fmap :: (a -&gt; b) -&gt; State s a -&gt; State s b
+    fmap f st = state $ \s -&gt;
+        let (x, s&#39;) = runState st s
+        in (f x, s&#39;)
+
+instance Applicative (State s) where
+    -- pure :: a -&gt; State s a
+    pure a = state $ \s -&gt; (a, s)
+
+    -- (&lt;*&gt;) :: State s (a -&gt; b) -&gt; State s a -&gt; State s b
+    stf &lt;*&gt; stx = state $ \s -&gt;
+        let (f, s&#39;)  = runState stf s
+            (x, s&#39;&#39;) = runState stx s&#39;
+        in (f x, s&#39;&#39;)
+
+    -- (*&gt;) :: State s a -&gt; State s b -&gt; State s b
+    stx *&gt; sty = state $ \s -&gt;
+        let (_, s&#39;) = runState stx s
+        in runState sty s&#39;
+
+instance Monad (State s) where
+    -- return :: a -&gt; State s a
+    return = pure
+
+    -- (&gt;&gt;=) :: State s a -&gt; (a -&gt; State s b) -&gt; State s b
+    stx &gt;&gt;= f = state $ \s -&gt;
+        let (x, s&#39;) = runState stx s
+        in runState (f x) s&#39;
+
+    -- (&gt;&gt;) :: State s a -&gt; State s b -&gt; State s b
+    -- (&gt;&gt;) = *&gt;   No need to define explicitly</code></pre>
+<h2 id="example">Example</h2>
+<p>Imagine a simple program that reads the string of an arithmetic expression, and wants to ensure that the expression is valid, so things like: - No multiple operators next to each other, like <code>2 + * 3</code>. - Open/close parentheses and square brackets are properly matching, i.e. nothing like <code>[(2+3] + 1)</code> or <code>(2+1) + 1)</code>. - No operators right after an opening parenthesis or before a closing parnethesis (or square brackets), i.e. no <code>(+ 2)</code> <code>(2*3+)</code>. - No numbers immediately preceding an open parenthesis/bracket or immediately following a closing parenthesis/bracket.</p>
+<p>While there are many ways to solve this, we will solve it by creating a function:</p>
+<pre class="haskell"><code>checkMatching :: [Char] -&gt; State ([Char], Char) Bool</code></pre>
+<p>So this function takes as input the string, and using a state consisting of a list(stack) of characters (to remember which parentheses/braces are currently “open” as well as a <code>Char</code> storing the last character seen. We can then use this on a string by doing:</p>
+<pre class="haskell"><code>runState (checkMatching s) []</code></pre>
+<p>Let’s start by thinking of the big picture:</p>
+<pre class="haskell"><code>checkMatching [] = -- Check stack empty and last char not operator
+checkMatching (x:xs) |
+  opens x      =  -- Check last char not number
+                  -- add x to stack
+                  -- set as last char
+                  -- recurse
+  closes x     =  -- Check last char not operator
+                  -- Pop from stack and compare for matching
+                  -- set as last char
+                  -- recurse
+  isdigit x    =  -- Check last char not closing
+                  -- set as last char
+                  -- recurse
+  isoperator x =  -- Check last char not operator
+                  -- Check last char not open
+                  -- set as last char
+                  -- recurse</code></pre>
+<p>We start with some simple helper functions acting on characters:</p>
+<pre class="haskell"><code>operator :: Char -&gt; Bool
+operator = (`elem` &quot;+-*/&quot;)
+
+digit :: Char -&gt; Bool
+digit = (`elem` &quot;0123456789&quot;)
+
+pairs :: [(Char, Char)]
+pairs = [(&#39;(&#39;, &#39;)&#39;), (&#39;[&#39;, &#39;]&#39;), (&#39;{&#39;, &#39;}&#39;)]
+
+opens :: Char -&gt; Bool
+opens = (`elem` map fst pairs)
+
+closes :: Char -&gt; Bool
+closes = (`elem` map snd pairs)
+
+matches :: Char -&gt; Char -&gt; Bool
+matches c c&#39; = (c, c&#39;) `elem` pairs
+
+validEnd :: Char -&gt; Bool
+validEnd c = digit c || closes c</code></pre>
+<p>One of the things we will need is a way to “check” what the last character was. So for example, we would like to be able to write something like:</p>
+<pre class="haskell"><code>last digit :: State ([Char], Char) Bool</code></pre>
+<p>And this would be true exactly when the last character is a digit. We can use <code>gets</code> here. Remember that <code>gets :: (s -&gt; a) -&gt; State s a</code>, so it takes a function that processes state and gives us back a <code>State s a</code> value that uses the function on the current state (without changing the state). In our case we would need to provide it with the function:</p>
+<pre class="haskell"><code>-- ([Char], Char) -&gt; Bool
+digit . snd      -- Same as `(_, c) -&gt; digit c`</code></pre>
+<p>Therefore the overall definition would become:</p>
+<pre class="haskell"><code>last :: (b -&gt; c) -&gt; State ([a], b) c
+last p = gets (p . snd)   -- More mysteriously:  last = gets . (. snd)</code></pre>
+<p>Next we need something to help us check that the stack is empty. We can again think of that via a function that given a predicate on a stack returns a bool (we write the type more generally, with the return type being <code>c</code> rather than <code>Bool</code>:</p>
+<pre class="haskell"><code>stack :: ([a] -&gt; c) -&gt; State ([a], b) c
+stack p = gets (p . fst)</code></pre>
+<p>Then we can write for example, <code>stack null</code> to check if the stack is empty.</p>
+<p>So now we are almost ready to do the first part, dealing with the empty list (end of input). Conceptually what we want to do is this:</p>
+<pre class="haskell"><code>checkMatching [] = last validEnd &amp;&amp; stack null  -- Not valid code!</code></pre>
+<p>The problem is the <code>&amp;&amp;</code> here: It is supposed to act on <code>Bool</code>s. But what we have instead are <code>State ([Char], Char) Bool</code>s. The solution is exactly what <code>Applicative</code> was designed for, and the answer in our context is typically expressed in terms of the <code>liftA2</code> function:</p>
+<pre class="haskell"><code>import Control.Applicative (liftA2)
+-- liftA2 :: Applicative f =&gt; (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+-- In our case:
+liftA2 :: (Bool -&gt; Bool -&gt; Bool) -&gt; State s Bool -&gt;
+                                    State s Bool -&gt; State s Bool</code></pre>
+<p>So <code>liftA2</code> will take the function to apply, in our case <code>(&amp;&amp;)</code>, and the two <code>State ...</code> values to apply it to, and return the combination:</p>
+<pre class="haskell"><code>(&lt;&amp;&amp;&gt;) :: State s Bool -&gt; State s Bool -&gt; State s Bool
+(&lt;&amp;&amp;&gt;) = liftA2 (&amp;&amp;)</code></pre>
+<p>Now we can write:</p>
+<pre class="haskell"><code>checkMatching [] = last validEnd &lt;&amp;&amp;&gt; stack null</code></pre>
+<p>For all the other cases, we need to create some more tools. For example, we need methods <code>push</code>, <code>pop</code> and <code>setLast</code>, which manipulate the state. Here are some possible definitions, with some helper methods there:</p>
+<pre class="haskell"><code>mapFst :: (a -&gt; b) -&gt; (a, c) -&gt; (b, c)
+mapFst f (x, y) = (f x, y)
+
+mapSnd :: (a -&gt; b) -&gt; (c, a) -&gt; (c, b)
+mapSnd f (x, y) = (x, f y)
+
+onStack :: (a -&gt; a) -&gt; State (a, b) ()
+onStack f = modify $ mapFst f
+
+push :: a -&gt; State ([a], b) ()
+push c = onStack (c :)
+
+pop :: State ([a], b) a
+pop = stack head &lt;* onStack tail
+
+setLast :: b -&gt; State (a, b) ()
+setLast c = modify $ mapSnd (\_ -&gt; c)</code></pre>
+<p>Here we used the <code>Applicative</code> operator <code>(&lt;*)</code> which said: Perform the two steps in sequence but then return the value of the first one. That’s because we want to return the top element, which we saw via <code>stack head</code>, but then also remove it, which we did with <code>onStack tail</code>. And we cannot do those two things in opposite order, or we’ll be looking at the wrong element.</p>
+<p>Now we are ready to start thinking about our main cases. Recall the plan:</p>
+<pre class="haskell"><code>checkMatching (x:xs) |
+  opens x      =  -- Check last char not number
+                  -- add x to stack
+                  -- set as last char
+                  -- recurse</code></pre>
+<p>So if we encounter an opening mark, the main idea is to add it. But only if the last character was not a number. If it is a number then we have found an error, and can return <code>False</code> early. Note however that this “early False” behavior is not what is supported by the function <code>&lt;&amp;&amp;&gt;</code> we wrote earlier: In that case, both <em>effects</em> are applied, regardless of whether the final answer can be determined by the first effect. We need something that behaves more like the <code>&amp;&amp;</code> operator in other languages: Only the first part will happen, if the second part is not needed.</p>
+<p>We can accomplish this by using the monad aspect of <code>State s a</code>:</p>
+<pre class="haskell"><code>ifM :: State s Bool -&gt; State s a -&gt; State s a -&gt; State s a
+ifM stest strue sfalse = do
+  b &lt;- stest
+  if b then strue else sfalse
+-- Without do: ifM sb st sf = sb &gt;&gt;= (\b -&gt; if b then st else sf)
+
+(&lt;&amp;&amp;^&gt;) :: State s Bool -&gt; State s Bool -&gt; State s Bool
+sb1 &lt;&amp;&amp;^&gt; sb2 = ifM sb1 (return False) sb2</code></pre>
+<p>With that in mind, we can now approach our first item:</p>
+<pre class="haskell"><code>checkMatching (x:xs)
+  | opens x    = last (not . digit) &lt;&amp;&amp;^&gt; -- Check last char not number
+                 (push x &gt;&gt; goOn)         -- add x to stack
+      where goOn = setLast x &gt;&gt; checkMatching xs</code></pre>
+<p>So if the next thing on the list is an opening mark, then we check that the last character is not a digit, and if that succeeds then we proceed to push <code>x</code> to the stack before continuing with <code>goOn</code>, which is a shortcut for “set the last char to x and recursively continue”.</p>
+<p>Next we have the closing mark case:</p>
+<pre class="haskell"><code>  | closes x   = last (not . operator) &lt;&amp;&amp;^&gt; -- Check last char not operator
+                 stack (not . null) &lt;&amp;&amp;^&gt;    -- Check stack nonempty
+                 stack ((`matches` x) . head) &lt;&amp;&amp;^&gt;  -- Compare top of stack
+                 (pop &gt;&gt; goOn)               -- Pop from stack
+--  the where goOn goes here ...</code></pre>
+<p>The last two cases don’t really require much explanation:</p>
+<pre class="haskell"><code>  | digit x    = last (not . closes) &lt;&amp;&amp;^&gt; goOn -- Check last char not closing
+  | operator x = last (not . operator) &lt;&amp;&amp;^&gt; -- Check last char not operator
+                 last (not . opens) &lt;&amp;&amp;^&gt;    -- Check last char not open
+                 goOn
+--  the where goOn goes here ...</code></pre>
+<p>So some of the key takeaways from that should be:</p>
+<ul>
+<li>Using <code>Applicative</code> and <code>Monad</code> operations we can express succinctly some pretty complex ideas.</li>
+<li>In order to work effectively with the <code>State</code> monad, we created helper functions of our own which operated with our specific state in ways that made sense for our use-case.</li>
+</ul>
+<p>One thing remains: We need to initialize our state: What is the “last element” when we start the list? The state monad above is good at expressing the main loop through the list, but it is not enough to get us started. For that we will need another function, <code>check</code>:</p>
+<pre class="haskell"><code>check :: String -&gt; Bool
+check [] = False     -- The empty string is NOT a valid expression
+check (x:xs)
+  | operator x    = False   -- Cannot start with an operator
+  | closes x      = False   -- Cannot start with a closing mark
+  | otherwise     = evalState (checkMatching xs) (stack, x)
+        where stack = if opens x then [x] else []</code></pre>
+<h2 id="the-interpreter-using-this-fuller-version-of-the-state-monad">The interpreter using this fuller version of the state monad</h2>
+<p>We will now use the state monad more extensively in our simple language interpreter. We will make some minor changes however:</p>
+<pre class="haskell"><code>type Symbol = String  -- alias for strings when used as language symbols/variables.
+data Expr = Numb Double     -- number literal
+          | Var Symbol      -- variable lookup
+          | Add Expr Expr   -- expression for addition
+          | Prod Expr Expr  -- expression for multiplication
+          | Seq Stmt Expr   -- first compute stmt, then expr
+          deriving (Eq, Show)
+data Stmt = Assign Symbol Expr  -- variable assignment
+          | Print Expr          -- print the result of an expression evaluation
+          | PrintMem            -- print all stored values
+          deriving (Eq, Show)
+
+type Value = Double     -- Doubles are the only possible values in this language
+type Memory = [(Symbol, Value)]</code></pre>
+<p>The main difference is that we moved the sequencing operator to expressions. We can now have an expression that consists of a statement followed by an expression. So this would allow something like <code>(x := 3; (y := 2; x + y))</code>, via:</p>
+<pre class="haskell"><code>(Seq (Assign &quot;x&quot; (Numb 3))
+     (Seq (Assign &quot;y&quot; (Numb 2))
+          (Add (Var &quot;x&quot;) (Var &quot;y&quot;))))</code></pre>
+<p>The key difference this makes is this: We must allow the possibility that when we evaluate an expression it may actually change the state. So our expressions will now also need to interact with the memory state. So the types of our two main evaluation functions would be:</p>
+<pre class="haskell"><code>evalExpr :: Expr -&gt; State Memory Value
+evalStmt :: Stmt -&gt; State Memory (IO ())</code></pre>
+<p>Let’s take a look at the code, there’s lots to talk about. We start with an easy case:</p>
+<pre class="haskell"><code>evalStmt PrintMem = printMemory &lt;$&gt; get</code></pre>
+<p>Recall that <code>&lt;$&gt;</code> is the <code>fmap</code>. It takes the function <code>printMemory :: Memory -&gt; IO ()</code> and elevates it to act as <code>State Memory Memory -&gt; State Memory (IO ())</code>. It is then applied to the value <code>get :: State Memory Memory</code>.</p>
+<p>It’s worth taking a look at the new version of <code>printMemory</code> which uses the IO Monad functions:</p>
+<pre class="haskell"><code>-- Using sequence_ :: [IO ()] -&gt; IO ()
+printMemory :: Memory -&gt; IO ()
+printMemory = sequence_ . map printPair
+
+printPair :: (Symbol, Value) -&gt; IO ()
+printPair (s, v) = putStrLn $ s ++ &quot; = &quot; ++ show v</code></pre>
+<p>Next, we take a look at printing the result of an expression:</p>
+<pre class="haskell"><code>  -- print :: Value -&gt; IO ()
+evalStmt (Print expr) = print &lt;$&gt; evalExpr expr</code></pre>
+<p>This once again uses <code>&lt;$&gt;</code> to allow <code>print :: Value -&gt; IO ()</code> to turn <code>evalExpr expr :: State Memory Value</code> into <code>State Memory (IO ())</code>.</p>
+<p>Finally, assignment.</p>
+<pre class="haskell"><code>evalStmt (Assign symbol expr) = do
+  v &lt;- evalExpr expr
+  return &lt;$&gt; modify (store symbol v) -- return :: a -&gt; IO a
+  -- alternative:
+  -- evalExpr expr &gt;&gt;= \v -&gt; return &lt;$&gt; modify (store symbol v)</code></pre>
+<p>Assigning is done as follows:</p>
+<ul>
+<li>Evaluate the expression, to get a value <code>v</code>. This may also change the memory.</li>
+<li>We modify the memory using the <code>store</code> function. Then <code>return &lt;$&gt; ...</code> makes sure that we end in a <code>IO ()</code> rather than a <code>()</code>. Recall that <code>&lt;$&gt;</code> is the <code>fmap</code>, so it takes the function <code>return :: () -&gt; IO ()</code> and “upgrades” it to a function <code>State Memory () -&gt; State Memory (IO ())</code>.</li>
+</ul>
+<p>The <code>do</code> notation makes sure that the memory gets updated through each step along the way, as needed.</p>
+<p>Now we look at <code>evalExpr</code>. Some parts are easy:</p>
+<pre class="haskell"><code>-- return :: a -&gt; State Memory a
+evalExpr (Numb d) = return d</code></pre>
+<p>Here <code>return</code> is the function that turns a value into a state transformation that doesn’t actually transform anything and simply returns the value.</p>
+<p>The case of variable lookup is in reality simply, but complicated by the fact that we need to handle errors in lookup.</p>
+<pre class="haskell"><code>-- gets :: (Memory -&gt; Maybe Value) -&gt; State Memory (Maybe Value)
+-- lookup :: Symbol -&gt; Memory -&gt; Maybe Value
+-- gets (lookup s) :: State Memory (Maybe Value)
+evalExpr (Var s) = valueOrError &lt;$&gt; gets (lookup s)
+    -- valueOrError :: Maybe Value -&gt; Value
+    where valueOrError (Just v) = v
+          valueOrError Nothing  = error (&quot;Cannot find symbol: &quot; ++ s)</code></pre>
+<p>Next, we have the two operations for adding and multiplying expressions. We use the <code>do</code> notation of the <code>State Memory</code> monad to chain the memory updates through each step: The expression <code>e2</code> is evaluated in the memory resulting after expression <code>e1</code> is evaluated.</p>
+<pre class="haskell"><code>evalExpr (Add e1 e2) = do
+    v1 &lt;- evalExpr e1
+    v2 &lt;- evalExpr e2
+    return $ v1 + v2
+evalExpr (Prod e1 e2) = do
+    v1 &lt;- evalExpr e1
+    v2 &lt;- evalExpr e2
+    return $ v1 * v2</code></pre>
+<p>We can actually do those easier, using <code>liftM2</code>:</p>
+<pre class="haskell"><code>evalExpr (Add e1 e2) = liftM2 (+) (evalExpr e1) (evalExpr e2)
+evalExpr (Prod e1 e2) = liftM2 (*) (evalExpr e1) (evalExpr e2)</code></pre>
+<p>Lastly, we need to handle the sequencing of a statement and an expression:</p>
+<pre class="haskell"><code>evalExpr (Seq st expr) = evalStmt st &gt;&gt; evalExpr expr</code></pre>
+<p>This evaluates the statement, then ignores its result and evaluates the expression in the updated memory state.</p>
+<p>Notice that part: “<em>ignores its result</em>”. In other languages that’s not a big deal: The point of the statement was to change the state, and it did so. BUT in Haskell there is a huge difference: This result is the <code>IO ()</code> action which does whatever printing we want from the program. And that printing will no longer happen: Only the effects of the assignments will do anything (and the prints will only matter at the “top-level” statement.</p>
+<p>We will need to address this, and we will do so in the next segment. There are three possible “fixes”:</p>
+<ol start="0" type="1">
+<li>Make <code>evalExpr</code> return an <code>IO Value</code> instead of a <code>Value</code>, for an overall type of <code>State Memory (IO Value)</code>. This will change our code in many places, as we are effectively dealing with <em>two monads</em>.</li>
+<li>This extends the previous, by using a new type for <code>State</code> which involves effectively three arguments, one of which is a monad (<code>IO</code> in our example). In brief, a <code>State s m a</code> will be a function that takes a state <code>s</code> and returns an <code>m (a, s)</code>. Remember here that <code>m</code> is a monad, for example <code>IO</code>, so we are returning <code>IO (a, s)</code> instead of the <code>(IO a, s)</code> of the previous part. This is a fairly advanced approach, but it is the one taken by the built-in <code>State</code> class.</li>
+<li>Add the <code>IO</code> actions produced as a part of the maintained <code>State</code>. So now our <code>state</code> will consist of both <code>Memory</code> and <code>Output</code> where <code>Output</code> is a list of <code>IO ()</code> actions accumulated during the evaluation process.</li>
+</ol>
+<script type="text/javascript">
+let els = document.getElementsByTagName("pre");
+for (const el of els) {
+  const lang = el.getAttribute("class");
+  if (lang != "") {
+      el.children[0].setAttribute("class", "language-"+lang);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-haskell.js"></script>
+</body>
+</html>

@@ -21,7 +21,7 @@ Before we start exploring functors, let us consider three important container ty
   ~ The `IO` type expresses the idea that our operation interacts with the world in some way, and produces a value of type `a`.
 
 `ST s a`
-  ~ The State "monad" (we will discuss what that means later) is another example. It is meant to somehow maintain and update some "state" `s`, and also return a value of type `a`. We will discuss this type now in some more detail.
+  ~ The State "monad" is another example. It is meant to somehow maintain and update some "state" `s`, and also return a value of type `a`. We already saw this as the `ProgStateT a` type, which is basically `ST s a` with `s` being `Memory`. We will come back to it in the next lecture.
 
 ## Functors
 
@@ -32,14 +32,14 @@ The container/polymorphic type `f a` is a **functor** if it comes equipped with 
 fmap :: (a -> b) -> f a -> f b
 ```
 
-In other words, functors come equipped with a natural way to transform the contained values, is provided with an appropriate function. There are certain "naturality" conditions that such a function must obey, often described via a set of "properties":
+In other words, functors come equipped with a natural way to transform the contained values, if provided with an appropriate function. There are certain "naturality" conditions that such a function must obey, often described via a set of "properties":
 ```haskell
 fmap id      = id
 fmap (g . h) = fmap g . fmap h
 ```
 These look complicated, but basically they say that functors behave in a reasonable way:
 
-- If the function we use on the functor is the identity function `id :: a -> a` (defined by `id a = a`, then the resulting transformation `fmap id :: f a -> f a` is just the identity function  `id :: f a -> f a`.
+- If the function we use on the functor is the identity function `id :: a -> a` (defined by `id a = a`, then the resulting transformation `fmap id :: f a -> f a` is just the identity function  `id :: f a -> f a`, in other words mapping over the identy function does not change anything.
 - If we have functions `h :: a -> b` and `g :: b -> c`, then we have two different ways to produce a function `f a -> f c`:
     - The first is to first compute the composition `g . h :: a -> c` and feed that into `fmap`.
     - The other is to compute `fmap h :: f a -> f b` and `fmap g :: f b -> f c`, then to compose them.
@@ -56,21 +56,25 @@ class Functor f where
 We can now see how each of the types we have defined earlier become instances of `Functor`, by transforming their contained value:
 ```haskell
 instance Functor [] where
+    -- fmap :: (a -> b) -> [a] -> [b]
     fmap f xs = [f x | x <- xs]   -- could also have written fmap = map
 
 instance Functor Maybe where
+    -- fmap :: (a -> b) -> Maybe a -> Maybe b
     fmap _ Nothing  = Nothing
     fmap f (Just x) = Just (f x)
 
 instance Functor IO where
+    -- fmap :: (a -> b) -> IO a -> IO b
     fmap f action = do
         x <- action
         return $ f x
 
-instance Functor (ST s) where
-    fmap f (S trans) = S trans'
-        where trans' st = let (x, st') = trans st
-                          in (f x, st')
+instance Functor ProgStateT where
+    -- fmap :: (a -> b) -> ProgStateT a -> ProgStateT b
+    fmap f pst =
+      PST (\mem -> let (x, mem') = run pst mem
+                   in (f x, mem'))
 ```
 
 The `Functor` provides us for free with a [number of standard functions](http://hackage.haskell.org/package/base-4.10.0.0/docs/Data-Functor.html#t:Functor):
@@ -84,6 +88,13 @@ The last function is simply a synomym for `fmap`. Note that it is very similar t
 ```haskell
 (+ 2) <$> Just 3     -- Results in Just 5
 (+ 1) <$> [2, 3, 4]  -- Results in Just [3, 4, 5]
+```
+The middle two functions effectively preserve the "container form", but using the provided value instead of the values in the container. Some examples:
+```haskell
+"hi" <$ Just 3     -- Results in Just "hi"
+"hi" <$ Nothing    -- Results in Nothing
+4 <$ [1,3,4]       -- Results in [4, 4, 4]
+5 <$ putStrLn "hi" -- A IO Integer action which prints "hi" and returns 5
 ```
 
 ## Applicatives
@@ -178,36 +189,51 @@ class Applicative m => Monad m where
 
     return = pure  -- default implementation via Applicative
 ```
+We've already seen the `(>>=)` operator in a few places.
 
-The most common way to use monads is via the "do" notation. For example, when we wrote earlier something like
+The most common way to use monads is via the "do" notation. For example, when we write something like:
 ```haskell
-evalStmt PrintMem = do
-    mem <- getState
-    return $ printMemory mem
+echo = do
+  c <- getChar
+  putChar c
 ```
-Haskell would convert that program code into:
+What we are really doing is:
 ```haskell
-evalStmt PrintMem = getState >>= (\mem -> return $ printMemory mem)
+echo = getChar >>= putChar
+-- getChar :: IO Char
+-- putChar :: Char -> IO ()
+-- (>>=) :: IO a -> (a -> IO ()) -> IO ()
 ```
-In other words, each subsequent statement in a "do" block is behind the scenes a function of the variables stored during previous statements. You will agree surely that the "do" notation simplifies things quite a lot.
+
+In other words, each subsequent statement in a "do" block is behind the scenes a function of the variables stored during previous statements, chained via `>>=`. You will agree surely that the "do" notation simplifies things quite a lot. We will rewrite our expression-evaluating program using this notation in the next set of notes. For now, here's another example of this, using the fact that lists are a Monad:
+```haskell
+addAll lst = do
+    x <- lst
+    y <- lst
+    return $ x + y
+
+-- Equivalent to: [x + y | x <- lst, y <- lst]
+
+addAll [1,2,3]   --   Produces [2,3,4,3,4,5,4,5,6]
+```
 
 Let us see how the various classes we have seen earlier can be thought of as instances of `Monad`:
 ```haskell
 instance Monad Maybe where
     return x = Just x
     Nothing >>= f = Nothing
-    Just x >>= f  = f x
+    Just x  >>= f = f x
 
 instance Monad [] where
     return x = [x]
+    -- Here f :: a -> [b]
     xs >= f  = [y | x <- xs, y <- f x]
 
-instance Monad ST where
-    return x = S (\st -> (x, st))
-    act1 >>= f = S trans
-    where trans st = let (x, st') = runState act1 st
-                         act2     = f x
-                     in runState act2 st'
+instance Monad ProgStateT where
+    return x = PST (\mem -> (x, mem))  -- Called yield before
+    -- (>>=) :: ProgStateT a -> (a -> ProgStateT b) -> ProgStateT b
+    pst1 >>= f = PST (\mem -> let (v, mem') = run pst1 mem
+                              in run (f v) mem')
 ```
 The definition for lists is particularly interesting: If we have a list of elements, and for each element we can produce a list of result elements via the function `f`, we can then iterate over each resulting list and concatenate all the results together. This is close to what list comprehensions are doing.
 

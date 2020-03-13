@@ -159,7 +159,7 @@ Mon
   ~ - [Type classes over parametrized types: Foldables, Functors, Applicatives, Monads](notes/functors_monads.md)
 
 Wed
-  ~ TBD
+  ~ [State Monad Revisited](notes/state_monad_revisited.md)
 
 Fri
   ~ TBD

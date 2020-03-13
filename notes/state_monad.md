@@ -195,161 +195,115 @@ Let's think of the pieces of this function. The first is computing the value, th
 updateMemory :: (Memory -> Memory) -> ProgStateT ()
 updateMemory f = PST (\mem -> ((), f mem))
 ```
-In our case `store symbol v :: Memory -> Memory` is such a function. Therefore we can consider `updateMemory (store symbol v)` as a `ProgStateT ()` value. Our main problem is that we need to compute the `v`, which depends on the memory as well.
-
-
-
--- let e = Seq (Assign "x" (Add (Numb 2) (Numb 4))) $ Seq (Print $ Var "x") $ PrintMem
-
-
-
-
-With that in mind, our `evalStmt` function will gain the signature:
+In our case `store symbol v :: Memory -> Memory` is such a function. Therefore we can consider `updateMemory (store symbol v)` as a `ProgStateT ()` value. Our main problem is that we need to compute the `v`, which depends on the memory as well. So perhaps we should better think of the storing problem as a function:
 ```haskell
-evalStmt :: Stmt -> State Memory (IO ())
+store symbol :: Value -> ProgStateT ()
 ```
-We will look at the details in a moment. But first, our `evaluate` becomes:
+We also have a function that produces a value, given a memory, and hence is a memory transformer that produces a value:
 ```haskell
-evaluate :: Stmt -> IO ()
-evaluate stmt = evalState (evalStmt stmt) []
--- Before: evaluate stmt = io where (io, _) = evalStmt stmt []
+evalExpr expr :: ProgStateT Value
 ```
-
-Now let's consider the details of `evalStmt`. One of the cases we considered was:
+So our goal is to now combine these two steps:
 ```haskell
-evalStmt PrintMem mem = (printMemory mem, mem)
+evalExpr expr :: ProgStateT Value
+store symbol :: Value -> ProgStateT ()
 ```
-This would now become:
+This is a special case of a more generic problem. A function that combines these two by first performing the `evalExpr expr`, then performing the `store symbol` with the resulting value. In general we would like a function as follows:
 ```haskell
-evalStmt PrintMem = ST (\mem -> (printMemory mem, mem))
+(>>=) :: ProgStateT a -> (a -> ProgStateT b) -> ProgStateT b
 ```
-This weird-looking case is one important example of state-handling. In this case we do not need to *change* the state, only to *use* it. We could think of the above as a helper function:
+We can define this operation as follows:
 ```haskell
-gets :: (s -> a) -> ST s a
-gets f = ST (\mem -> (f mem, mem))
+(>>=) :: ProgStateT a -> (a -> ProgStateT b) -> ProgStateT b
+(PST pst1) >>= f = PST (\mem -> let (v, mem') = pst1 mem
+                                    PST pst2  = f v
+                                in pst2 mem')
 ```
-Then we can rewrite that part of `evalStmt` very simply as:
+This looks a bit awkward, but it will look better if we introduce a simply `run` function:
 ```haskell
-evalStmt PrintMem = gets printMemory
+run :: ProgStateT a -> Memory -> (a, Memory)
+run (PST pst) = pst
 ```
-
-
-
-
-
-
-
-TODO: Rest needs rewrite!
-We can then model the program state via the `ST` type, using the `Memory` type as the state:
+Then we can say:
 ```haskell
-type ProgState a = ST Memory a
+(>>=) :: ProgStateT a -> (a -> ProgStateT b) -> ProgStateT b
+pst1 >>= f = PST (\mem -> let (v, mem') = run pst1 mem
+                          in run (f v) mem')
 ```
-We can now write functions that turn expressions and statements into `ProgState` values: They all will carry the `Memory` with them and update as needed, while the type `a` will differ: statements will contain `IO ()` to indicate that they interact with the user (printing values when asked). Expressions will need to contain a `Value` type.
+In other words, we run the first action `pst1`, on the provided memory, then run the second action, `f v` on the updated memory, `mem'`.
 
-The advantage we get from this approach is that the task of updating and maintaining the state through every step is more or less hidden from our code, implemented in a single place in the `(>>=)` function.
+Using this, function, we can write our `Assign` part thus:
 ```haskell
-evalStmt :: Stmt  -> ProgState (IO ())
-evalStmt (Assign symbol expr) = do
-    v <- evalExpr expr   -- Evaluate expr, possibly state update
-    modify (store symbol v)
-    return $ return ()   -- Second return is the IO
-evalStmt (Seq stmt1 stmt2) = do
-    io1 <- evalStmt stmt1
-    io2 <- evalStmt stmt2
-    return $ io1 >> io2
-evalStmt (Print expr) = do
-    v <- evalExpr expr
-    return $ putStrLn $ show v
-evalStmt PrintMem = do
-    mem <- getState
-    return $ printMemory mem
-
-printMemory :: Memory -> IO ()
-printMemory []            = return ()
-printMemory ((s, v):rest) = do
-    puStrLn $ s ++ " = " ++ show v
-    printMemory rest
-
-evaluate :: Stmt -> IO ()
-evaluate stmt = io
-    where emptyMem = []
-          program = evalStmt stmt
-          (io, _) = runState program emptyMem
+evalStmt (Assign symbol expr) = fmap return (eval' >>= store')
+    where eval'  = fmap (evalExpr expr) getMemory
+          store' = \v -> updateMemory (store symbol v)
 ```
+We had to add an extra `fmap return` step, which uses `return :: () -> IO ()` to take us from a `ProgStateT ()` value to a `ProgStateT (IO ())` value, because that's the return value expected of `evalStmt`.
 
-## The State Monad
-The idea of the State type is similar to our view of `IO` as a function that changed the "world" in some way and also produced a value of type `a`. The State type makes that more precise. It can work with very generic "states", represented here with the type `s`. We can then make the following definition:
+We will do one final optimization: It seems we have often had a need for the following function, so let's give it a name:
 ```haskell
-newtype ST s a = S (s -> (a, s))
+useMemory :: (Memory -> a) -> ProgStateT a
+useMemory f = fmap f getMemory
 ```
-
-So a value of type `ST s a` is a *transition* function that takes the current state, and produces a value of type `a` along with a new (updated) state. For technical reasons we place that function inside an `S` tag. We can easily write a function that removes the tag:
+Then we can write the `eval'` part a bit easier:
 ```haskell
-runState :: ST s a -> s -> (a, s)
-runState (S trans) x = trans x
--- Could also have done: runState (S trans) = trans
+evalStmt (Assign symbol expr) = fmap return (eval' >>= store')
+    where eval'  = useMemory (evalExpr expr)
+          store' = \v -> updateMemory (store symbol v)
+```
+This is perhaps still hard to read, but an important aspect is that the specific memory weaving is all tucked away in the behavior of the `(>>=)` operator.
+
+Lastly, let's look at the `Sequence` step:
+```haskell
+evalStmt (Seq stmt1 stmt2) =
+  PST (\mem -> let PST pst1      = evalStmt stmt1
+                   PST pst2      = evalStmt stmt2
+                   (io', mem')   = pst1 mem
+                   (io'', mem'') = pst2 mem'
+               in (io' >> io'', mem''))
+```
+Boy, what a mess! using our `run` function, we can improve on it a bit:
+```haskell
+evalStmt (Seq stmt1 stmt2) =
+  PST (\mem -> let (io', mem')   = run (evalStmt stmt1) mem
+                   (io'', mem'') = run (evalStmt stmt2) mem'
+               in (io' >> io'', mem''))
+```
+This is certainly easier to read! But it still has the weaving of memory a bit too detailed. The main building blocks are the two pieces:
+```haskell
+evalStmt stmt1 :: ProgStateT (IO ())
+evalStmt stmt2 :: ProgStateT (IO ())
+```
+Let's see if we can use our `(>>=)` operator, as *it* should effectively do the `run` bits:
+```haskell
+evalStmt (Seq stmt1 stmt2) =
+    evalStmt stmt1 >>= \io1 -> (evalStmt stmt2
+                   >>= \io2 -> yield (io1 >> io2))
+
+yield :: a -> ProgStateT a
+yield v = PST (\mem -> (v, mem))
 ```
 
-We can also write a function that evaluates a given stateful computation for a state, discards the resulting state and simply returns the final value:
+And now, here is our final version for `evalStmt`:
 ```haskell
-evalState :: ST s a -> s -> a
-evalState (S trans) st = x'
-    where (x', _) = runState (S trans) st
--- Alternative definition: evalState state = fst . runState state
+evalStmt :: Stmt -> ProgStateT (IO ())
+evalStmt (Assign symbol expr) =
+    fmap return (eval' >>= store')
+    where eval'  = useMemory $ evalExpr expr
+          store' = \v -> updateMemory (store symbol v)
+evalStmt (Seq stmt1 stmt2) =
+    evalStmt stmt1 >>= \io1 -> (evalStmt stmt2
+                   >>= \io2 -> yield (io1 >> io2))
+evalStmt PrintMem = useMemory printMemory
+evalStmt (Print expr) = useMemory (print . evalExpr expr)
 ```
 
-In order to meaningfully work with this new state structure though, we will need a couple of things:
-
-- A way to set the state to a new value. This is akin to `putStr` printing something to the screen and hence changing the state of IO.
-- A way to read the state, while going through a stateful computation.
-- A way to turn a normal value into a stateful computation. We did this for `IO` with a function called `return`, and we will do the same here.
-- A way to apply a normal function to the value in the computation, while keeping the state the same.
-- A way to chain two computations together, so that the state transfers from the first to the second. In Haskell that operation has a name, `(>>=)`, typically called a "bind" operation.
-
-Let us take a look at each of these. Getting and setting the state is easy:
+Let's recap some of the helper functions we used along the way:
 ```haskell
-getState :: ST s s
-getState = S (\st -> (st, st))
+fmap :: (a -> b) -> ProgStateT a -> ProgStateT b
 
-putState :: s -> ST s ()
-putState st = S (\_ -> ((), st))
+yield :: a -> ProgStateT a
+
+(>>=) :: ProgStateT a -> (a -> ProgStateT b) -> ProgStateT b
 ```
-
-Now we need functions for returning a normal value as the result of a stateful computation that does not change the state, and also mapping the result values through a normal function:
-```haskell
-return :: a -> ST s a
-return x = S (\st -> (x, st))
-
-fmap :: (a -> b) -> ST s a -> ST s b
-fmap f (S trans) = S trans'
-    where trans' st = (f x, st')
-                      where (x, st') = trans st
-```
-
-Now comes the tricky bit: We want to combine two stateful computations into a new stateful computation. Actually what we will do is slightly different: We will combine one stateful computation with a function that takes as input a result of the first computation, and uses it to produce a second stateful computation that is then carried out. It is probably the hardest part of the whole story:
-```haskell
-(>>=) :: ST s a -> (a -> ST s b) -> ST s b
-act1 >>= f = S trans
-    where trans st = let (x, st') = runState act1 st
-                         act2     = f x
-                     in runState act2 st'
-```
-This all looks a bit messy, but we only had to do it and understand it once! Now we can use this chaining instead of having to effectively manually do it every time. The even cooler thing is that this effectively allows us to use the IO-type notation with `do`, and Haskell will unravel that for us. For example, we can build a function that modifies the current state, as follows:
-```haskell
-modify :: (s -> s) -> ST s ()
-modify f = do
-    st <- getState
-    putState (f st)
-```
-And Haskell turns that into:
-```haskell
-modify f = getState >>= (\st -> putState (f st))
--- Can also write as:   getState >>= (putState . f)
-```
-which is perhaps elegant but somewhat harder to read, especially if it involved more steps. In order for Haskell to be able to carry this out, it must know that our `ST` structure is a "monad". We will discuss what that means later in the chapter, but effectively it just means having the "bind" operation we just defined.
-
-**Practice**:
-
-1. Using "do" notation, write a function `incr :: ST Int ()` that increments the integer state by 1. Also do it by instead using `modify`.
-2. Using "do" notation, write a function `account :: a -> ST Int a` which "accounts" for the computation that produces a value of type `a`, by incrementing the integer state. Your function should simply increment the state and return the provided value.
-
+In fact these are all common properties of many "container classes", like `[a]`, `IO a`, as well as `Maybe a`. We will discuss the details more in the next section, before returning to this example.
