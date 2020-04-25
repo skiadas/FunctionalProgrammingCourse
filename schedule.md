@@ -156,13 +156,14 @@ Fri
 ## Week 10
 
 Mon
-  ~ - [Type classes over parametrized types: Foldables, Functors, Applicatives, Monads](notes/functors_monads.md)
+  ~ - [Expressing State in Haskell (cont)](notes/state_monad.md)
 
 Wed
-  ~ [State Monad Revisited](notes/state_monad_revisited.md)
+  ~ - [Type classes over parametrized types: Foldables, Functors, Applicatives, Monads](notes/functors_monads.md)
 
 Fri
-  ~ TBD
+  ~ - [State Monad Revisited](notes/state_monad_revisited.md)
+
 
 ## Week 11
 
@@ -195,7 +196,7 @@ Wed
   ~ TBD
 
 Fri
-  ~ TBD
+  ~ [Final study guide](notes/midterm2_study_guide.md)
 
 
 - [Folding trees](notes/foldingTrees.md)

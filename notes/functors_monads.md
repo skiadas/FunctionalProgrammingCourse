@@ -31,8 +31,16 @@ The container/polymorphic type `f a` is a **functor** if it comes equipped with 
 ```haskell
 fmap :: (a -> b) -> f a -> f b
 ```
+In other words, functors come equipped with a natural way to transform the contained values, if provided with an appropriate function.
 
-In other words, functors come equipped with a natural way to transform the contained values, if provided with an appropriate function. There are certain "naturality" conditions that such a function must obey, often described via a set of "properties":
+**Practice**: Without looking at the remaining notes, implement `fmap` for `Maybe`, `IO` and `State`:
+```haskell
+fmap :: (a -> b) -> Maybe a -> Maybe b
+fmap :: (a -> b) -> IO a -> IO b
+fmap :: (a -> b) -> State s a -> State s b
+```
+
+There are certain "naturality" conditions that such a function must obey, often described via a set of "properties":
 ```haskell
 fmap id      = id
 fmap (g . h) = fmap g . fmap h
@@ -46,7 +54,7 @@ These look complicated, but basically they say that functors behave in a reasona
 
     And the result is the same whichever way we do it. It does not matter if you compose first, or if you apply `fmap` first.
 
-These two properties allow Haskell to simplify some functor operations. But we will not concern ourselves with them very much right now.
+These two properties allow Haskell to simplify some functor operations. But we will not concern ourselves very much with this aspect right now.
 
 The key insight is that very many container types are naturally functor types. This is captured via the `Functor` class:
 ```haskell
@@ -97,6 +105,8 @@ The middle two functions effectively preserve the "container form", but using th
 5 <$ putStrLn "hi" -- A IO Integer action which prints "hi" and returns 5
 ```
 
+**Practice**: Implement `(<$)` and `void` using `fmap`.
+
 ## Applicatives
 
 The `Applicative` class is an extension of the `Functor` class. It essentially allows us to map functions as `Functor` does, but works with functions of possibly more than one parameter. We can think of it as providing for us a "tower" of functions:
@@ -125,13 +135,21 @@ fmap3 g x y z = pure g <*> x <*> y <*> z
 Let us take a closer look at the types for `fmap2`:
 ```haskell
 g :: a -> b -> c
-x :: f a
-y :: f b
 pure g :: f (a -> (b -> c))
 (<*>) :: f (a -> (b -> c)) -> f a -> f (b -> c)
+x :: f a
 pure g <*> x :: f (b -> c)
 (<*>) :: f (b -> c) -> f b -> f c
+y :: f b
 (pure g <*> x) <*> y :: f c
+```
+Something very profound is going on here, so make sure you follow the above type considerations. The idea is that we combine the ability to only partially apply a function with the ability that `<*>` provides us, to apply a function within the applicative to a value within the applicative.
+
+**Practice**: Think of possible definitions for `<*>` in some of the types we have seen:
+```haskell
+(<*>) :: Maybe (a -> b) -> Maybe a -> Maybe b
+(<*>) :: [a -> b] -> [a] -> [b]   -- List of functions and list of a-values
+(<*>) :: IO (a -> b) -> IO a -> IO b
 ```
 
 Now let us discuss how our earlier types are instances of `Applicative`. For the `Maybe` type, if we have a function and we have a value, then we apply the function to the value. Otherwise we return `Nothing`. For lists, we have a list of functions and a list of values, and we apply all functions to all values.
@@ -177,9 +195,9 @@ x <*> (y <*> z)   = (pure (.) <*> x <*> y) <*> z
 
 The `Monad` class is the last step in this hierarchy of classes.
 
-- `Functor` allowed us to apply "pure" functions `(a->b)` to our effectful values `f a`.
+- `Functor` allowed us to apply "pure" functions `(a -> b)` to our effectful values `f a`.
 - `Applicative` allowed us to apply effectful function values `f (a -> b)` to our effectful values `f a`.
-- `Monad` will allow us to combine functions that result in effectful values `a -> f b` with effectful values `f a` to produce a result `f b`.
+- `Monad` will allow us to combine functions that result in effectful values `a -> f b` with effectful values `f a` to produce a result `f b`. The difference with applicative is that *the second effect may depend on the output value from the first effect*.
 
 Here is the definition of the `Monad` class:
 ```haskell
@@ -189,9 +207,18 @@ class Applicative m => Monad m where
 
     return = pure  -- default implementation via Applicative
 ```
-We've already seen the `(>>=)` operator in a few places.
+We've already seen the `(>>=)` operator in a few places. In effect, the definition of `(>>=)` for the `IO` monad is:
+```haskell
+(>>=) :: IO a -> (a -> IO b) -> IO b
+ioa >>= f = do
+  x <- ioa
+  f x
+```
+So for `IO` it simply says: Carry out the `IO a` action, then use its value to obtain an `IO b` action. That's your result (i.e. do that next). We could almost define the operation `(>>=)` this way, except for the fact that it is actually used behind the scenes to implement the `do` notation:
 
-The most common way to use monads is via the "do" notation. For example, when we write something like:
+> The `do` notation is behind the scenes nothing more than successive applications of `(>>=)` (and `(>>)`).
+
+For example, when we write something like:
 ```haskell
 echo = do
   c <- getChar
@@ -236,6 +263,17 @@ instance Monad ProgStateT where
                               in run (f v) mem')
 ```
 The definition for lists is particularly interesting: If we have a list of elements, and for each element we can produce a list of result elements via the function `f`, we can then iterate over each resulting list and concatenate all the results together. This is close to what list comprehensions are doing.
+
+As another example, here's how we could write the list concat function using monads:
+```haskell
+concat :: [[a]] -> [a]
+concat lsts = lsts >>= (\lst -> lst)
+-- Or simpler, using the identity function `id :: a -> a`
+concat lsts = lsts >>= id
+-- Using operator section syntax, now it's getting hard to understand
+concat = (>>= id)
+```
+Make sure you understand the above, work out the types of each piece!
 
 Similar to the other two classes, instances of `Monad` are expected to further satisfy certain rules, that we will not explore in detail:
 ```haskell

@@ -42,7 +42,12 @@
 <p>We will now begin our investigation of key operations that all the aforementioned “container types” have in common. The first of these is the idea of a functor.</p>
 <p>The container/polymorphic type <code>f a</code> is a <strong>functor</strong> if it comes equipped with a function:</p>
 <pre class="haskell"><code>fmap :: (a -&gt; b) -&gt; f a -&gt; f b</code></pre>
-<p>In other words, functors come equipped with a natural way to transform the contained values, if provided with an appropriate function. There are certain “naturality” conditions that such a function must obey, often described via a set of “properties”:</p>
+<p>In other words, functors come equipped with a natural way to transform the contained values, if provided with an appropriate function.</p>
+<p><strong>Practice</strong>: Without looking at the remaining notes, implement <code>fmap</code> for <code>Maybe</code>, <code>IO</code> and <code>State</code>:</p>
+<pre class="haskell"><code>fmap :: (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+fmap :: (a -&gt; b) -&gt; IO a -&gt; IO b
+fmap :: (a -&gt; b) -&gt; State s a -&gt; State s b</code></pre>
+<p>There are certain “naturality” conditions that such a function must obey, often described via a set of “properties”:</p>
 <pre class="haskell"><code>fmap id      = id
 fmap (g . h) = fmap g . fmap h</code></pre>
 <p>These look complicated, but basically they say that functors behave in a reasonable way:</p>
@@ -55,7 +60,7 @@ fmap (g . h) = fmap g . fmap h</code></pre>
 </ul>
 And the result is the same whichever way we do it. It does not matter if you compose first, or if you apply <code>fmap</code> first.</li>
 </ul>
-<p>These two properties allow Haskell to simplify some functor operations. But we will not concern ourselves with them very much right now.</p>
+<p>These two properties allow Haskell to simplify some functor operations. But we will not concern ourselves very much with this aspect right now.</p>
 <p>The key insight is that very many container types are naturally functor types. This is captured via the <code>Functor</code> class:</p>
 <pre class="haskell"><code>class Functor f where
     fmap :: (a -&gt; b) -&gt; f a -&gt; f b</code></pre>
@@ -93,6 +98,7 @@ instance Functor ProgStateT where
 &quot;hi&quot; &lt;$ Nothing    -- Results in Nothing
 4 &lt;$ [1,3,4]       -- Results in [4, 4, 4]
 5 &lt;$ putStrLn &quot;hi&quot; -- A IO Integer action which prints &quot;hi&quot; and returns 5</code></pre>
+<p><strong>Practice</strong>: Implement <code>(&lt;$)</code> and <code>void</code> using <code>fmap</code>.</p>
 <h2 id="applicatives">Applicatives</h2>
 <p>The <code>Applicative</code> class is an extension of the <code>Functor</code> class. It essentially allows us to map functions as <code>Functor</code> does, but works with functions of possibly more than one parameter. We can think of it as providing for us a “tower” of functions:</p>
 <pre class="haskell"><code>fmap0 :: a -&gt; f a
@@ -111,13 +117,18 @@ fmap2 g x y   = pure g &lt;*&gt; x &lt;*&gt; y
 fmap3 g x y z = pure g &lt;*&gt; x &lt;*&gt; y &lt;*&gt; z</code></pre>
 <p>Let us take a closer look at the types for <code>fmap2</code>:</p>
 <pre class="haskell"><code>g :: a -&gt; b -&gt; c
-x :: f a
-y :: f b
 pure g :: f (a -&gt; (b -&gt; c))
 (&lt;*&gt;) :: f (a -&gt; (b -&gt; c)) -&gt; f a -&gt; f (b -&gt; c)
+x :: f a
 pure g &lt;*&gt; x :: f (b -&gt; c)
 (&lt;*&gt;) :: f (b -&gt; c) -&gt; f b -&gt; f c
+y :: f b
 (pure g &lt;*&gt; x) &lt;*&gt; y :: f c</code></pre>
+<p>Something very profound is going on here, so make sure you follow the above type considerations. The idea is that we combine the ability to only partially apply a function with the ability that <code>&lt;*&gt;</code> provides us, to apply a function within the applicative to a value within the applicative.</p>
+<p><strong>Practice</strong>: Think of possible definitions for <code>&lt;*&gt;</code> in some of the types we have seen:</p>
+<pre class="haskell"><code>(&lt;*&gt;) :: Maybe (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+(&lt;*&gt;) :: [a -&gt; b] -&gt; [a] -&gt; [b]   -- List of functions and list of a-values
+(&lt;*&gt;) :: IO (a -&gt; b) -&gt; IO a -&gt; IO b</code></pre>
 <p>Now let us discuss how our earlier types are instances of <code>Applicative</code>. For the <code>Maybe</code> type, if we have a function and we have a value, then we apply the function to the value. Otherwise we return <code>Nothing</code>. For lists, we have a list of functions and a list of values, and we apply all functions to all values.</p>
 <pre class="haskell"><code>instance Applicative Maybe where
     pure x = Just x
@@ -152,9 +163,9 @@ x &lt;*&gt; (y &lt;*&gt; z)   = (pure (.) &lt;*&gt; x &lt;*&gt; y) &lt;*&gt; z</
 <h2 id="monads">Monads</h2>
 <p>The <code>Monad</code> class is the last step in this hierarchy of classes.</p>
 <ul>
-<li><code>Functor</code> allowed us to apply “pure” functions <code>(a-&gt;b)</code> to our effectful values <code>f a</code>.</li>
+<li><code>Functor</code> allowed us to apply “pure” functions <code>(a -&gt; b)</code> to our effectful values <code>f a</code>.</li>
 <li><code>Applicative</code> allowed us to apply effectful function values <code>f (a -&gt; b)</code> to our effectful values <code>f a</code>.</li>
-<li><code>Monad</code> will allow us to combine functions that result in effectful values <code>a -&gt; f b</code> with effectful values <code>f a</code> to produce a result <code>f b</code>.</li>
+<li><code>Monad</code> will allow us to combine functions that result in effectful values <code>a -&gt; f b</code> with effectful values <code>f a</code> to produce a result <code>f b</code>. The difference with applicative is that <em>the second effect may depend on the output value from the first effect</em>.</li>
 </ul>
 <p>Here is the definition of the <code>Monad</code> class:</p>
 <pre class="haskell"><code>class Applicative m =&gt; Monad m where
@@ -162,8 +173,16 @@ x &lt;*&gt; (y &lt;*&gt; z)   = (pure (.) &lt;*&gt; x &lt;*&gt; y) &lt;*&gt; z</
     (&gt;&gt;=)  :: m a -&gt; (a -&gt; m b) -&gt; m b
 
     return = pure  -- default implementation via Applicative</code></pre>
-<p>We’ve already seen the <code>(&gt;&gt;=)</code> operator in a few places.</p>
-<p>The most common way to use monads is via the “do” notation. For example, when we write something like:</p>
+<p>We’ve already seen the <code>(&gt;&gt;=)</code> operator in a few places. In effect, the definition of <code>(&gt;&gt;=)</code> for the <code>IO</code> monad is:</p>
+<pre class="haskell"><code>(&gt;&gt;=) :: IO a -&gt; (a -&gt; IO b) -&gt; IO b
+ioa &gt;&gt;= f = do
+  x &lt;- ioa
+  f x</code></pre>
+<p>So for <code>IO</code> it simply says: Carry out the <code>IO a</code> action, then use its value to obtain an <code>IO b</code> action. That’s your result (i.e. do that next). We could almost define the operation <code>(&gt;&gt;=)</code> this way, except for the fact that it is actually used behind the scenes to implement the <code>do</code> notation:</p>
+<blockquote>
+<p>The <code>do</code> notation is behind the scenes nothing more than successive applications of <code>(&gt;&gt;=)</code> (and <code>(&gt;&gt;)</code>).</p>
+</blockquote>
+<p>For example, when we write something like:</p>
 <pre class="haskell"><code>echo = do
   c &lt;- getChar
   putChar c</code></pre>
@@ -198,6 +217,14 @@ instance Monad ProgStateT where
     pst1 &gt;&gt;= f = PST (\mem -&gt; let (v, mem&#39;) = run pst1 mem
                               in run (f v) mem&#39;)</code></pre>
 <p>The definition for lists is particularly interesting: If we have a list of elements, and for each element we can produce a list of result elements via the function <code>f</code>, we can then iterate over each resulting list and concatenate all the results together. This is close to what list comprehensions are doing.</p>
+<p>As another example, here’s how we could write the list concat function using monads:</p>
+<pre class="haskell"><code>concat :: [[a]] -&gt; [a]
+concat lsts = lsts &gt;&gt;= (\lst -&gt; lst)
+-- Or simpler, using the identity function `id :: a -&gt; a`
+concat lsts = lsts &gt;&gt;= id
+-- Using operator section syntax, now it&#39;s getting hard to understand
+concat = (&gt;&gt;= id)</code></pre>
+<p>Make sure you understand the above, work out the types of each piece!</p>
 <p>Similar to the other two classes, instances of <code>Monad</code> are expected to further satisfy certain rules, that we will not explore in detail:</p>
 <pre class="haskell"><code>return x &gt;&gt;= f    = f x
 mx &gt;&gt;= return     = mx
